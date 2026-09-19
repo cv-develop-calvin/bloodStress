@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% set active = 'index' %}
+{% block title %}血压趋势 · 血压记录{% endblock %}
+
+{% block content %}
+
+<!-- 最新一次测量 -->
+<div class="card border-0 shadow-sm mb-3 text-white bg-primary bg-gradient">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <div class="small opacity-75">最新测量{% if latest %} · {{ latest['date'] }} {{ latest['time'] }}{% endif %}</div>
+        {% if latest %}
+          {% set lv = classify(latest['systolic'], latest['diastolic']) %}
+          <div class="display-6 fw-bold lh-sm">{{ latest['systolic'] }}<span class="fs-4 opacity-75">/{{ latest['diastolic'] }}</span>
+            <span class="fs-6 opacity-75">mmHg</span>
+          </div>
+          <div class="mt-1">
+            <span class="badge {{ lv['css'] }}">{{ lv['name'] }}</span>
+            {% if latest['pulse'] %}<span class="badge text-bg-light text-primary">心率 {{ latest['pulse'] }}</span>{% endif %}
+          </div>
+        {% else %}
+          <div class="fs-4 fw-semibold mt-1">暂无数据</div>
+          <a class="btn btn-light btn-sm mt-2 fw-semibold" href="{{ url_for('add') }}">添加第一条记录</a>
+        {% endif %}
+      </div>
+      {% if latest %}<div class="text-end small opacity-75">{{ latest['note'] or '' }}</div>{% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- 时间范围 -->
+<div class="btn-group btn-group-sm w-100 mb-3 shadow-sm" role="group" aria-label="时间范围">
+  {% for value, label in ranges %}
+    <a href="{{ url_for('index', days=value) }}"
+       class="btn btn-outline-primary {% if days|string == value %}active{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+<!-- 统计卡片 -->
+<div class="row g-2 mb-3">
+  <div class="col-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body py-3">
+        <div class="text-secondary small">平均收缩压</div>
+        <div class="fs-3 fw-bold text-primary">{{ stat['avg_sys']|round(1) if stat['avg_sys'] else '--' }}</div>
+        <div class="text-secondary small">最高 {{ stat['max_sys'] or '--' }} · 最低 {{ stat['min_sys'] or '--' }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body py-3">
+        <div class="text-secondary small">平均舒张压</div>
+        <div class="fs-3 fw-bold text-success">{{ stat['avg_dia']|round(1) if stat['avg_dia'] else '--' }}</div>
+        <div class="text-secondary small">最高 {{ stat['max_dia'] or '--' }} · 最低 {{ stat['min_dia'] or '--' }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body py-3">
+        <div class="text-secondary small">平均心率</div>
+        <div class="fs-3 fw-bold text-warning-emphasis">{{ stat['avg_pulse']|round(1) if stat['avg_pulse'] else '--' }}</div>
+        <div class="text-secondary small">次 / 分钟</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body py-3">
+        <div class="text-secondary small">记录条数</div>
+        <div class="fs-3 fw-bold text-secondary">{{ stat['n'] or 0 }}</div>
+        <div class="text-secondary small">{% if days %}{{ days }} 天内{% else %}全部数据{% endif %}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 曲线图 -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="mb-0 fw-bold">血压趋势曲线</h6>
+      <div class="btn-group btn-group-sm" role="group" aria-label="曲线开关">
+        <button type="button" class="btn btn-outline-primary active" data-series="0">收缩压</button>
+        <button type="button" class="btn btn-outline-success active" data-series="1">舒张压</button>
+        <button type="button" class="btn btn-outline-warning active" data-series="2">心率</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="bpChart"></canvas>
+    </div>
+    {% if latest %}
+      {% set lv = classify(latest['systolic'], latest['diastolic']) %}
+      <div class="alert alert-light border mt-3 mb-0 small">
+        <span class="badge {{ lv['css'] }}">{{ lv['name'] }}</span> {{ lv['advice'] }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 最近记录 -->
+<div class="card border-0 shadow-sm mb-5">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <h6 class="mb-0 fw-bold">最近记录</h6>
+    <a class="small text-decoration-none" href="{{ url_for('records') }}">查看全部 →</a>
+  </div>
+  <div class="list-group list-group-flush">
+    {% for r in recent %}
+      {% set lv = classify(r['systolic'], r['diastolic']) %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-semibold">{{ r['date'] }} <span class="text-secondary small">{{ r['time'] }}</span></div>
+          <div class="small text-secondary">{{ r['note'] or '—' }}</div>
+        </div>
+        <div class="text-end">
+          <div class="fw-bold">{{ r['systolic'] }}/{{ r['diastolic'] }}
+            <span class="badge {{ lv['css'] }} ms-1">{{ lv['name'] }}</span>
+          </div>
+          <div class="small text-secondary">{% if r['pulse'] %}心率 {{ r['pulse'] }}{% endif %}</div>
+        </div>
+      </div>
+    {% else %}
+      <div class="list-group-item text-center text-secondary py-4">还没有记录，点击右上角「＋ 记录」开始吧</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.BP_DATA = {{ chart_rows|tojson }};
+  window.BP_DAYS = {{ days }};
+</script>
+{% endblock %}

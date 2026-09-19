@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · 血压记录{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm mb-5">
+  <div class="card-header bg-white">
+    <h6 class="mb-0 fw-bold">{{ title }}</h6>
+  </div>
+  <div class="card-body">
+    <form method="post" action="{{ action }}" class="needs-validation" novalidate id="bpForm">
+      <div class="row g-3">
+        <div class="col-6">
+          <label for="date" class="form-label">测量日期</label>
+          <input type="date" class="form-control" id="date" name="date"
+                 value="{{ record['date'] }}" required max="{{ today }}">
+        </div>
+        <div class="col-6">
+          <label for="time" class="form-label">测量时间</label>
+          <input type="time" class="form-control" id="time" name="time" value="{{ record['time'] }}">
+        </div>
+
+        <div class="col-6">
+          <label for="systolic" class="form-label">收缩压（高压）</label>
+          <div class="input-group">
+            <input type="number" class="form-control" id="systolic" name="systolic"
+                   value="{{ record['systolic'] }}" min="60" max="300" placeholder="120" required>
+            <span class="input-group-text">mmHg</span>
+          </div>
+        </div>
+        <div class="col-6">
+          <label for="diastolic" class="form-label">舒张压（低压）</label>
+          <div class="input-group">
+            <input type="number" class="form-control" id="diastolic" name="diastolic"
+                   value="{{ record['diastolic'] }}" min="30" max="200" placeholder="80" required>
+            <span class="input-group-text">mmHg</span>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label for="pulse" class="form-label">心率（选填）</label>
+          <div class="input-group">
+            <input type="number" class="form-control" id="pulse" name="pulse"
+                   value="{{ record['pulse'] if record['pulse'] else '' }}" min="30" max="250" placeholder="75">
+            <span class="input-group-text">次/分</span>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label for="note" class="form-label">备注（选填）</label>
+          <input type="text" class="form-control" id="note" name="note"
+                 value="{{ record['note'] }}" placeholder="如：晨起、服药后、运动后">
+        </div>
+
+        <div class="col-12" id="levelPreview"></div>
+
+        <div class="col-12 d-grid gap-2 d-sm-flex">
+          <button type="submit" class="btn btn-primary px-4">保存</button>
+          <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">取消</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-5">
+  <div class="card-header bg-white"><h6 class="mb-0 fw-bold">血压分级参考</h6></div>
+  <div class="table-responsive">
+    <table class="table table-sm mb-0 align-middle">
+      <thead class="table-light">
+        <tr><th>分级</th><th>收缩压</th><th>舒张压</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge text-bg-secondary">血压偏低</span></td><td>&lt; 90</td><td>&lt; 60</td></tr>
+        <tr><td><span class="badge text-bg-success">正常血压</span></td><td>90 – 119</td><td>60 – 79</td></tr>
+        <tr><td><span class="badge text-bg-info">正常高值</span></td><td>120 – 139</td><td>80 – 89</td></tr>
+        <tr><td><span class="badge text-bg-warning">1 级高血压</span></td><td>140 – 159</td><td>90 – 99</td></tr>
+        <tr><td><span class="badge text-bg-danger">2 级高血压</span></td><td>160 – 179</td><td>100 – 109</td></tr>
+        <tr><td><span class="badge text-bg-danger">3 级高血压</span></td><td>≥ 180</td><td>≥ 110</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
