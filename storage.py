@@ -1,4 +1,4 @@
-"""SQLite 数据访问层：血压记录的增删改查与统计。"""
+"""SQLite 数据访问层：宋宝宝的记录的增删改查与统计。"""
 from __future__ import annotations
 
 import os

@@ -1,6 +1,6 @@
 [app]
-title = 血压记录
-package.name = bloodpressurerecord
+title = 宋宝宝的记录
+package.name = songbaobao
 package.domain = org.bp
 
 source.dir = .

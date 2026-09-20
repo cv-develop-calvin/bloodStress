@@ -1,6 +1,6 @@
 {
-  "name": "血压记录",
-  "short_name": "血压记录",
+  "name": "宋宝宝的记录",
+  "short_name": "宝宝记录",
   "description": "记录每日血压数据，用曲线图查看变化趋势",
   "start_url": "/",
   "scope": "/",

@@ -1,4 +1,4 @@
-"""血压记录 · 移动端 Web App（Bootstrap 风格 + Chart.js 曲线图）
+"""宋宝宝的记录 · 移动端 Web App（Bootstrap 风格 + Chart.js 曲线图）
 
 启动：python app.py           （局域网访问，手机浏览器打开提示的地址）
       python app.py --seed    （写入 30 天演示数据）
@@ -189,7 +189,7 @@ def lan_ip() -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="血压记录 App")
+    parser = argparse.ArgumentParser(description="宋宝宝的记录 App")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=5000)
     parser.add_argument("--seed", action="store_true", help="写入演示数据")

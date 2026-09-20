@@ -24,7 +24,7 @@ def serve() -> None:
 
 def main() -> None:
     threading.Thread(target=serve, daemon=True).start()
-    print(f"血压记录服务已启动： http://127.0.0.1:{PORT}", flush=True)
+    print(f"宋宝宝的记录服务已启动： http://127.0.0.1:{PORT}", flush=True)
     print(f"数据库：{storage.db_path()}", flush=True)
     try:
         while True:

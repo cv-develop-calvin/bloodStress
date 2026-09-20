@@ -1,6 +1,6 @@
-# 血压记录 · 安卓应用（Python + Bootstrap + Chart.js）
+# 宋宝宝的记录 · 安卓应用（Python + Bootstrap + Chart.js）
 
-在安卓手机上运行的血压记录应用：Python（Flask）做后端，Bootstrap 5 做移动端 UI，Chart.js 画血压趋势曲线，SQLite 存储数据。
+在安卓手机上运行的宋宝宝的记录应用：Python（Flask）做后端，Bootstrap 5 做移动端 UI，Chart.js 画血压趋势曲线，SQLite 存储数据。
 两种在安卓上运行的方式：**Termux 直接运行**（几分钟可用）或 **Buildozer 打包成 APK**（真·独立 App）。
 
 ## 安装到手机（三种方式，任选其一）
@@ -18,12 +18,12 @@ bash run_android.sh           # 自动装 python + flask 并启动
 ```
 
 4. 手机浏览器打开 `http://127.0.0.1:5000` 即可使用。
-5. 想做成桌面图标：再装 **Termux:Widget**，在 `~/.shortcuts/` 建文件 `血压记录`：
+5. 想做成桌面图标：再装 **Termux:Widget**，在 `~/.shortcuts/` 建文件 `宋宝宝的记录`：
 
 ```bash
 mkdir -p ~/.shortcuts
-echo 'cd /sdcard/bp && bash run_android.sh' > ~/.shortcuts/血压记录
-chmod +x ~/.shortcuts/血压记录
+echo 'cd /sdcard/bp && bash run_android.sh' > ~/.shortcuts/宋宝宝的记录
+chmod +x ~/.shortcuts/宋宝宝的记录
 ```
 
 之后在桌面添加 Termux:Widget 小组件，点一下就能启动（后台常驻可在 Termux 通知里锁定）。
@@ -39,7 +39,7 @@ chmod +x ~/.shortcuts/血压记录
 
 1. 把项目推到 GitHub：
 ```bash
-git init && git add . && git commit -m "血压记录 App"
+git init && git add . && git commit -m "宋宝宝的记录 App"
 git remote add origin https://github.com/<你的账号>/<仓库名>.git
 git push -u origin main
 ```
@@ -47,7 +47,7 @@ git push -u origin main
 3. 约 15–30 分钟构建完成后，在 Artifacts 下载 `blood-pressure-apk`（内含 `.apk`）。
 4. 把 APK 传到手机（微信/QQ 文件传输、USB 拷贝、或上传网盘下载），点开安装。
    - 提示「未知来源应用」→ 允许本次安装（设置 → 安装未知应用 → 对应来源允许）。
-5. 桌面出现「血压记录」图标，点开即用，无需联网、无需电脑。
+5. 桌面出现「宋宝宝的记录」图标，点开即用，无需联网、无需电脑。
 
 **B2 · 本机装 WSL 构建**
 
@@ -61,7 +61,7 @@ pip3 install --user buildozer cython
 cd /mnt/d/cv_coding/cv_song
 buildozer -v android debug
 ```
-产物：`bin/血压记录-1.0.0-debug.apk`，拷到手机安装。
+产物：`bin/宋宝宝的记录-1.0.0-debug.apk`，拷到手机安装。
 （可选，用 adb 直接装：电脑装 platform-tools → `adb install bin/*.apk`）
 
 ### 方式 C：局域网 PWA（不安装，也能像 App 一样用）
@@ -103,7 +103,7 @@ bash run_android.sh    # 自动安装 python + flask 并启动
 ```bash
 pip install buildozer
 sudo apt install -y openjdk-17-jdk autoconf libtool pkg-config zip unzip
-buildozer -v android debug      # 产物 bin/血压记录-1.0.0-debug.apk
+buildozer -v android debug      # 产物 bin/宋宝宝的记录-1.0.0-debug.apk
 ```
 
 关键配置在 `buildozer.spec`：
