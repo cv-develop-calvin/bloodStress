@@ -1,13 +1,15 @@
 name: Build Android APK
 
-# 本机没有 Linux/WSL 时，用 GitHub Actions 免费构建 APK：
-# 1) 把本项目推送到 GitHub 仓库
-# 2) Actions 页面选中本工作流 → Run workflow（务必选 main 分支）
+# 构建方式：
+# 1) 推送到 main 分支会自动触发本工作流
+# 2) 也可在 Actions 页面选中本工作流 → Run workflow（分支选 main）
 # 3) 完成后下载 Artifacts 里的 apk，传到手机安装
 
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
 
