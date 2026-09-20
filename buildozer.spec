@@ -8,8 +8,7 @@ source.include_exts = py,png,jpg,svg,html,css,js,json,db,txt
 source.exclude_dirs = data,__pycache__,.buildozer,bin
 
 version = 1.0.0
-# hostpython3 必须显式声明；flask 依赖的 markupsafe 需要进 requirements
-requirements = hostpython3==3.11.5,python3,flask,markupsafe
+requirements = python3,flask
 
 # WebView 模式：APK 内运行 Flask，界面由 Android WebView 显示
 android.bootstrap = webview
