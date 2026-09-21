@@ -64,8 +64,16 @@ jobs:
         id: build
         continue-on-error: true
         run: |
-          set -o pipefail
-          yes | buildozer -v android debug 2>&1 | tail -n 400
+          # 注意：不能用 `set -o pipefail` + `yes |`，yes 被 SIGPIPE 杀掉会造成构建成功却误报失败。
+          # 这里只取 buildozer 自己的退出码（PIPESTATUS[1]）。
+          yes '' | buildozer -v android debug 2>&1 | tail -n 400
+          exit "${PIPESTATUS[1]}"
+
+      - name: Check build result
+        if: steps.build.outcome == 'failure'
+        run: |
+          echo "::error::buildozer 构建失败，详见上方 Build debug APK 日志"
+          exit 1
 
       - name: Diagnostics on failure
         if: failure() || steps.build.outcome == 'failure'
