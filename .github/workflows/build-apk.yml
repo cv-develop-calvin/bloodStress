@@ -61,12 +61,23 @@ jobs:
           buildozer version
 
       - name: Build debug APK
+        id: build
+        continue-on-error: true
         run: |
           set -o pipefail
           yes | buildozer -v android debug 2>&1 | tail -n 400
 
+      - name: Diagnostics on failure
+        if: failure() || steps.build.outcome == 'failure'
+        run: |
+          echo "===== bin 目录 ====="
+          ls -la bin || true
+          echo "===== buildozer 日志尾部 ====="
+          find .buildozer -maxdepth 4 -name "*.log" -printf "%p\n" 2>/dev/null | head -n 5
+          find .buildozer -maxdepth 4 -name "*.log" -exec sh -c 'echo "--- $1"; tail -n 60 "$1"' _ {} \; 2>/dev/null | head -n 400
+
       - name: Upload build logs on failure
-        if: failure()
+        if: failure() || steps.build.outcome == 'failure'
         uses: actions/upload-artifact@v7
         with:
           name: buildozer-logs
