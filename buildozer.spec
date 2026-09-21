@@ -22,6 +22,8 @@ orientation = portrait
 fullscreen = 0
 
 icon.filename = static/img/icon-512.png
+presplash.filename = static/img/icon-512.png
+android.presplash_color = #FFFFFF
 android.accept_sdk_license = True
 android.allow_backup = True
 # 需要签名发布版时改用：buildozer -v android release
