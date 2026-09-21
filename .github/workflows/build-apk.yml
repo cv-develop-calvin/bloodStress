@@ -45,14 +45,20 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install "cython<3.0" buildozer
 
-      - name: Cache buildozer directories
+      # 只缓存 SDK/NDK 目录。项目内的 .buildozer 不再缓存：
+      # 它包含已生成好的 res/drawable/icon.png，缓存命中会导致换了图标却打出旧图标。
+      - name: Cache Android SDK/NDK
         uses: actions/cache@v6
         with:
-          path: |
-            ~/.buildozer
-            .buildozer
-          key: buildozer-${{ hashFiles('buildozer.spec') }}
-          restore-keys: buildozer-
+          path: ~/.buildozer
+          key: buildozer-sdk-${{ hashFiles('buildozer.spec') }}
+          restore-keys: buildozer-sdk-
+
+      - name: Clean previous dist (force icon refresh)
+        run: |
+          rm -rf .buildozer/android/platform/build/dists
+          rm -rf .buildozer/android/platform/build/build
+          ls -la static/img
 
       - name: Preflight check
         run: |
@@ -68,6 +74,20 @@ jobs:
           # 这里只取 buildozer 自己的退出码（PIPESTATUS[1]）。
           yes '' | buildozer -v android debug 2>&1 | tail -n 400
           exit "${PIPESTATUS[1]}"
+
+      - name: Verify APK resources
+        if: always()
+        run: |
+          ls -la bin || true
+          AAPT=$(ls ~/.buildozer/android/platform/android-sdk/build-tools/*/aapt2 2>/dev/null | tail -n 1)
+          echo "aapt2: $AAPT"
+          if [ -n "$AAPT" ]; then
+            for f in bin/*.apk; do
+              [ -e "$f" ] || continue
+              echo "===== badging $f ====="
+              "$AAPT" dump badging "$f" | grep -E "application-icon|roundIcon|label=|package: name" || true
+            done
+          fi
 
       - name: Check build result
         if: steps.build.outcome == 'failure'
