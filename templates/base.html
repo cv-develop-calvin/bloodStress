@@ -23,7 +23,16 @@
       </svg>
       宋宝宝的记录
     </span>
-    <a class="btn btn-light btn-sm fw-semibold" href="{{ url_for('add') }}">＋ 记录</a>
+    <div class="dropdown">
+      <button class="btn btn-light btn-sm fw-semibold dropdown-toggle" data-bs-toggle="dropdown"
+              aria-expanded="false" aria-label="快捷添加">＋ 添加</button>
+      <ul class="dropdown-menu dropdown-menu-end shadow">
+        <li><a class="dropdown-item" href="{{ url_for('add') }}">血压记录</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('meds_add') }}">添加药品</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('lab_scan') }}">📷 拍血常规报告</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('lab_add') }}">手动填写血常规</a></li>
+      </ul>
+    </div>
   </div>
 </nav>
 
@@ -42,25 +51,55 @@
   {% block content %}{% endblock %}
 </main>
 
-<nav class="tabbar bg-white border-top d-lg-none">
+<nav class="tabbar bg-white border-top">
   <div class="container-fluid px-0">
     <div class="row g-0 text-center">
       <a class="col tabbar-item {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">
-        <span>📈</span><small>趋势</small>
+        <span>❤️</span><small>血压</small>
       </a>
-      <a class="col tabbar-item {% if request.endpoint == 'add' %}active{% endif %}" href="{{ url_for('add') }}">
-        <span>➕</span><small>添加</small>
+      <a class="col tabbar-item {% if request.endpoint in ['meds', 'meds_add', 'meds_edit'] %}active{% endif %}"
+         href="{{ url_for('meds') }}">
+        <span>💊</span><small>用药</small>
       </a>
-      <a class="col tabbar-item {% if request.endpoint == 'records' %}active{% endif %}" href="{{ url_for('records') }}">
+      <a class="col tabbar-item {% if request.endpoint in ['lab_scan'] %}active{% endif %}" href="{{ url_for('lab_scan') }}">
+        <span>📷</span><small>拍照</small>
+      </a>
+      <a class="col tabbar-item {% if request.endpoint in ['lab', 'lab_add', 'lab_edit'] %}active{% endif %}"
+         href="{{ url_for('lab') }}">
+        <span>🩸</span><small>血常规</small>
+      </a>
+      <a class="col tabbar-item {% if request.endpoint in ['records', 'form'] %}active{% endif %}"
+         href="{{ url_for('records') }}">
         <span>📋</span><small>记录</small>
       </a>
     </div>
   </div>
 </nav>
 
+<!-- 用药提醒弹窗 -->
+<div class="modal fade" id="medRemindModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning-subtle">
+        <h6 class="modal-title fw-bold">💊 用药提醒</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+      </div>
+      <div class="modal-body" id="medRemindBody">
+        <p class="mb-0 text-secondary">该吃药啦</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">稍后</button>
+        <a class="btn btn-primary" id="medRemindTake" href="#">记录服药</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>window.BP_PAGE = window.BP_PAGE || '{{ request.endpoint }}';</script>
 {% block scripts %}{% endblock %}
 <script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url_for('static', filename='vendor/chart.umd.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/reminder.js') }}"></script>
 </body>
 </html>
