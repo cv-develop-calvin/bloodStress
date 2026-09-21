@@ -1,9 +1,8 @@
 name: Build Android APK
 
 # 构建方式：
-# 1) 推送到 main 分支会自动触发本工作流
+# 1) 推送到 main 分支自动触发（打 vX.Y.Z 标签会自动创建 Release 并附上 APK）
 # 2) 也可在 Actions 页面选中本工作流 → Run workflow（分支选 main）
-# 3) 完成后下载 Artifacts 里的 apk，传到手机安装
 
 on:
   workflow_dispatch:
@@ -12,6 +11,9 @@ on:
       - main
     tags:
       - 'v*'
+
+permissions:
+  contents: write      # 打标签构建时需要创建 Release
 
 jobs:
   build:
@@ -45,8 +47,46 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install "cython<3.0" buildozer
 
-      # 只缓存 SDK/NDK 目录。项目内的 .buildozer 不再缓存：
-      # 它包含已生成好的 res/drawable/icon.png，缓存命中会导致换了图标却打出旧图标。
+      # 版本号以 version.py 为唯一来源，避免和 buildozer.spec 不一致
+      - name: Sync version and write build info
+        id: ver
+        run: |
+          python - <<'PY'
+          import json, os, re, subprocess
+          from datetime import datetime
+
+          text = open('version.py', encoding='utf-8').read()
+          version = re.search(r'VERSION\s*=\s*"([^"]+)"', text).group(1)
+          parts = [int(x) for x in re.findall(r'\d+', version)[:3]]
+          while len(parts) < 3:
+              parts.append(0)
+          code = parts[0] * 10000 + parts[1] * 100 + parts[2]
+
+          spec = open('buildozer.spec', encoding='utf-8').read()
+          spec_new = re.sub(r'^version\s*=.*$', f'version = {version}', spec, count=1, flags=re.M)
+          if spec_new != spec:
+              open('buildozer.spec', 'w', encoding='utf-8').write(spec_new)
+
+          sha = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'],
+                               capture_output=True, text=True).stdout.strip()
+          branch = subprocess.run(['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+                                  capture_output=True, text=True).stdout.strip()
+          info = {
+              'version': version,
+              'version_code': code,
+              'build_time': datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC'),
+              'commit': sha,
+              'branch': branch,
+              'run_number': os.environ.get('GITHUB_RUN_NUMBER', '—'),
+              'build_type': 'release' if branch.startswith('v') or os.environ.get('GITHUB_REF', '').startswith('refs/tags/') else 'dev',
+              'repo': os.environ.get('GITHUB_REPOSITORY', ''),
+          }
+          json.dump(info, open('build_info.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+          print('版本:', version, 'code =', code)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'version={version}\ncode={code}\n')
+          PY
+
       - name: Cache Android SDK/NDK
         uses: actions/cache@v6
         with:
@@ -64,6 +104,8 @@ jobs:
         run: |
           java -version
           echo "JAVA_HOME=$JAVA_HOME"
+          java -version
+          ls -la build_info.json
           buildozer version
 
       - name: Build debug APK
@@ -85,7 +127,7 @@ jobs:
             for f in bin/*.apk; do
               [ -e "$f" ] || continue
               echo "===== badging $f ====="
-              "$AAPT" dump badging "$f" | grep -E "application-icon|roundIcon|label=|package: name" || true
+              "$AAPT" dump badging "$f" | grep -E "application-icon|roundIcon|label=|package: name|versionName|versionCode" || true
             done
           fi
 
@@ -112,10 +154,38 @@ jobs:
           path: .buildozer/**/*.log
           if-no-files-found: ignore
 
+      # APK 重命名带上版本号，方便区分与留档
+      - name: Rename APK with version
+        if: always()
+        run: |
+          mkdir -p dist
+          for f in bin/*.apk; do
+            [ -e "$f" ] || continue
+            cp "$f" "dist/songbaobao-v${{ steps.ver.outputs.version }}-${{ steps.ver.outputs.code }}-debug.apk"
+          done
+          ls -la dist || true
+
       - name: Upload APK
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: blood-pressure-apk
-          path: bin/*.apk
+          name: blood-pressure-apk-v${{ steps.ver.outputs.version }}
+          path: dist/*.apk
           if-no-files-found: warn
+
+      # 打 vX.Y.Z 标签时自动发 Release，附上 APK（应用内「检查更新」即读取这里）
+      - name: Publish Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.apk
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## 宋宝宝的记录 v${{ steps.ver.outputs.version }}
+
+            构建号 `${{ steps.ver.outputs.code }}`，提交 `${{ github.sha }}`。
+
+            安装方式：下载下方 APK，在手机上点击安装（提示未知来源时允许）。
+            手机数据保存在应用内部，升级安装不会丢失历史记录。

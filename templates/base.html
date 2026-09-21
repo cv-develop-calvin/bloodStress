@@ -31,6 +31,8 @@
         <li><a class="dropdown-item" href="{{ url_for('meds_add') }}">添加药品</a></li>
         <li><a class="dropdown-item" href="{{ url_for('lab_scan') }}">📷 拍血常规报告</a></li>
         <li><a class="dropdown-item" href="{{ url_for('lab_add') }}">手动填写血常规</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="{{ url_for('about') }}">关于与版本 v{{ ver.VERSION }}</a></li>
       </ul>
     </div>
   </div>
@@ -71,6 +73,9 @@
       <a class="col tabbar-item {% if request.endpoint in ['records', 'form'] %}active{% endif %}"
          href="{{ url_for('records') }}">
         <span>📋</span><small>记录</small>
+      </a>
+      <a class="col tabbar-item {% if request.endpoint == 'about' %}active{% endif %}" href="{{ url_for('about') }}">
+        <span>⚙️</span><small>版本</small>
       </a>
     </div>
   </div>

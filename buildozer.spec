@@ -7,7 +7,8 @@ source.dir = .
 source.include_exts = py,png,jpg,svg,html,css,js,json,db,txt
 source.exclude_dirs = data,__pycache__,.buildozer,bin
 
-version = 1.0.0
+# 版本号须与 version.py 的 VERSION 保持一致
+version = 1.1.0
 requirements = python3,flask
 
 # WebView 模式：APK 内运行 Flask，界面由 Android WebView 显示

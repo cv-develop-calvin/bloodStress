@@ -17,6 +17,7 @@ from flask import (Flask, Response, flash, jsonify, redirect, render_template,
                    request, url_for)
 
 import storage
+import version as ver
 from lab import CBC_ITEMS, ITEM_ORDER, abnormal_count, judge, parse_ocr_text
 from utils import classify, now_time_str, parse_int, today_str
 
@@ -31,7 +32,8 @@ FREQS = ["每日 1 次", "每日 2 次", "每日 3 次", "隔日 1 次", "每周
 
 @app.context_processor
 def inject_common():
-    return {"today": today_str(), "ranges": RANGES, "freqs": FREQS, "now_str": now_time_str()}
+    return {"today": today_str(), "ranges": RANGES, "freqs": FREQS,
+            "now_str": now_time_str(), "ver": ver}
 
 
 def _days_from_args() -> int | None:
@@ -434,6 +436,26 @@ def lab_delete(report_id: int):
     storage.delete_lab(report_id)
     flash("报告已删除", "info")
     return redirect(url_for("lab"))
+
+
+# ================================================================ 版本与更新
+@app.route("/about")
+def about():
+    info = ver.build_info()
+    git = ver.git_info()
+    return render_template("about.html", info=info, git=git, changelog=ver.CHANGELOG)
+
+
+@app.route("/api/version")
+def api_version():
+    return jsonify({"current": ver.VERSION, "version_code": ver.version_code(),
+                    "build": ver.build_info()})
+
+
+@app.route("/api/check_update")
+def api_check_update():
+    """查询 GitHub Release 判断是否有新版本；不缓存，允许前端主动触发。"""
+    return jsonify(ver.check_update())
 
 
 # ================================================================ 导出与静态资源
