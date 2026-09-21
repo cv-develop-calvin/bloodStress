@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}{{ note['title'] or '留言' }} · 宋宝宝的记录{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <div>
+        <div class="d-flex align-items-center gap-2">
+          {% if note['mood'] %}<span class="fs-3">{{ note['mood'] }}</span>{% endif %}
+          <span class="fs-5 fw-bold hero-title">{{ note['title'] or '无标题' }}</span>
+        </div>
+        <div class="small text-secondary">{{ note['date'] }} {{ note['time'] }}</div>
+      </div>
+      <div class="text-nowrap">
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('notes_edit', note_id=note['id']) }}">编辑</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('notes') }}">返回</a>
+      </div>
+    </div>
+
+    {% if note['tags'] %}
+      <div class="d-flex flex-wrap gap-1 mb-3">
+        {% for t in note['tags'].split(',') %}
+          {% if t %}<a class="badge text-bg-light text-decoration-none"
+                      href="{{ url_for('notes', tag=t) }}">#{{ t }}</a>{% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if note['content'] %}
+      <div class="memo-content">{{ note['content'] }}</div>
+    {% endif %}
+  </div>
+</div>
+
+{% if photos %}
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h6 class="mb-0 fw-bold">📷 照片（{{ photos|length }}）</h6>
+    <span class="small text-secondary">点击可放大</span>
+  </div>
+  <div class="card-body">
+    <div class="photo-grid">
+      {% for p in photos %}
+        <div class="photo-cell">
+          <a href="{{ url_for('note_photo', filename=p['filename']) }}" target="_blank" rel="noopener">
+            <img src="{{ url_for('note_photo', filename=p['filename'], thumb=1) }}"
+                 alt="{{ p['caption'] or '照片' }}" loading="lazy">
+          </a>
+          <form method="post" action="{{ url_for('notes_photo_delete', photo_id=p['id']) }}"
+                class="photo-del" onsubmit="return confirm('删除这张照片？');">
+            <button class="btn btn-sm btn-danger" type="submit" aria-label="删除照片">×</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="d-grid gap-2 mb-5">
+  <a class="btn btn-outline-primary" href="{{ url_for('notes_edit', note_id=note['id']) }}">继续添加照片 / 修改留言</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>window.BP_PAGE = 'notes';</script>
+{% endblock %}

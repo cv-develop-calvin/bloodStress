@@ -14,8 +14,9 @@ import socket
 from datetime import datetime
 
 from flask import (Flask, Response, flash, jsonify, redirect, render_template,
-                   request, url_for)
+                   request, send_from_directory, url_for)
 
+import photos
 import storage
 import version as ver
 from lab import CBC_ITEMS, ITEM_ORDER, abnormal_count, judge, parse_ocr_text
@@ -23,6 +24,8 @@ from utils import classify, now_time_str, parse_int, today_str
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("BP_SECRET", "blood-pressure-record")
+# 笔记照片一次最多 9 张，单张限制 12MB（手机原图一般 2-5MB）
+app.config["MAX_CONTENT_LENGTH"] = 12 * 1024 * 1024 * 9
 app.jinja_env.globals.update(classify=classify, judge=judge, CBC_ITEMS=CBC_ITEMS,
                              ITEM_ORDER=ITEM_ORDER, abnormal_count=abnormal_count)
 
@@ -332,9 +335,11 @@ def _read_lab_form(form=None, row=None) -> dict:
                 "photo": form.get("photo") or "",
                 "raw_text": form.get("raw_text") or ""}
     if row is not None:
-        return {"date": row["date"], "time": row["time"], "hospital": row["hospital"],
-                "note": row["note"], "source": row["source"], "photo": row["photo"],
-                "raw_text": row["raw_text"]}
+        # 数据库里可能是 NULL，统一转成空串，避免模板渲染出 "None" 文本
+        return {"date": row["date"] or "", "time": row["time"] or "",
+                "hospital": row["hospital"] or "", "note": row["note"] or "",
+                "source": row["source"] or "manual", "photo": row["photo"] or "",
+                "raw_text": row["raw_text"] or ""}
     return {"date": today_str(), "time": now_time_str(), "hospital": "", "note": "",
             "source": "manual", "photo": "", "raw_text": ""}
 
@@ -362,8 +367,8 @@ def lab_chart(item: str):
 
 @app.route("/lab/scan")
 def lab_scan():
-    """拍照/上传报告照片，由前端 OCR 识别后进入确认表单。"""
-    return render_template("lab_scan.html", items=ITEM_ORDER)
+    """拍照入口已并入血常规页，旧链接重定向过去并自动展开识别面板。"""
+    return redirect(url_for("lab", scan=1))
 
 
 @app.route("/lab/parse", methods=["POST"])
@@ -436,6 +441,195 @@ def lab_delete(report_id: int):
     storage.delete_lab(report_id)
     flash("报告已删除", "info")
     return redirect(url_for("lab"))
+
+
+# ================================================================ 笔记本
+def _read_note_form(form=None, row=None) -> dict:
+    if form is not None:
+        return {"date": (form.get("date") or "").strip() or today_str(),
+                "time": (form.get("time") or "").strip(),
+                "title": (form.get("title") or "").strip(),
+                "content": (form.get("content") or "").strip(),
+                "mood": form.get("mood") or "",
+                "tags": _normalize_tags(form.get("tags") or "")}
+    if row is not None:
+        return {"date": row["date"] or "", "time": row["time"] or "",
+                "title": row["title"] or "", "content": row["content"] or "",
+                "mood": row["mood"] or "", "tags": row["tags"] or ""}
+    return {"date": today_str(), "time": now_time_str(), "title": "",
+            "content": "", "mood": "😊", "tags": ""}
+
+
+def _normalize_tags(raw: str) -> str:
+    """标签统一成英文逗号分隔、去重去空。"""
+    parts = [t.strip() for t in (raw or "").replace("，", ",").split(",")]
+    seen, out = set(), []
+    for t in parts:
+        if t and t not in seen:
+            seen.add(t)
+            out.append(t)
+    return ",".join(out)
+
+
+def _validate_note(form) -> tuple[dict | None, str | None]:
+    data = _read_note_form(form)
+    if not data["content"] and not data["title"] and not form.get("_photos"):
+        return None, "请至少填写标题或留言内容"
+    if len(data["content"]) > 5000:
+        return None, "留言内容过长（最多 5000 字）"
+    return data, None
+
+
+def _save_note_photos(note_id: int, files: list) -> tuple[int, int]:
+    """保存上传的多张照片，返回 (成功数, 失败数)。"""
+    ok = bad = 0
+    for f in files:
+        if not f or not (f.filename or "").strip():
+            continue
+        info = photos.save_upload(f)
+        if not info:
+            bad += 1
+            continue
+        storage.add_note_photo(note_id, info["filename"], info["thumb"],
+                               caption="", size=info["size"])
+        ok += 1
+    return ok, bad
+
+
+@app.route("/notes")
+def notes():
+    keyword = (request.args.get("q") or "").strip()
+    tag = (request.args.get("tag") or "").strip()
+    return render_template("notes.html",
+                           notes=storage.list_notes(keyword, tag),
+                           keyword=keyword, tag=tag,
+                           tags=storage.all_tags(),
+                           stats=storage.note_stats(),
+                           recent_photos=storage.recent_photos(12))
+
+
+@app.route("/notes/add", methods=["GET", "POST"])
+def notes_add():
+    if request.method == "POST":
+        data, error = _validate_note(request.form)
+        if error:
+            flash(error, "danger")
+            return render_template("note_form.html", title="写留言",
+                                   action=url_for("notes_add"),
+                                   note=_read_note_form(request.form),
+                                   photos=[]), 400
+        note_id = storage.add_note(**data)
+        ok, bad = _save_note_photos(note_id, request.files.getlist("photos"))
+        msg = "留言已保存"
+        if ok:
+            msg += f"，上传 {ok} 张照片"
+        if bad:
+            flash(f"{bad} 张图片格式不支持，已跳过", "warning")
+        flash(msg, "success")
+        return redirect(url_for("notes_detail", note_id=note_id))
+    return render_template("note_form.html", title="写留言", action=url_for("notes_add"),
+                           note=_read_note_form(), photos=[])
+
+
+@app.route("/notes/<int:note_id>")
+def notes_detail(note_id: int):
+    note = storage.get_note(note_id)
+    if note is None:
+        flash("留言不存在", "warning")
+        return redirect(url_for("notes"))
+    return render_template("note_detail.html", note=note,
+                           photos=storage.list_note_photos(note_id))
+
+
+@app.route("/notes/edit/<int:note_id>", methods=["GET", "POST"])
+def notes_edit(note_id: int):
+    note = storage.get_note(note_id)
+    if note is None:
+        flash("留言不存在", "warning")
+        return redirect(url_for("notes"))
+    if request.method == "POST":
+        data, error = _validate_note(request.form)
+        if error:
+            flash(error, "danger")
+            return render_template("note_form.html", title="编辑留言",
+                                   action=url_for("notes_edit", note_id=note_id),
+                                   note=_read_note_form(request.form),
+                                   photos=storage.list_note_photos(note_id)), 400
+        storage.update_note(note_id, **data)
+        ok, bad = _save_note_photos(note_id, request.files.getlist("photos"))
+        if ok:
+            flash(f"已新增 {ok} 张照片", "success")
+        if bad:
+            flash(f"{bad} 张图片格式不支持，已跳过", "warning")
+        # 处理勾选删除的照片
+        for pid in request.form.getlist("remove_photo"):
+            pid_int = parse_int(pid)
+            if pid_int:
+                fn = storage.delete_note_photo(pid_int)
+                photos.remove(fn)
+        flash("留言已更新", "success")
+        return redirect(url_for("notes_detail", note_id=note_id))
+    return render_template("note_form.html", title="编辑留言",
+                           action=url_for("notes_edit", note_id=note_id),
+                           note=_read_note_form(row=note),
+                           photos=storage.list_note_photos(note_id))
+
+
+@app.route("/notes/delete/<int:note_id>", methods=["POST"])
+def notes_delete(note_id: int):
+    files = storage.delete_note(note_id)
+    for fn in files:
+        photos.remove(fn)
+    flash("留言已删除", "info")
+    return redirect(url_for("notes"))
+
+
+@app.route("/notes/photo/delete/<int:photo_id>", methods=["POST"])
+def notes_photo_delete(photo_id: int):
+    photo = storage.get_note_photo(photo_id)
+    if photo is None:
+        flash("照片不存在", "warning")
+        return redirect(url_for("notes"))
+    note_id = photo["note_id"]
+    fn = storage.delete_note_photo(photo_id)
+    photos.remove(fn)
+    flash("照片已删除", "info")
+    return redirect(url_for("notes_edit", note_id=note_id))
+
+
+@app.route("/note_photo/<filename>")
+def note_photo(filename: str):
+    """输出笔记照片，仅允许访问 photos 目录下的文件名。"""
+    safe = os.path.basename(filename or "")
+    if not safe:
+        return "", 404
+    directory = photos.photos_dir()
+    if request.args.get("thumb"):
+        cand = os.path.splitext(safe)[0] + "_thumb.jpg"
+        if os.path.isfile(os.path.join(directory, cand)):
+            safe = cand
+    path = os.path.join(directory, safe)
+    if not os.path.isfile(path):
+        return "", 404
+    resp = send_from_directory(directory, safe, max_age=86400 * 30)
+    resp.headers["Cache-Control"] = "public, max-age=2592000"
+    return resp
+
+
+@app.route("/export_notes.csv")
+def export_notes_csv():
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["日期", "时间", "标题", "留言", "心情", "标签", "照片数"])
+    for n in storage.list_notes(limit=100000):
+        writer.writerow([n["date"], n["time"], n["title"], n["content"],
+                         n["mood"], n["tags"], n["photo_count"]])
+    output.seek(0)
+    return Response(
+        output.getvalue().encode("utf-8-sig"),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=songbaobao-notes.csv"},
+    )
 
 
 # ================================================================ 版本与更新

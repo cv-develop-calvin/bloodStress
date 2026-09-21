@@ -1,13 +1,13 @@
 {
   "name": "宋宝宝的记录",
   "short_name": "宝宝记录",
-  "description": "记录每日血压数据，用曲线图查看变化趋势",
+  "description": "记录血压、用药与血常规，星座战士主题",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f8f9fa",
-  "theme_color": "#0d6efd",
+  "background_color": "#0b1030",
+  "theme_color": "#0b1030",
   "lang": "zh-CN",
   "icons": [
     {

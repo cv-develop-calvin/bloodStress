@@ -1,8 +1,10 @@
 __pycache__/
 *.py[cod]
 data/
+dist/
 *.log
 .buildozer/
 bin/
+shots/
 venv/
 .venv/

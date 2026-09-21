@@ -47,9 +47,15 @@
     afterDatasetsDraw: function (chart) {
       var ctx = chart.ctx, y = chart.scales.y, area = chart.chartArea;
       if (!y || !area) return;
-      [{ v: 140, color: 'rgba(13,110,253,.45)', text: '收缩压 140' },
-       { v: 90, color: 'rgba(25,135,84,.45)', text: '舒张压 90' }].forEach(function (t) {
-        var py = y.getPixelForValue(t.v);
+      [{ v: 140, axis: 'y', color: 'rgba(255,221,122,.55)', text: '收缩压 140' },
+       { v: 90, axis: 'y', color: 'rgba(127,227,192,.55)', text: '舒张压 90' },
+       { v: 100, axis: 'y1', color: 'rgba(169,156,255,.5)', text: '心率 100' }].forEach(function (t) {
+        // 收缩压/舒张压用左轴，心率参考线用右轴
+        var scale = chart.scales[t.axis];
+        var visible = t.axis === 'y' ? chart.isDatasetVisible(0) || chart.isDatasetVisible(1)
+                                     : chart.isDatasetVisible(2);
+        if (!scale || !visible) return;
+        var py = scale.getPixelForValue(t.v);
         if (py < area.top || py > area.bottom) return;
         ctx.save();
         ctx.setLineDash([6, 4]);
@@ -114,9 +120,19 @@
   function initChart() {
     var canvas = document.getElementById('bpChart');
     if (!canvas) return;
+    // Chart.js 可能晚于本脚本加载，等库就绪再初始化
     if (typeof Chart === 'undefined') {
-      canvas.insertAdjacentHTML('afterend',
-        '<div class="alert alert-warning small mt-2">图表库未加载，请刷新页面重试。</div>');
+      var tries = 0;
+      var timer = setInterval(function () {
+        if (typeof Chart !== 'undefined') {
+          clearInterval(timer);
+          initChart();
+        } else if (++tries > 60) {
+          clearInterval(timer);
+          canvas.insertAdjacentHTML('afterend',
+            '<div class="alert alert-warning small mt-2">图表库未加载，请刷新页面重试。</div>');
+        }
+      }, 100);
       return;
     }
 
@@ -130,6 +146,13 @@
 
     var times = rows.map(function (r) { return r.time || ''; });
 
+    // 小屏适配：像素宽度决定 X 轴最多显示几个日期标签，避免标签重叠
+    var axisWidth = canvas.clientWidth || (canvas.parentElement && canvas.parentElement.clientWidth) || 360;
+    var maxTicks = Math.max(4, Math.min(10, Math.floor(axisWidth / 78)));
+    // 数据点很多时只在悬停显示点，保持曲线干净
+    var pointRadius = rows.length > 60 ? 0 : (rows.length > 30 ? 2 : 3);
+    var isNarrow = axisWidth < 420;
+
     var chart = new Chart(canvas, {
       type: 'line',
       data: {
@@ -137,20 +160,24 @@
         datasets: [
           {
             label: '收缩压', data: rows.map(function (r) { return r.systolic; }),
-            borderColor: '#0d6efd', backgroundColor: fillGradient(canvas, 'rgba(13,110,253,COLOR)'),
-            pointBackgroundColor: '#0d6efd', borderWidth: 2, pointRadius: 3,
-            pointHoverRadius: 5, tension: 0.35, fill: true, spanGaps: true
+            yAxisID: 'y',
+            borderColor: '#ffdd7a', backgroundColor: fillGradient(canvas, 'rgba(255,221,122,COLOR)'),
+            pointBackgroundColor: '#ffdd7a', pointBorderColor: '#8a6516', borderWidth: 2.4,
+            pointRadius: pointRadius, pointHoverRadius: 6, tension: 0.35, fill: true, spanGaps: true
           },
           {
             label: '舒张压', data: rows.map(function (r) { return r.diastolic; }),
-            borderColor: '#198754', backgroundColor: fillGradient(canvas, 'rgba(25,135,84,COLOR)'),
-            pointBackgroundColor: '#198754', borderWidth: 2, pointRadius: 3,
-            pointHoverRadius: 5, tension: 0.35, fill: true, spanGaps: true
+            yAxisID: 'y',
+            borderColor: '#7fe3c0', backgroundColor: fillGradient(canvas, 'rgba(127,227,192,COLOR)'),
+            pointBackgroundColor: '#7fe3c0', pointBorderColor: '#1c6b52', borderWidth: 2.4,
+            pointRadius: pointRadius, pointHoverRadius: 6, tension: 0.35, fill: true, spanGaps: true
           },
           {
+            // 心率量级与血压不同，单独用右侧坐标轴，避免被压成一条平线
             label: '心率', data: rows.map(function (r) { return r.pulse; }),
-            borderColor: '#fd7e14', pointBackgroundColor: '#fd7e14',
-            borderWidth: 2, pointRadius: 3, pointHoverRadius: 5,
+            yAxisID: 'y1',
+            borderColor: '#a99cff', pointBackgroundColor: '#a99cff', pointBorderColor: '#35276f',
+            borderWidth: 2, pointRadius: pointRadius, pointHoverRadius: 6,
             borderDash: [5, 3], tension: 0.35, fill: false, spanGaps: true
           }
         ]
@@ -175,8 +202,41 @@
           }
         },
         scales: {
-          x: { grid: { display: false }, ticks: { maxTicksLimit: 8, color: '#6c757d' } },
-          y: { grid: { color: 'rgba(0,0,0,.06)' }, ticks: { color: '#6c757d' } }
+          x: {
+            grid: { display: false },
+            ticks: {
+              autoSkip: true,
+              maxTicksLimit: maxTicks,
+              maxRotation: 0,
+              color: '#a8b0d8',
+              font: { size: isNarrow ? 10 : 11 }
+            }
+          },
+          y: {
+            position: 'left',
+            grid: { color: 'rgba(232,194,90,.10)' },
+            ticks: { color: '#ffdd7a', font: { size: isNarrow ? 10 : 11 }, stepSize: 20 },
+            title: {
+              display: !isNarrow, text: '血压 mmHg', color: '#ffdd7a',
+              font: { size: 10 }
+            }
+          },
+          y1: {
+            position: 'right',
+            grid: { drawOnChartArea: false },
+            // 心率轴范围与血压轴接近，避免两条轴的刻度错位造成误读
+            suggestedMin: 40,
+            suggestedMax: 160,
+            ticks: {
+              color: '#a99cff',
+              font: { size: isNarrow ? 10 : 11 },
+              stepSize: 20              // 与左轴同样的 20 步长，两轴刻度线对齐
+            },
+            title: {
+              display: !isNarrow, text: '心率 次/分', color: '#a99cff',
+              font: { size: 10 }
+            }
+          }
         }
       },
       plugins: [thresholdPlugin]

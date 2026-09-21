@@ -4,10 +4,29 @@
 
   var canvas = document.getElementById('labChart');
   var select = document.getElementById('labItem');
-  if (!canvas || !select || typeof Chart === 'undefined') return;
+  if (!canvas || !select) return;
 
   var chart = null;
   var days = window.BP_DAYS || 0;
+  // 小屏适配：标签密度与点大小随宽度变化
+  var width = canvas.clientWidth || (canvas.parentElement && canvas.parentElement.clientWidth) || 360;
+  var narrow = width < 420;
+
+  // 本脚本可能在 Chart.js 之前加载，等库就绪后再初始化
+  function ready(fn) {
+    if (typeof Chart !== 'undefined') { fn(); return; }
+    var tries = 0;
+    var timer = setInterval(function () {
+      if (typeof Chart !== 'undefined') {
+        clearInterval(timer);
+        fn();
+      } else if (++tries > 60) {          // 约 6 秒后放弃
+        clearInterval(timer);
+        canvas.insertAdjacentHTML('afterend',
+          '<div class="alert alert-warning small mt-2">图表库未加载，请刷新页面重试。</div>');
+      }
+    }, 100);
+  }
 
   function bandPlugin(low, high, unit) {
     return {
@@ -20,7 +39,7 @@
         var b = Math.min(area.bottom, Math.max(top, bottom));
         if (b <= t) return;
         c.ctx.save();
-        c.ctx.fillStyle = 'rgba(25,135,84,.10)';
+        c.ctx.fillStyle = 'rgba(127,227,192,.12)';
         c.ctx.fillRect(area.left, t, area.right - area.left, b - t);
         c.ctx.restore();
       },
@@ -28,7 +47,7 @@
         var y = c.scales.y, area = c.chartArea;
         if (!y || !area) return;
         c.ctx.save();
-        c.ctx.fillStyle = 'rgba(25,135,84,.75)';
+        c.ctx.fillStyle = 'rgba(127,227,192,.85)';
         c.ctx.font = '11px sans-serif';
         var py = y.getPixelForValue(high);
         if (py >= area.top && py <= area.bottom) c.ctx.fillText('参考上限 ' + high, area.left + 4, py - 4);
@@ -48,7 +67,7 @@
         var labels = pts.map(function (p) { return p[0].slice(5); });
         var values = pts.map(function (p) { return p[1]; });
         var abnormal = pts.map(function (p) {
-          return (p[1] < data.low || p[1] > data.high) ? '#dc3545' : '#0d6efd';
+          return (p[1] < data.low || p[1] > data.high) ? '#ff8080' : '#ffdd7a';
         });
 
         chart = new Chart(canvas, {
@@ -58,8 +77,8 @@
             datasets: [{
               label: data.label,
               data: values,
-              borderColor: '#0d6efd',
-              backgroundColor: 'rgba(13,110,253,.10)',
+              borderColor: '#ffdd7a',
+              backgroundColor: 'rgba(255,221,122,.12)',
               pointBackgroundColor: abnormal,
               pointBorderColor: abnormal,
               pointRadius: 5,
@@ -84,8 +103,20 @@
               }
             },
             scales: {
-              x: { grid: { display: false }, ticks: { color: '#6c757d' } },
-              y: { grid: { color: 'rgba(0,0,0,.06)' }, ticks: { color: '#6c757d' } }
+              x: {
+                grid: { display: false },
+                ticks: {
+                  autoSkip: true,
+                  maxTicksLimit: narrow ? 5 : 8,
+                  maxRotation: 0,
+                  color: '#a8b0d8',
+                  font: { size: narrow ? 10 : 11 }
+                }
+              },
+              y: {
+                grid: { color: 'rgba(232,194,90,.10)' },
+                ticks: { color: '#a8b0d8', font: { size: narrow ? 10 : 11 } }
+              }
             }
           },
           plugins: [bandPlugin(data.low, data.high, data.unit)]
@@ -95,5 +126,7 @@
   }
 
   select.addEventListener('change', function () { render(select.value); });
-  if (select.value) render(select.value);
+  ready(function () {
+    if (select.value) render(select.value);
+  });
 })();

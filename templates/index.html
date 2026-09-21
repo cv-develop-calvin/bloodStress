@@ -13,27 +13,28 @@
 </div>
 {% endif %}
 
-<!-- 最新一次测量 -->
-<div class="card border-0 shadow-sm mb-3 text-white bg-primary bg-gradient">
+<!-- 最新一次测量（圣衣卡） -->
+<div class="card hero-card mb-3">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-start">
       <div>
-        <div class="small opacity-75">最新测量{% if latest %} · {{ latest['date'] }} {{ latest['time'] }}{% endif %}</div>
+        <div class="zodiac-chip mb-2">天马座 · PEGASUS</div>
+        <div class="small text-secondary">最新测量{% if latest %} · {{ latest['date'] }} {{ latest['time'] }}{% endif %}</div>
         {% if latest %}
           {% set lv = classify(latest['systolic'], latest['diastolic']) %}
-          <div class="display-6 fw-bold lh-sm">{{ latest['systolic'] }}<span class="fs-4 opacity-75">/{{ latest['diastolic'] }}</span>
-            <span class="fs-6 opacity-75">mmHg</span>
+          <div class="display-5 hero-value lh-sm">{{ latest['systolic'] }}<span class="fs-4 text-secondary">/{{ latest['diastolic'] }}</span>
+            <span class="fs-6 text-secondary">mmHg</span>
           </div>
-          <div class="mt-1">
+          <div class="mt-2">
             <span class="badge {{ lv['css'] }}">{{ lv['name'] }}</span>
-            {% if latest['pulse'] %}<span class="badge text-bg-light text-primary">心率 {{ latest['pulse'] }}</span>{% endif %}
+            {% if latest['pulse'] %}<span class="badge text-bg-light">心率 {{ latest['pulse'] }}</span>{% endif %}
           </div>
         {% else %}
-          <div class="fs-4 fw-semibold mt-1">暂无数据</div>
-          <a class="btn btn-light btn-sm mt-2 fw-semibold" href="{{ url_for('add') }}">添加第一条记录</a>
+          <div class="fs-4 fw-semibold mt-1 hero-title">暂无数据</div>
+          <a class="btn btn-gold btn-sm mt-2" href="{{ url_for('add') }}">添加第一条记录</a>
         {% endif %}
       </div>
-      {% if latest %}<div class="text-end small opacity-75">{{ latest['note'] or '' }}</div>{% endif %}
+      {% if latest %}<div class="text-end small text-secondary">{{ latest['note'] or '' }}</div>{% endif %}
     </div>
   </div>
 </div>
@@ -49,37 +50,37 @@
 <!-- 血压统计 -->
 <div class="row g-2 mb-3">
   <div class="col-6">
-    <div class="card border-0 shadow-sm h-100">
+    <div class="card stat-card h-100">
       <div class="card-body py-3">
         <div class="text-secondary small">平均收缩压</div>
-        <div class="fs-3 fw-bold text-primary">{{ stat['avg_sys']|round(1) if stat['avg_sys'] else '--' }}</div>
+        <div class="fs-3 fw-bold stat-value">{{ stat['avg_sys']|round(1) if stat['avg_sys'] else '--' }}</div>
         <div class="text-secondary small">最高 {{ stat['max_sys'] or '--' }} · 最低 {{ stat['min_sys'] or '--' }}</div>
       </div>
     </div>
   </div>
   <div class="col-6">
-    <div class="card border-0 shadow-sm h-100">
+    <div class="card stat-card h-100">
       <div class="card-body py-3">
         <div class="text-secondary small">平均舒张压</div>
-        <div class="fs-3 fw-bold text-success">{{ stat['avg_dia']|round(1) if stat['avg_dia'] else '--' }}</div>
+        <div class="fs-3 fw-bold stat-value">{{ stat['avg_dia']|round(1) if stat['avg_dia'] else '--' }}</div>
         <div class="text-secondary small">最高 {{ stat['max_dia'] or '--' }} · 最低 {{ stat['min_dia'] or '--' }}</div>
       </div>
     </div>
   </div>
   <div class="col-6">
-    <div class="card border-0 shadow-sm h-100">
+    <div class="card stat-card h-100">
       <div class="card-body py-3">
         <div class="text-secondary small">平均心率</div>
-        <div class="fs-3 fw-bold text-warning-emphasis">{{ stat['avg_pulse']|round(1) if stat['avg_pulse'] else '--' }}</div>
+        <div class="fs-3 fw-bold stat-value">{{ stat['avg_pulse']|round(1) if stat['avg_pulse'] else '--' }}</div>
         <div class="text-secondary small">记录 {{ stat['n'] or 0 }} 条</div>
       </div>
     </div>
   </div>
   <div class="col-6">
-    <div class="card border-0 shadow-sm h-100">
+    <div class="card stat-card h-100">
       <div class="card-body py-3">
         <div class="text-secondary small">近 7 天服药依从性</div>
-        <div class="fs-3 fw-bold {% if adherence['rate'] is not none and adherence['rate'] < 80 %}text-danger{% else %}text-success{% endif %}">
+        <div class="fs-3 fw-bold {% if adherence['rate'] is not none and adherence['rate'] < 80 %}text-danger{% else %}stat-value{% endif %}">
           {% if adherence['rate'] is not none %}{{ adherence['rate'] }}%{% else %}--{% endif %}
         </div>
         <div class="text-secondary small">已服 {{ adherence['taken'] }} / {{ adherence['expected'] }} 次</div>
@@ -123,7 +124,7 @@
     </a>
   </div>
   <div class="col-6">
-    <a class="card border-0 shadow-sm text-decoration-none h-100" href="{{ url_for('lab_scan') }}">
+    <a class="card border-0 shadow-sm text-decoration-none h-100" href="{{ url_for('lab', scan=1) }}">
       <div class="card-body py-3">
         <div class="fs-4">📷</div>
         <div class="fw-bold text-dark">拍血常规</div>

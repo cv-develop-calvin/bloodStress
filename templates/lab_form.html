@@ -42,8 +42,10 @@
               <tr>
                 <td class="small">{{ CBC_ITEMS[key]['label'] }}</td>
                 <td>
+                  {# 空值不渲染成 "None" 文本 #}
                   <input type="text" inputmode="decimal" class="form-control form-control-sm cbc-input"
-                         name="{{ key }}" id="in_{{ key }}" value="{{ values[key] }}"
+                         name="{{ key }}" id="in_{{ key }}"
+                         value="{{ values[key] if values[key] not in (None, 'None', '') else '' }}"
                          data-low="{{ CBC_ITEMS[key]['low'] }}" data-high="{{ CBC_ITEMS[key]['high'] }}">
                 </td>
                 <td class="small text-secondary">{{ CBC_ITEMS[key]['unit'] }}</td>

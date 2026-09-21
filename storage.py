@@ -307,6 +307,130 @@ def _minutes_between(hhmm_a: str, hhmm_b: str) -> int:
     return mins(hhmm_b) - mins(hhmm_a)
 
 
+# ---------------------------------------------------------------- 笔记
+def add_note(date: str, time: str, title: str, content: str,
+             mood: str = "", tags: str = "") -> int:
+    now = _now()
+    with get_conn() as conn:
+        cur = conn.execute(
+            "INSERT INTO notes (date, time, title, content, mood, tags, created_at, updated_at)"
+            " VALUES (?,?,?,?,?,?,?,?)",
+            (date, time, title, content, mood, tags, now, now),
+        )
+        return cur.lastrowid
+
+
+def update_note(note_id: int, date: str, time: str, title: str, content: str,
+                mood: str = "", tags: str = "") -> None:
+    with get_conn() as conn:
+        conn.execute(
+            "UPDATE notes SET date=?, time=?, title=?, content=?, mood=?, tags=?, updated_at=?"
+            " WHERE id=?",
+            (date, time, title, content, mood, tags, _now(), note_id),
+        )
+
+
+def delete_note(note_id: int) -> list:
+    """删除笔记及其照片记录，返回待删除的照片文件名列表。"""
+    with get_conn() as conn:
+        files = [r["filename"] for r in
+                 conn.execute("SELECT filename FROM note_photos WHERE note_id=?", (note_id,))]
+        conn.execute("DELETE FROM note_photos WHERE note_id=?", (note_id,))
+        conn.execute("DELETE FROM notes WHERE id=?", (note_id,))
+    return files
+
+
+def get_note(note_id: int):
+    with get_conn() as conn:
+        return conn.execute("SELECT * FROM notes WHERE id=?", (note_id,)).fetchone()
+
+
+def list_notes(keyword: str = "", tag: str = "", limit: int = 100):
+    """按日期倒序返回笔记，附带照片数量与首图。"""
+    where, args = [], []
+    if keyword:
+        where.append("(title LIKE ? OR content LIKE ? OR tags LIKE ?)")
+        like = f"%{keyword}%"
+        args += [like, like, like]
+    if tag:
+        where.append("(',' || tags || ',') LIKE ?")
+        args.append(f"%,{tag},%")
+    clause = (" WHERE " + " AND ".join(where)) if where else ""
+
+    sql = f"""
+        SELECT n.*,
+               (SELECT COUNT(*) FROM note_photos p WHERE p.note_id = n.id) AS photo_count,
+               (SELECT p.filename FROM note_photos p WHERE p.note_id = n.id
+                ORDER BY p.id ASC LIMIT 1) AS cover
+        FROM notes n{clause}
+        ORDER BY n.date DESC, n.id DESC LIMIT ?
+    """
+    with get_conn() as conn:
+        return conn.execute(sql, (*args, limit)).fetchall()
+
+
+def note_stats() -> dict:
+    with get_conn() as conn:
+        n = conn.execute("SELECT COUNT(*) AS c FROM notes").fetchone()["c"]
+        p = conn.execute("SELECT COUNT(*) AS c FROM note_photos").fetchone()["c"]
+        first = conn.execute("SELECT MIN(date) AS d FROM notes").fetchone()["d"]
+    return {"notes": n, "photos": p, "since": first or ""}
+
+
+def all_tags() -> list:
+    """汇总所有标签及出现次数。"""
+    counter: dict = {}
+    with get_conn() as conn:
+        for row in conn.execute("SELECT tags FROM notes WHERE tags <> ''"):
+            for t in (row["tags"] or "").replace("，", ",").split(","):
+                t = t.strip()
+                if t:
+                    counter[t] = counter.get(t, 0) + 1
+    return sorted(counter.items(), key=lambda kv: (-kv[1], kv[0]))
+
+
+def add_note_photo(note_id: int, filename: str, thumb: str,
+                   caption: str = "", size: int = 0) -> int:
+    with get_conn() as conn:
+        cur = conn.execute(
+            "INSERT INTO note_photos (note_id, filename, thumb, caption, size, created_at)"
+            " VALUES (?,?,?,?,?,?)",
+            (note_id, filename, thumb, caption, size, _now()),
+        )
+        return cur.lastrowid
+
+
+def list_note_photos(note_id: int, limit: int = 200):
+    with get_conn() as conn:
+        return conn.execute(
+            "SELECT * FROM note_photos WHERE note_id=? ORDER BY id ASC LIMIT ?",
+            (note_id, limit),
+        ).fetchall()
+
+
+def get_note_photo(photo_id: int):
+    with get_conn() as conn:
+        return conn.execute("SELECT * FROM note_photos WHERE id=?", (photo_id,)).fetchone()
+
+
+def delete_note_photo(photo_id: int):
+    """删除单张照片记录，返回文件名（供调用方删文件）。"""
+    with get_conn() as conn:
+        row = conn.execute("SELECT filename FROM note_photos WHERE id=?", (photo_id,)).fetchone()
+        conn.execute("DELETE FROM note_photos WHERE id=?", (photo_id,))
+    return row["filename"] if row else ""
+
+
+def recent_photos(limit: int = 12):
+    """最近的照片，用于笔记首页的照片墙。"""
+    with get_conn() as conn:
+        return conn.execute(
+            "SELECT p.*, n.date AS note_date, n.title AS note_title"
+            " FROM note_photos p LEFT JOIN notes n ON n.id = p.note_id"
+            " ORDER BY p.id DESC LIMIT ?", (limit,)
+        ).fetchall()
+
+
 # ---------------------------------------------------------------- 血常规
 def add_lab(date: str, time: str, hospital: str, source: str, photo: str,
             raw_text: str, note: str, values: dict) -> int:

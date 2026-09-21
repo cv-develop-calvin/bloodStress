@@ -50,11 +50,40 @@ DDL = [
         {', '.join(f'{c} REAL' for c in CBC_COLUMNS)}
     )
     """,
+    # 笔记本：文字留言
+    """
+    CREATE TABLE IF NOT EXISTS notes (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        date       TEXT NOT NULL,
+        time       TEXT NOT NULL DEFAULT '',
+        title      TEXT NOT NULL DEFAULT '',
+        content    TEXT NOT NULL DEFAULT '',
+        mood       TEXT NOT NULL DEFAULT '',
+        tags       TEXT NOT NULL DEFAULT '',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """,
+    # 笔记本：照片（一条笔记可多张）
+    """
+    CREATE TABLE IF NOT EXISTS note_photos (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        note_id    INTEGER NOT NULL,
+        filename   TEXT NOT NULL,
+        thumb      TEXT NOT NULL DEFAULT '',
+        caption    TEXT NOT NULL DEFAULT '',
+        size       INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE
+    )
+    """,
 ]
 
 INDEXES = [
     "CREATE INDEX IF NOT EXISTS idx_med_logs_date ON med_logs(date)",
     "CREATE INDEX IF NOT EXISTS idx_lab_date ON lab_reports(date)",
+    "CREATE INDEX IF NOT EXISTS idx_notes_date ON notes(date)",
+    "CREATE INDEX IF NOT EXISTS idx_note_photos_note ON note_photos(note_id)",
 ]
 
 

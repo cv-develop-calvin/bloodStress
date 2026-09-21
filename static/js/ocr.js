@@ -12,9 +12,20 @@
   var parseBtn = document.getElementById('parseBtn');
   var redoBtn = document.getElementById('redoBtn');
 
+  // 主库、worker、wasm 核心、语言包分别来自固定版本目录，避免路径拼接出错
   var CDN_LIST = [
-    'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js',
-    'https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js'
+    {
+      main: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js',
+      worker: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/worker.min.js',
+      core: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.0/',
+      lang: 'https://cdn.jsdelivr.net/npm/@tesseract.js-data/chi_sim@1.0.0/4.0.0_best_int/'
+    },
+    {
+      main: 'https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js',
+      worker: 'https://unpkg.com/tesseract.js@5.1.0/dist/worker.min.js',
+      core: 'https://unpkg.com/tesseract.js-core@5.1.0/',
+      lang: 'https://unpkg.com/@tesseract.js-data/chi_sim@1.0.0/4.0.0_best_int/'
+    }
   ];
   var CDN = CDN_LIST[0];
   var worker = null;
@@ -39,10 +50,10 @@
     if (window.Tesseract) return true;
     for (var i = 0; i < CDN_LIST.length; i++) {
       try {
-        await loadScript(CDN_LIST[i]);
+        await loadScript(CDN_LIST[i].main);
         CDN = CDN_LIST[i];
         if (window.Tesseract) return true;
-      } catch (e) { /* 尝试下一个 */ }
+      } catch (e) { /* 尝试下一个源 */ }
     }
     return false;
   }
@@ -68,10 +79,12 @@
 
     try {
       if (!worker) {
-        worker = await Tesseract.createWorker('chi_sim+eng', 1, {
-          workerPath: CDN.replace('tesseract.min.js', 'worker.min.js'),
-          corePath: CDN.replace(/tesseract\.min\.js$/, ''),
-          langPath: CDN.replace(/dist\/tesseract\.min\.js$/, 'lang/'),
+        // 只加载中文模型：chi_sim 已包含拉丁字母与数字识别能力。
+        // 若写成 chi_sim+eng，tesseract 会去中文目录里找 eng.traineddata 而 404。
+        worker = await Tesseract.createWorker('chi_sim', 1, {
+          workerPath: CDN.worker,
+          corePath: CDN.core,
+          langPath: CDN.lang,
           logger: function (m) {
             var p = Math.round((m.progress || 0) * 100);
             if (m.status === 'recognizing text') {
