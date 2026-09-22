@@ -10,6 +10,10 @@
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/icon.svg') }}">
   <link rel="apple-touch-icon" sizes="192x192" href="{{ url_for('static', filename='img/icon-192.png') }}">
   <link rel="apple-touch-icon" sizes="512x512" href="{{ url_for('static', filename='img/icon-512.png') }}">
+  <!-- 字体：中文首屏用预加载，避免文字闪烁 -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{{ url_for('static', filename='fonts/NotoSansSC-subset.woff2') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>

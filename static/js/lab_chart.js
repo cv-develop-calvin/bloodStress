@@ -48,7 +48,7 @@
         if (!y || !area) return;
         c.ctx.save();
         c.ctx.fillStyle = 'rgba(127,227,192,.85)';
-        c.ctx.font = '11px sans-serif';
+        c.ctx.font = '11px "Noto Sans SC", sans-serif';
         var py = y.getPixelForValue(high);
         if (py >= area.top && py <= area.bottom) c.ctx.fillText('参考上限 ' + high, area.left + 4, py - 4);
         var pd = y.getPixelForValue(low);

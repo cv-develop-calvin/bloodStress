@@ -3,6 +3,10 @@
 :root {
   --bp-tabbar-height: 58px;
 
+  /* 字体（定义见 fonts.css） */
+  --font-sans: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+
   /* 主题色板 */
   --saint-gold: #e8c25a;
   --saint-gold-bright: #ffe9a8;
@@ -24,6 +28,7 @@
 
 /* ---------------------------------------------- 背景层 */
 body {
+  font-family: var(--font-sans);
   -webkit-text-size-adjust: 100%;
   padding-bottom: calc(var(--bp-tabbar-height) + env(safe-area-inset-bottom));
   min-height: 100vh;

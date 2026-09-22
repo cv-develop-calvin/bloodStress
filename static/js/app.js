@@ -67,7 +67,7 @@
         ctx.stroke();
         ctx.setLineDash([]);
         ctx.fillStyle = t.color;
-        ctx.font = '11px sans-serif';
+        ctx.font = '11px "Noto Sans SC", sans-serif';
         ctx.fillText(t.text, area.left + 4, py - 4);
         ctx.restore();
       });

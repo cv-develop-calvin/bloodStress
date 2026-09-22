@@ -4,8 +4,10 @@ package.name = songbaobao
 package.domain = org.bp
 
 source.dir = .
-# jpg/jpeg 必须包含：主题背景图是 JPG，漏掉会导致 APK 内缺图
-source.include_exts = py,png,jpg,jpeg,svg,gif,webp,html,css,js,json,db,txt,md
+# 必须逐个列出用到的扩展名，漏掉哪个就会在 APK 里缺哪类文件：
+#   png/jpg/jpeg/svg/webp/gif —— 图标与主题背景图
+#   woff2/ttf                  —— Noto Sans SC 字体
+source.include_exts = py,png,jpg,jpeg,svg,gif,webp,woff2,ttf,otf,html,css,js,json,db,txt,md
 source.exclude_dirs = data,__pycache__,.buildozer,bin,dist,shots,.git,.github,_apkcheck
 
 # 版本号须与 version.py 的 VERSION 保持一致

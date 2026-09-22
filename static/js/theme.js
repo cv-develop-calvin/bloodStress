@@ -6,7 +6,8 @@
   if (typeof Chart !== 'undefined') {
     Chart.defaults.color = '#a8b0d8';
     Chart.defaults.borderColor = 'rgba(232,194,90,.14)';
-    Chart.defaults.font.family = 'system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif';
+    Chart.defaults.font.family = '"Noto Sans SC", -apple-system, "Segoe UI", ' +
+      '"PingFang SC", "Microsoft YaHei", sans-serif';
   }
 
   // 首屏「圣衣」卡：金色边框轻微呼吸光效

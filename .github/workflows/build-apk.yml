@@ -163,6 +163,8 @@ jobs:
                   "模板 notes.html": res("templates/notes.html"),
                   "Chart.js": res("chart.umd.min.js"),
                   "Bootstrap": res("bootstrap.min.css"),
+                  "字体 Noto Sans SC (woff2)": res("NotoSansSC-subset.woff2"),
+                  "字体 CSS": res("css/fonts.css"),
                   # 2) 依赖库：p4a 把纯 Python 依赖打进 libpybundle.so
                   "依赖包 bundle (libpybundle.so)": any(
                       n.endswith("libpybundle.so") for n in names),
