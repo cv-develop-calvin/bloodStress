@@ -118,7 +118,8 @@ jobs:
           exit "${PIPESTATUS[1]}"
 
       - name: Verify APK resources
-        if: always()
+        id: verify
+        continue-on-error: true
         run: |
           ls -la bin || true
           AAPT=$(ls ~/.buildozer/android/platform/android-sdk/build-tools/*/aapt2 2>/dev/null | tail -n 1)
@@ -129,89 +130,22 @@ jobs:
             if [ -n "$AAPT" ]; then
               "$AAPT" dump badging "$f" | grep -E "application-icon|roundIcon|label=|package: name|versionName|versionCode" || true
             fi
-            echo "===== APK 内容抽查（$f）====="
-            # p4a 会把应用代码编译成 .pyc 并把整个私有目录打进 assets/private.tar，
-            # 第三方纯 Python 依赖则在 libpybundle.so 里，所以必须分别检查。
-            python3 - "$f" <<'PY'
-          import io, sys, tarfile, zipfile
-
-          apk = sys.argv[1]
-          with zipfile.ZipFile(apk) as z:
-              names = z.namelist()
-
-              # 1) 私有目录内的应用文件
-              tar_names = []
-              blob = z.read("assets/private.tar") if "assets/private.tar" in names else b""
-              if blob:
-                  with tarfile.open(fileobj=io.BytesIO(blob)) as t:
-                      tar_names = t.getnames()
-              # python3 recipe 产出 .pyc，兼容 .py 便于本地排查
-              py = lambda stem: any(n.endswith(stem + ".pyc") or n.endswith(stem + ".py")
-                                    for n in tar_names)
-              res = lambda name: any(n.endswith(name) for n in tar_names)
-
-              checks = {
-                  "应用入口 main": py("main"),
-                  "血压模块 app": py("app"),
-                  "笔记本模块 photos": py("photos"),
-                  "数据层 storage": py("storage"),
-                  "血常规 lab": py("lab"),
-                  "主题背景 bg-saint.jpg": res("bg-saint.jpg"),
-                  "横幅 bg-saint-top.jpg": res("bg-saint-top.jpg"),
-                  "应用图标 icon-512.png": res("icon-512.png"),
-                  "模板 base.html": res("templates/base.html"),
-                  "模板 notes.html": res("templates/notes.html"),
-                  "Chart.js": res("chart.umd.min.js"),
-                  "Bootstrap": res("bootstrap.min.css"),
-                  "字体 Noto Sans SC (woff2)": res("NotoSansSC-subset.woff2"),
-                  "字体 CSS": res("css/fonts.css"),
-                  # 2) 依赖库：p4a 把纯 Python 依赖打进 libpybundle.so
-                  "依赖包 bundle (libpybundle.so)": any(
-                      n.endswith("libpybundle.so") for n in names),
-                  "私有目录 assets/private.tar": bool(blob),
-              }
-
-              missing = []
-              for label, ok in checks.items():
-                  print(("  OK   " if ok else "  MISS ") + label)
-                  if not ok:
-                      missing.append(label)
-
-              # Flask / Pillow / markupsafe 是否真的可用：检查 .so 内是否含关键字
-              bundle_hit = {}
-              if any(n.endswith("libpybundle.so") for n in names):
-                  data = z.read([n for n in names if n.endswith("libpybundle.so")][0])
-                  for lib, keys in {
-                      "Flask": [b"flask/", b"flask\\", b"flask/__init__"],
-                      "Werkzeug": [b"werkzeug"],
-                      "Jinja2": [b"jinja2"],
-                      "markupsafe": [b"markupsafe"],
-                      "Pillow(PIL)": [b"PIL/", b"PIL\\", b"PIL/Image"],
-                  }.items():
-                      hit = any(k in data for k in keys)
-                      bundle_hit[lib] = hit
-                      print(("  OK   " if hit else "  MISS ") + f"{lib}（bundle 内）")
-                      if not hit:
-                          missing.append(lib)
-
-              print(f"  私有目录文件数: {len(tar_names)}")
-              print(f"  Python 版本库: "
-                    + str([n for n in names if "libpython" in n]))
-
-              if missing:
-                  print("::error::APK 缺少关键内容，装上会闪退: " + ", ".join(missing))
-                  sys.exit(1)
-          PY
           done
+          # 校验逻辑放在独立脚本里：YAML heredoc 的缩进会破坏 Python 代码结构
+          python tools/verify_apk.py bin/*.apk
 
-      - name: Check build result
-        if: steps.build.outcome == 'failure'
+      - name: Check build and verify result
+        if: steps.build.outcome == 'failure' || steps.verify.outcome == 'failure'
         run: |
-          echo "::error::buildozer 构建失败，详见上方 Build debug APK 日志"
+          if [ "${{ steps.build.outcome }}" = "failure" ]; then
+            echo "::error::buildozer 构建失败，详见上方 Build debug APK 日志"
+          else
+            echo "::error::APK 内容校验未通过，详见上方 Verify APK resources 日志（不要发布这个包）"
+          fi
           exit 1
 
       - name: Diagnostics on failure
-        if: failure() || steps.build.outcome == 'failure'
+        if: failure() || steps.build.outcome == 'failure' || steps.verify.outcome == 'failure'
         run: |
           echo "===== bin 目录 ====="
           ls -la bin || true
@@ -220,7 +154,7 @@ jobs:
           find .buildozer -maxdepth 4 -name "*.log" -exec sh -c 'echo "--- $1"; tail -n 60 "$1"' _ {} \; 2>/dev/null | head -n 400
 
       - name: Upload build logs on failure
-        if: failure() || steps.build.outcome == 'failure'
+        if: failure() || steps.build.outcome == 'failure' || steps.verify.outcome == 'failure'
         uses: actions/upload-artifact@v7
         with:
           name: buildozer-logs
@@ -250,7 +184,7 @@ jobs:
       # 手机浏览器点开即可直接下载安装，不像 Artifacts 那样打包成 zip。
       # 打 vX.Y.Z 标签时使用标签号作为版本，否则用「构建号」生成滚动版本。
       - name: Publish APK release
-        if: steps.build.outcome == 'success'
+        if: steps.build.outcome == 'success' && steps.verify.outcome == 'success'
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('build-{0}', github.run_number) }}
