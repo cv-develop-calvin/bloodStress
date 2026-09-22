@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt)
 }
 
@@ -53,15 +52,18 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
 
-    // JDK 17 的模块系统会封闭 jdk.compiler 等内部包，kapt 需要显式开放，
-    // 否则注解处理阶段会报 "Could not load module <Error module>"。
-    kapt {
-        correctErrorTypes = true
-        javacOptions {
-            option("-Xmaxerrs", 500)
-        }
-    }
+// Hilt 的 KSP 处理需要显式支持 correctErrorTypes 等价行为：
+// 由 Hilt 自己处理聚合，确保 Room 生成的 DAO/Database 在 Hilt 分析时已可见。
+hilt {
+    enableAggregatingTask = true
+}
+
+ksp {
+    arg("dagger.fastInit", "enabled")
+    // Room 的 schema 输出目录（exportSchema = true 时必须提供）
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
@@ -79,15 +81,15 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // Room（用 kapt，与 Hilt 同处理器以保证生成类互相可见）
+    // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
-    // Hilt（用 kapt：Hilt 的 KSP 后端在 Kotlin 1.9 下处理 Room 生成的类时会因处理顺序报 error.NonExistentClass）
+    // Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // 图片加载
     implementation(libs.coil.compose)
