@@ -1,7 +1,9 @@
 [versions]
 agp = "8.5.2"
-kotlin = "1.9.25"
-ksp = "1.9.25-1.0.20"
+# Compose 编译插件 org.jetbrains.kotlin.plugin.compose 是 Kotlin 2.0 才引入的，
+# 其版本必须等于 Kotlin 版本；Kotlin 1.9.x 上不存在该插件（构建会报 not found）。
+kotlin = "2.0.21"
+ksp = "2.0.21-1.0.27"
 composeBom = "2024.10.01"
 hilt = "2.52"
 room = "2.6.1"
