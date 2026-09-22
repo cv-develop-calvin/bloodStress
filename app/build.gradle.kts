@@ -41,6 +41,8 @@ android {
 
     buildFeatures {
         compose = true
+        // AGP 8.x 默认不生成 BuildConfig，VersionRepository 依赖它
+        buildConfig = true
     }
 
     packaging {

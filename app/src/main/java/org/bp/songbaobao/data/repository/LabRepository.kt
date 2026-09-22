@@ -36,6 +36,6 @@ class LabRepository @Inject constructor(private val dao: LabDao) {
         return dao.allForExport()
             .filter { from == null || it.date >= from }
             .sortedWith(compareBy({ it.date }, { it.id }))
-            .mapNotNull { r -> CbcItems.valueOf(r, itemKey)?.let { LabPoint(r.date, it) } }
+            .mapNotNull { r -> r.valueOf(itemKey)?.let { LabPoint(r.date, it) } }
     }
 }
