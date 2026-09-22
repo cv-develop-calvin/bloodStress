@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compose 项目的基础主题：透明状态栏交给 Compose 处理 -->
+    <style name="Theme.SongBaoBao" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/navy</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+</resources>

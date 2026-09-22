@@ -1,10 +1,31 @@
-__pycache__/
-*.py[cod]
-data/
-dist/
+# Gradle / Android Studio
+*.iml
+.gradle
+/local.properties
+/.idea
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Kotlin / Java
+*.class
 *.log
-.buildozer/
-bin/
-shots/
-venv/
-.venv/
+out/
+
+# 旧 Flask 版本遗留（含 SQLite 数据库，未被跟踪）
+data/
+
+# 发布产物
+/app/release
+*.apk
+*.aab

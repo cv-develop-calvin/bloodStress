@@ -1,176 +1,84 @@
-# 宋宝宝的记录 · 安卓应用（Python + Bootstrap + Chart.js）
+# 宋宝宝的记录
 
-在安卓手机上运行的健康记录应用：Python（Flask）做后端，Bootstrap 5 做移动端 UI，Chart.js 画趋势曲线，
-SQLite 存储数据，星座战士主题（深空星夜 + 金色描边）。
+安卓原生健康记录应用：记录血压、用药、血常规与日常留言，数据全部保存在手机本地。
 
-**功能**：血压记录与趋势曲线、用药记录与服药提醒、血常规记录与拍照识别、笔记本（留言 + 照片）。
+**技术栈**：Kotlin · Jetpack Compose + Material 3 · MVVM · Room(SQLite) · Hilt · Coroutines/Flow · Navigation Compose · MPAndroidChart · Google ML Kit · Coil
 
-## 下载 APK（最快）
-
-直接打开 Releases 页面，点 `.apk` 文件即可下载安装（原始文件，不是压缩包）：
-
-👉 https://github.com/cv-develop-calvin/bloodStress/releases
-
-每次推送到 main 分支都会自动构建并发布新版本，打 `vX.Y.Z` 标签则发布正式版本。
-
-## 闪退怎么排查
-
-APK 启动过程会写日志到应用私有目录的 `startup.log`，包含 Python 版本、关键环境变量、
-应用目录文件清单和完整异常堆栈。
-
-```bash
-# 用 adb（推荐）
-adb shell run-as org.bp.songbaobao cat files/startup.log
-
-# 或拖到电脑上看
-adb shell run-as org.bp.songbaobao cat files/startup.log > startup.log
-```
-
-没有 adb 时，用手机文件管理器进 `Android/data/org.bp.songbaobao/files/` 查看。
-
-## 安装到手机（三种方式，任选其一）
-
-## 安装到手机（三种方式，任选其一）
-
-### 方式 A：Termux 直接跑（不用打包，最快）
-
-1. 手机装 [Termux](https://f-droid.org/packages/com.termux/)（装 F-Droid 版，Play 商店版本已停止更新）。
-2. 把整个项目文件夹拷到手机（USB 传、微信/QQ 传、或用 `termux-setup-storage` 后放 `/sdcard/bp`）。
-3. 打开 Termux：
-
-```bash
-termux-setup-storage          # 申请存储权限，弹窗点允许
-cd /sdcard/bp                 # 换成你的目录
-bash run_android.sh           # 自动装 python + flask 并启动
-```
-
-4. 手机浏览器打开 `http://127.0.0.1:5000` 即可使用。
-5. 想做成桌面图标：再装 **Termux:Widget**，在 `~/.shortcuts/` 建文件 `宋宝宝的记录`：
-
-```bash
-mkdir -p ~/.shortcuts
-echo 'cd /sdcard/bp && bash run_android.sh' > ~/.shortcuts/宋宝宝的记录
-chmod +x ~/.shortcuts/宋宝宝的记录
-```
-
-之后在桌面添加 Termux:Widget 小组件，点一下就能启动（后台常驻可在 Termux 通知里锁定）。
-
-> 注意：Termux 默认不对外网开放端口，所以只能用手机本机 `127.0.0.1` 访问，这正好保证数据不外泄。
-> 关闭应用：在 Termux 里 Ctrl+C，或 `pkill -f main.py`。
-
-### 方式 B：打包成 APK 安装（真正的独立 App）
-
-本机是 Windows 且没有 WSL，无法直接构建（Buildozer 需要 Linux）。两条路：
-
-**B1 · 用 GitHub Actions 云构建（推荐，不用装 Linux）**
-
-1. 把项目推到 GitHub：
-```bash
-git init && git add . && git commit -m "宋宝宝的记录 App"
-git remote add origin https://github.com/<你的账号>/<仓库名>.git
-git push -u origin main
-```
-2. 打开仓库 → **Actions** → 左侧 `Build Android APK` → **Run workflow**。
-3. 约 15–30 分钟构建完成后，在 Artifacts 下载 `blood-pressure-apk`（内含 `.apk`）。
-4. 把 APK 传到手机（微信/QQ 文件传输、USB 拷贝、或上传网盘下载），点开安装。
-   - 提示「未知来源应用」→ 允许本次安装（设置 → 安装未知应用 → 对应来源允许）。
-5. 桌面出现「宋宝宝的记录」图标，点开即用，无需联网、无需电脑。
-
-**B2 · 本机装 WSL 构建**
-
-```powershell
-wsl --install -d Ubuntu-22.04     # 需重启；完成后打开 Ubuntu
-```
-在 Ubuntu 里：
-```bash
-sudo apt update && sudo apt install -y python3-pip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev zip unzip git
-pip3 install --user buildozer cython
-cd /mnt/d/cv_coding/cv_song
-buildozer -v android debug
-```
-产物：`bin/宋宝宝的记录-1.0.0-debug.apk`，拷到手机安装。
-（可选，用 adb 直接装：电脑装 platform-tools → `adb install bin/*.apk`）
-
-### 方式 C：局域网 PWA（不安装，也能像 App 一样用）
-
-电脑上 `python app.py`（或 `--port 5055`），手机与电脑同一 WiFi，手机浏览器打开终端打印的局域网地址，菜单选「添加到主屏幕」，即获得全屏图标。缺点是电脑必须开着。
-
----
+**主题**：星座战士风格（深空星夜背景 + 金色描边），全局使用 Noto Sans SC 字体。
 
 ## 功能
 
-- 每日记录：日期、时间、收缩压、舒张压、心率、备注
-- 曲线图趋势：收缩压 / 舒张压 / 心率三条曲线可单独开关，带 140 / 90 参考线
-- 时间范围：7 天 / 30 天 / 90 天 / 全部
-- 统计卡片：平均值、最高、最低、记录条数
-- 自动分级（参考《中国高血压防治指南》）：正常 / 正常高值 / 1-3 级高血压，并给出健康提示
-- 记录管理：日期区间筛选、分页、编辑、删除、导出 CSV
-- 全部静态资源（Bootstrap、Chart.js）已本地化，手机上无需联网
+### 血压
+- 记录收缩压 / 舒张压 / 心率 / 备注
+- 自动分级判定（偏低 / 正常 / 正常高值 / 1–3 级高血压）并给出健康提示
+- 趋势曲线：7 / 30 / 90 天 / 全部，三条曲线可单独开关，含 140 / 90 参考线
+- 统计：平均值、最高、最低、记录数
+- 列表支持日期区间筛选、编辑、删除
 
-## 方式一：安卓手机 Termux 直接运行（推荐，最快）
+### 用药
+- 药品档案：名称、剂量、单位、频次、多个服药时间点、起止日期、备注
+- 服药打卡（可撤销），依从性统计（近 7 天）
+- **到点提醒**：系统通知 + 手机默认铃声 + 震动，重启后自动恢复
 
-1. 手机安装 [Termux](https://f-droid.org/packages/com.termux/)（F-Droid 版本）。
-2. 把整个项目目录复制到手机（例如 `/sdcard/bp` 或 Termux 主目录）。
-3. 在 Termux 中执行：
+### 血常规
+- 13 项常用指标：白细胞、红细胞、血红蛋白、红细胞压积、MCV、MCH、MCHC、血小板、淋巴/中性/单核/嗜酸性粒细胞百分比、超敏 CRP
+- 每项按参考区间自动判定偏低 / 正常 / 偏高
+- 指标趋势曲线（含参考区间上下限）
+- **拍照识别化验单**：调用相机或相册 → ML Kit 中文识别 → 解析指标 → 预填表单确认
 
-```bash
-termux-setup-storage
-cd /sdcard/bp          # 换成你的目录
-bash run_android.sh    # 自动安装 python + flask 并启动
-```
+### 笔记本
+- 文字留言：标题、内容、心情、标签
+- 照片：拍照 / 相册多选（最多 9 张），自动压缩并生成缩略图
+- 搜索（标题 / 内容 / 标签）、标签筛选、照片墙
 
-4. 启动后手机浏览器打开 `http://127.0.0.1:5000` 即可使用；可安装 **Termux:Widget** 建桌面快捷方式一键启动。
+### 其他
+- 关于页：版本信息、技术栈、更新日志
 
-> 说明：Termux 默认不允许外部访问端口，用本机 127.0.0.1 最安全；数据保存在手机本地 SQLite 文件中。
+## 构建
 
-## 方式二：打包成安卓 APK
+用 Android Studio（Giraffe 或更高版本）打开项目根目录，等待 Gradle 同步后直接运行到手机或模拟器。
 
-需在 Linux / WSL（本机未安装 WSL，可用 WSL 或云服务器/GitHub Actions）执行：
-
-```bash
-pip install buildozer
-sudo apt install -y openjdk-17-jdk autoconf libtool pkg-config zip unzip
-buildozer -v android debug      # 产物 bin/宋宝宝的记录-1.0.0-debug.apk
-```
-
-关键配置在 `buildozer.spec`：
-
-```
-android.bootstrap = webview       # APK 内运行 Flask，界面用 Android WebView 显示
-requirements = python3,flask
-android.permissions = INTERNET
-```
-
-WebView 默认加载 `http://127.0.0.1:5000/`，与 `main.py` 中 `BP_PORT`（默认 5000）一致；
-若用 `p4a --port 8080` 改端口，请同时设置环境变量 `BP_PORT=8080`。
-
-## 桌面预览 / 局域网调试
+命令行构建（需 JDK 17）：
 
 ```bash
-pip install -r requirements.txt
-python app.py            # 默认 5000 端口
-python app.py --port 5055
-python app.py --seed     # 写入 30 天演示数据（可先用它看曲线效果）
+./gradlew assembleDebug      # 输出 app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleRelease    # 发布版（需配置签名）
 ```
 
-启动后打印本机与局域网地址，同一 WiFi 下手机浏览器可直接打开（PWA：菜单「添加到主屏幕」）。
+最低支持 Android 8.0（API 26），目标 Android 14（API 34），仅 arm64-v8a。
 
-## 目录结构
+## 项目结构
 
 ```
-main.py            安卓 / APK 入口：后台启动本地 Web 服务
-app.py             Flask 路由与业务逻辑
-storage.py         SQLite 数据访问层
-utils.py           血压分级与日期工具
-templates/         Bootstrap 页面（首页趋势 / 记录表单 / 记录列表）
-static/vendor/     Bootstrap 5、Chart.js（本地文件，离线可用）
-static/css,js      自定义样式与曲线图交互
-static/manifest.json, sw.js   PWA 离线支持
-buildozer.spec     APK 打包配置
-run_android.sh     Termux 一键运行脚本
+app/src/main/java/org/bp/songbaobao/
+├── data/
+│   ├── local/          Room 数据库、Entity、DAO
+│   └── repository/     数据仓库（血压 / 用药 / 血常规 / 笔记）
+├── domain/             业务逻辑（血压分级、血常规指标、OCR 解析）
+├── di/                 Hilt 模块
+├── reminder/           用药提醒（AlarmManager、广播接收器、通知）
+├── ui/
+│   ├── theme/          主题配色、字体、Typography
+│   ├── components/     通用组件与图表
+│   ├── navigation/     路由定义与底部导航
+│   └── screen/         各功能页面
+└── util/               时间与格式化工具
 ```
 
 ## 数据
 
-- 数据库：`bp.db`（Android 下写入应用私有目录，桌面下写入 `data/bp.db`）
-- 备份：复制该文件或使用记录页「导出 CSV」
+- 数据库：`songbaobao.db`，位于应用私有目录，卸载应用会一并删除
+- 笔记照片：位于应用 `filesDir/photos`
+- 数据结构与旧 Web 版一致，均为 SQLite，便于迁移
+
+## 权限
+
+| 权限 | 用途 |
+|---|---|
+| POST_NOTIFICATIONS | 用药提醒通知 |
+| VIBRATE | 提醒震动 |
+| RECEIVE_BOOT_COMPLETED | 重启后恢复提醒 |
+| SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM | 精准到点提醒 |
+| READ_MEDIA_IMAGES | 从相册选图（化验单、笔记照片） |
+
+拍照使用系统相机（Photo Picker / TakePicture），不申请 CAMERA 权限。

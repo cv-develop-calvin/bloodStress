@@ -1,0 +1,193 @@
+package org.bp.songbaobao.ui.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.bp.songbaobao.ui.theme.*
+
+/** 金色渐变主按钮（对应 Web 版 btn-gold） */
+@Composable
+fun GoldButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    content: @Composable RowScope.() -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Gold,
+            contentColor = Navy,
+            disabledContainerColor = Gold.copy(alpha = 0.4f),
+            disabledContentColor = Navy.copy(alpha = 0.6f)
+        ),
+        content = content
+    )
+}
+
+/** 通用面板卡片（毛玻璃近似 + 金色描边） */
+@Composable
+fun PanelCard(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = PanelBg),
+        border = androidx.compose.foundation.BorderStroke(1.dp, PanelBorder),
+        content = content
+    )
+}
+
+/** 首屏「圣衣卡」：金色渐变强调 */
+@Composable
+fun HeroCard(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        border = androidx.compose.foundation.BorderStroke(1.dp, GoldBright.copy(alpha = 0.6f))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.linearGradient(
+                        listOf(NavySoft.copy(alpha = 0.95f), Ink.copy(alpha = 0.98f))
+                    )
+                )
+        ) {
+            Column(modifier = Modifier.padding(16.dp), content = content)
+        }
+    }
+}
+
+/** 统计小卡 */
+@Composable
+fun StatCard(
+    label: String,
+    value: String,
+    sub: String,
+    valueColor: Color = GoldBright,
+    modifier: Modifier = Modifier
+) {
+    PanelCard(modifier = modifier) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(label, style = MaterialTheme.typography.labelMedium, color = TextDim)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                value,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = valueColor
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(sub, style = MaterialTheme.typography.labelSmall, color = TextDim)
+        }
+    }
+}
+
+/** 星座角标 */
+@Composable
+fun ZodiacChip(text: String) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(50))
+            .background(Gold.copy(alpha = 0.14f))
+            .padding(horizontal = 10.dp, vertical = 3.dp)
+    ) {
+        Text(
+            text,
+            style = MaterialTheme.typography.labelSmall,
+            color = Gold,
+            letterSpacing = 2.sp
+        )
+    }
+}
+
+/** 空态提示 */
+@Composable
+fun EmptyHint(text: String, sub: String? = null, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxWidth().padding(vertical = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text, color = TextDim, textAlign = TextAlign.Center)
+        if (sub != null) {
+            Spacer(Modifier.height(4.dp))
+            Text(sub, color = TextDim, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+/** 带标签的分区标题 */
+@Composable
+fun SectionTitle(text: String, action: (@Composable () -> Unit)? = null) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = GoldBright,
+            modifier = Modifier.weight(1f)
+        )
+        action?.invoke()
+    }
+}
+
+/** 通用文本输入 */
+@Composable
+fun AppTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+    placeholder: String? = null,
+    singleLine: Boolean = true,
+    isError: Boolean = false,
+    supportingText: String? = null
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        placeholder = placeholder?.let { { Text(it, color = TextDim) } },
+        modifier = modifier.fillMaxWidth(),
+        singleLine = singleLine,
+        isError = isError,
+        supportingText = supportingText?.let { { Text(it) } },
+        shape = RoundedCornerShape(10.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Gold,
+            unfocusedBorderColor = PanelBorder,
+            focusedTextColor = TextMain,
+            unfocusedTextColor = TextMain,
+            focusedLabelColor = Gold,
+            unfocusedLabelColor = TextDim,
+            cursorColor = Gold,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
+        )
+    )
+}
