@@ -123,13 +123,44 @@ jobs:
           ls -la bin || true
           AAPT=$(ls ~/.buildozer/android/platform/android-sdk/build-tools/*/aapt2 2>/dev/null | tail -n 1)
           echo "aapt2: $AAPT"
-          if [ -n "$AAPT" ]; then
-            for f in bin/*.apk; do
-              [ -e "$f" ] || continue
-              echo "===== badging $f ====="
+          for f in bin/*.apk; do
+            [ -e "$f" ] || continue
+            echo "===== badging $f ====="
+            if [ -n "$AAPT" ]; then
               "$AAPT" dump badging "$f" | grep -E "application-icon|roundIcon|label=|package: name|versionName|versionCode" || true
-            done
-          fi
+            fi
+            echo "===== APK 内容抽查（$f）====="
+            # 关键资源必须在包内：主题背景（jpg）、图标（png）、启动入口（py）、静态库
+            python3 - "$f" <<'PY'
+          import sys, zipfile
+          apk = sys.argv[1]
+          with zipfile.ZipFile(apk) as z:
+              names = z.namelist()
+              must_have = {
+                  "主题背景 bg-saint.jpg": lambda n: n.endswith("bg-saint.jpg"),
+                  "横幅 bg-saint-top.jpg": lambda n: n.endswith("bg-saint-top.jpg"),
+                  "应用图标 icon-512.png": lambda n: n.endswith("icon-512.png"),
+                  "应用入口 main.py": lambda n: n.endswith("main.py"),
+                  "血压模块 app.py": lambda n: n.endswith("app.py"),
+                  "笔记本模块 photos.py": lambda n: n.endswith("photos.py"),
+                  "模板 base.html": lambda n: n.endswith("base.html"),
+                  "Chart.js": lambda n: n.endswith("chart.umd.min.js"),
+                  "Bootstrap": lambda n: n.endswith("bootstrap.min.css"),
+                  "Pillow 库": lambda n: "/PIL/" in n or n.endswith("PIL.zip"),
+                  "Flask 库": lambda n: "/flask/" in n,
+              }
+              missing = []
+              for label, pred in must_have.items():
+                  ok = any(pred(n) for n in names)
+                  print(("  OK   " if ok else "  MISS ") + label)
+                  if not ok:
+                      missing.append(label)
+          print(f"  包内文件总数: {len(names)}")
+          if missing:
+              print("::error::APK 缺少关键资源: " + ", ".join(missing))
+              sys.exit(1)
+          PY
+          done
 
       - name: Check build result
         if: steps.build.outcome == 'failure'
@@ -178,7 +209,7 @@ jobs:
       # 打 vX.Y.Z 标签时使用标签号作为版本，否则用「构建号」生成滚动版本。
       - name: Publish APK release
         if: steps.build.outcome == 'success'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('build-{0}', github.run_number) }}
           name: ${{ startsWith(github.ref, 'refs/tags/v') && format('v{0}', steps.ver.outputs.version) || format('构建 {0} · v{1}', github.run_number, steps.ver.outputs.version) }}

@@ -1,7 +1,34 @@
 # 宋宝宝的记录 · 安卓应用（Python + Bootstrap + Chart.js）
 
-在安卓手机上运行的宋宝宝的记录应用：Python（Flask）做后端，Bootstrap 5 做移动端 UI，Chart.js 画血压趋势曲线，SQLite 存储数据。
-两种在安卓上运行的方式：**Termux 直接运行**（几分钟可用）或 **Buildozer 打包成 APK**（真·独立 App）。
+在安卓手机上运行的健康记录应用：Python（Flask）做后端，Bootstrap 5 做移动端 UI，Chart.js 画趋势曲线，
+SQLite 存储数据，星座战士主题（深空星夜 + 金色描边）。
+
+**功能**：血压记录与趋势曲线、用药记录与服药提醒、血常规记录与拍照识别、笔记本（留言 + 照片）。
+
+## 下载 APK（最快）
+
+直接打开 Releases 页面，点 `.apk` 文件即可下载安装（原始文件，不是压缩包）：
+
+👉 https://github.com/cv-develop-calvin/bloodStress/releases
+
+每次推送到 main 分支都会自动构建并发布新版本，打 `vX.Y.Z` 标签则发布正式版本。
+
+## 闪退怎么排查
+
+APK 启动过程会写日志到应用私有目录的 `startup.log`，包含 Python 版本、关键环境变量、
+应用目录文件清单和完整异常堆栈。
+
+```bash
+# 用 adb（推荐）
+adb shell run-as org.bp.songbaobao cat files/startup.log
+
+# 或拖到电脑上看
+adb shell run-as org.bp.songbaobao cat files/startup.log > startup.log
+```
+
+没有 adb 时，用手机文件管理器进 `Android/data/org.bp.songbaobao/files/` 查看。
+
+## 安装到手机（三种方式，任选其一）
 
 ## 安装到手机（三种方式，任选其一）
 
