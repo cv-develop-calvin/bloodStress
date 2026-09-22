@@ -1,14 +1,20 @@
 /**
- * 仓库配置：国内镜像在前，官方源在后兜底。
- * 若镜像不可用或你希望使用官方源，把镜像那几行注释掉即可。
+ * 仓库配置。
+ *
+ * 默认（本机 / 国内网络）走阿里云镜像加速。
+ * CI 或境外网络可设环境变量 USE_MIRROR=false，只用官方源
+ * （GitHub Actions 在境外，访问阿里云反而更慢）。
  */
+val useMirror: Boolean = System.getenv("USE_MIRROR")?.toBoolean() ?: true
 
 pluginManagement {
     repositories {
-        // ---- 阿里云镜像（Gradle 插件 / Android / 公共库）----
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
-        maven("https://maven.aliyun.com/repository/google")
-        maven("https://maven.aliyun.com/repository/public")
+        if (useMirror) {
+            // ---- 阿里云镜像（Gradle 插件 / Android / 公共库）----
+            maven("https://maven.aliyun.com/repository/gradle-plugin")
+            maven("https://maven.aliyun.com/repository/google")
+            maven("https://maven.aliyun.com/repository/public")
+        }
 
         // ---- 官方源兜底 ----
         google {
@@ -26,9 +32,11 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        // ---- 阿里云镜像 ----
-        maven("https://maven.aliyun.com/repository/google")
-        maven("https://maven.aliyun.com/repository/public")
+        if (useMirror) {
+            // ---- 阿里云镜像 ----
+            maven("https://maven.aliyun.com/repository/google")
+            maven("https://maven.aliyun.com/repository/public")
+        }
 
         // ---- 官方源兜底 ----
         google()
