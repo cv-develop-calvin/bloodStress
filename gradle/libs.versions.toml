@@ -1,12 +1,7 @@
 [versions]
 agp = "8.5.2"
-# 使用 Kotlin 1.9.25 + Compose Compiler 1.5.15 这一成熟组合。
-# 曾尝试 Kotlin 2.0.21 + org.jetbrains.kotlin.plugin.compose，
-# 但 KSP2 下 Hilt/Room 处理器报 error.NonExistentClass（AppDatabase、
-# Repository 无法解析），源码本身无错误，属 KSP2 兼容性问题，故回退。
 kotlin = "1.9.25"
 ksp = "1.9.25-1.0.20"
-composeCompiler = "1.5.15"
 composeBom = "2024.10.01"
 hilt = "2.52"
 room = "2.6.1"

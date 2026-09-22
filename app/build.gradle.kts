@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
@@ -42,27 +43,11 @@ android {
         compose = true
     }
 
-    // Kotlin 1.9.x 使用 Compose Compiler 扩展版本（Kotlin 2.0 才改用插件）
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-    }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-}
-
-// Hilt 的 KSP 处理使用聚合任务，确保 Room 生成的 DAO/Database 在 Hilt 分析时已可见
-hilt {
-    enableAggregatingTask = true
-}
-
-ksp {
-    // Room 的 schema 输出目录（exportSchema = true 时必须提供）
-    arg("room.schemaLocation", "$projectDir/schemas")
-    arg("room.incremental", "true")
 }
 
 dependencies {
@@ -79,6 +64,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
 
     // Room
     implementation(libs.androidx.room.runtime)
