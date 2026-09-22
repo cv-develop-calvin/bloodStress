@@ -95,7 +95,8 @@ fun LabScreen(
                             }
                         }
                         val cols = 2
-                        CbcItems.items().chunked(cols).forEach { row ->
+                        // 用自定义名字避免与标准库 Iterable.chunked 产生解析歧义
+                        CbcItems.items().chunkedSafe(cols).forEach { row ->
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -237,7 +238,7 @@ fun LabScreen(
 private fun fmt(v: Double): String =
     if (v == v.toLong().toDouble()) v.toLong().toString() else "%.1f".format(v)
 
-private fun <T> List<T>.chunked(size: Int): List<List<T>> {
+private fun <T> List<T>.chunkedSafe(size: Int): List<List<T>> {
     val out = mutableListOf<List<T>>()
     var i = 0
     while (i < this.size) {

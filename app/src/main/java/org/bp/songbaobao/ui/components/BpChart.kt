@@ -221,11 +221,11 @@ fun LabLineChart(
                 fillColor = GColor.parseColor("#FFDD7A")
                 mode = LineDataSet.Mode.CUBIC_BEZIER
                 setDrawValues(false)
-                // 异常点标红
+                // 异常点标红（circleColors 要求 MutableList<Int>）
                 circleColors = values.map {
                     if (it < low || it > high) GColor.parseColor("#FF8080")
                     else GColor.parseColor("#FFDD7A")
-                }
+                }.toMutableList()
             }
             chart.data = LineData(ds)
             chart.invalidate()

@@ -255,12 +255,6 @@ private fun RangeChips(days: Int?, onSelect: (Int?) -> Unit) {
                     containerColor = Color.Transparent,
                     labelColor = org.bp.songbaobao.ui.theme.TextDim
                 ),
-                border = FilterChipDefaults.filterChipBorder(
-                    borderColor = org.bp.songbaobao.ui.theme.PanelBorder,
-                    selectedBorderColor = org.bp.songbaobao.ui.theme.Gold,
-                    enabled = true,
-                    selected = days == value
-                )
             )
         }
     }
