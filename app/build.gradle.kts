@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
@@ -41,6 +40,11 @@ android {
 
     buildFeatures {
         compose = true
+    }
+
+    // Kotlin 1.9.x 使用 Compose Compiler 扩展版本（Kotlin 2.0 才改用插件）
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 
     packaging {
