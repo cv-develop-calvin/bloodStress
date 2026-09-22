@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import org.bp.songbaobao.domain.classifyBp
+import org.bp.songbaobao.ui.components.classifyBp
 import org.bp.songbaobao.ui.components.AppTextField
 import org.bp.songbaobao.ui.components.EmptyHint
 import org.bp.songbaobao.ui.components.PanelCard

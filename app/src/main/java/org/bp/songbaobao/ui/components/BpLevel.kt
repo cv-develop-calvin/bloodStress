@@ -1,11 +1,18 @@
-package org.bp.songbaobao.domain
+package org.bp.songbaobao.ui.components
 
 import androidx.compose.ui.graphics.Color
-import org.bp.songbaobao.ui.theme.*
+import org.bp.songbaobao.ui.theme.ChartPulse
+import org.bp.songbaobao.ui.theme.DangerRed
+import org.bp.songbaobao.ui.theme.SuccessGreen
+import org.bp.songbaobao.ui.theme.TextDim
+import org.bp.songbaobao.ui.theme.WarnAmber
 
 /**
  * 血压分级，参考《中国高血压防治指南》。
  * 取收缩压与舒张压中较高的等级。
+ *
+ * 注意：放在 ui 层而非 domain —— domain 保持纯数据、不含 Compose 依赖，
+ * 避免 Room 实体链路间接依赖 Compose 类型导致 KSP/Hilt 报 error.NonExistentClass。
  */
 enum class BpLevelKey { LOW, NORMAL, ELEVATED, STAGE1, STAGE2, STAGE3 }
 

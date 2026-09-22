@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.bp.songbaobao.domain.CbcItems
-import org.bp.songbaobao.domain.CbcJudge
+import org.bp.songbaobao.ui.components.CbcJudge
 import org.bp.songbaobao.ui.components.*
 import org.bp.songbaobao.ui.components.LabLineChart
 import org.bp.songbaobao.ui.theme.*

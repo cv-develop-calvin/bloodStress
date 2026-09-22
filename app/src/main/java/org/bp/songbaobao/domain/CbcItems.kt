@@ -1,8 +1,5 @@
 package org.bp.songbaobao.domain
 
-import androidx.compose.ui.graphics.Color
-import org.bp.songbaobao.ui.theme.*
-
 /** 单条血常规指标定义 */
 data class CbcItem(
     val key: String,
@@ -12,25 +9,6 @@ data class CbcItem(
     val high: Double,
     val aliases: List<String>
 )
-
-/** 判定结果 */
-enum class CbcFlag { LOW, NORMAL, HIGH, NONE }
-
-data class CbcJudge(val flag: CbcFlag, val name: String, val color: Color) {
-    companion object {
-        private val LOW = CbcJudge(CbcFlag.LOW, "偏低", WarnAmber)
-        private val HIGH = CbcJudge(CbcFlag.HIGH, "偏高", DangerRed)
-        private val NORMAL = CbcJudge(CbcFlag.NORMAL, "正常", SuccessGreen)
-        private val NONE = CbcJudge(CbcFlag.NONE, "—", TextDim)
-        fun none() = NONE
-        fun of(v: Double?, item: CbcItem): CbcJudge = when {
-            v == null -> NONE
-            v < item.low -> LOW
-            v > item.high -> HIGH
-            else -> NORMAL
-        }
-    }
-}
 
 /** 常用血常规项目（与 Web 版 lab.py 一致） */
 object CbcItems {
@@ -82,24 +60,4 @@ object CbcItems {
         val item = get(key)
         v < item.low || v > item.high
     }
-}
-
-/**
- * 让 DAO/Entity 与指标取值解耦：LabReport 实现该接口即可。
- * 这里用简单接口避免反射。
- */
-interface LabValues {
-    val wbc: Double?
-    val rbc: Double?
-    val hgb: Double?
-    val hct: Double?
-    val mcv: Double?
-    val mch: Double?
-    val mchc: Double?
-    val plt: Double?
-    val lymPct: Double?
-    val neutPct: Double?
-    val monoPct: Double?
-    val eosPct: Double?
-    val crp: Double?
 }
