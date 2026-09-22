@@ -53,6 +53,15 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    // JDK 17 的模块系统会封闭 jdk.compiler 等内部包，kapt 需要显式开放，
+    // 否则注解处理阶段会报 "Could not load module <Error module>"。
+    kapt {
+        correctErrorTypes = true
+        javacOptions {
+            option("-Xmaxerrs", 500)
+        }
+    }
 }
 
 dependencies {
