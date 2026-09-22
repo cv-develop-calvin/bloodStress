@@ -6,7 +6,9 @@ kotlin = "2.0.21"
 ksp = "2.0.21-1.0.28"
 composeBom = "2024.10.01"
 hilt = "2.52"
-room = "2.6.1"
+# Room 2.6.1 只支持 KSP1；Kotlin 2.0 的 KSP2 需要 Room 2.7+，
+# 否则 Room 处理器不生成任何代码，@Database/DAO 全部解析为 error.NonExistentClass。
+room = "2.7.1"
 coil = "2.6.0"
 mpandroidchart = "3.1.0"
 mlkitTextChinese = "16.0.0"
