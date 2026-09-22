@@ -29,3 +29,6 @@ data/
 /app/release
 *.apk
 *.aab
+
+# 临时调试脚本
+_tmp_*.py
