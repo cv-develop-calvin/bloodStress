@@ -60,8 +60,13 @@ jobs:
         run: |
           echo "::group::构建错误详情"
           {
-            grep -E '^e: |error: |Execution failed for task|Could not resolve|Could not find|Could not determine|BUILD FAILED' build.log | head -n 40
-            # Gradle 的具体原因在 "What went wrong:" 之后若干行，需一并抓取
+            # 1) Kotlin 源码编译错误是根因，优先完整抓取
+            echo "==== Kotlin 源码错误 ===="
+            grep -E '^e: file:///' build.log | head -n 100
+            # 2) KSP / 依赖 / 任务级错误
+            echo "==== KSP 与其他错误 ===="
+            grep -E '^e: |error: |Could not resolve|Could not find|Could not determine|Execution failed|BUILD FAILED' build.log | head -n 40
+            # 3) Gradle 的具体原因在 What went wrong 之后若干行
             echo "==== What went wrong 详情 ===="
             grep -A 30 'What went wrong' build.log | head -n 50
           } | while IFS= read -r line; do
