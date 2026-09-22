@@ -69,7 +69,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.icons.extended)
 
     // Room（用 kapt，与 Hilt 同处理器以保证生成类互相可见）
     implementation(libs.androidx.room.runtime)
