@@ -58,6 +58,7 @@ jobs:
       - name: Surface compile errors
         if: steps.build.outcome == 'failure'
         run: |
+          mkdir -p ci-build
           echo "::group::构建错误详情"
           {
             # 1) Kotlin 源码编译错误是根因，优先完整抓取
@@ -69,7 +70,10 @@ jobs:
             # 3) Gradle 的具体原因在 What went wrong 之后若干行
             echo "==== What went wrong 详情 ===="
             grep -A 30 'What went wrong' build.log | head -n 50
-          } | while IFS= read -r line; do
+            # 4) 兜底：原始日志尾部，避免遗漏未匹配到的错误
+            echo "==== 日志尾部 ===="
+            tail -n 80 build.log
+          } | tee ci-build/errors.log | while IFS= read -r line; do
               # GitHub 注解消息需转义特殊字符
               esc=$(printf '%s' "$line" | sed 's/%/%25/g; s/\r/%0D/g')
               echo "::error::$esc"
@@ -81,6 +85,18 @@ jobs:
         run: |
           echo "::error::构建失败，具体编译错误见上方注解"
           exit 1
+
+      # 把错误日志作为公开 Release 资源上传（对公开仓库可匿名下载），
+      # 这样无需登录也能读到真实编译错误，便于快速定位。
+      - name: Upload build errors as release asset
+        if: failure()
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ci-build-log
+          name: CI 构建错误日志
+          files: ci-build/errors.log
+          draft: false
+          prerelease: true
 
       - name: Rename APK with build number
         run: |
