@@ -5,7 +5,10 @@ agp = "8.5.2"
 kotlin = "2.0.21"
 ksp = "2.0.21-1.0.28"
 composeBom = "2024.10.01"
-hilt = "2.52"
+# Hilt 2.52 的 KSP 处理器基于旧 KSP API，在 Kotlin 2.0 的 KSP2 下
+# 无法解析 @AndroidEntryPoint 与 Room 生成的类，报 error.NonExistentClass。
+# 2.56+ 才完整支持 KSP2。
+hilt = "2.56.2"
 # Room 2.6.1 只支持 KSP1；Kotlin 2.0 的 KSP2 需要 Room 2.7+，
 # 否则 Room 处理器不生成任何代码，@Database/DAO 全部解析为 error.NonExistentClass。
 room = "2.7.1"
