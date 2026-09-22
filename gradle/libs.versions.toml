@@ -9,9 +9,9 @@ composeBom = "2024.10.01"
 # 无法解析 @AndroidEntryPoint 与 Room 生成的类，报 error.NonExistentClass。
 # 2.56+ 才完整支持 KSP2。
 hilt = "2.56.2"
-# Room 2.6.1 只支持 KSP1；Kotlin 2.0 的 KSP2 需要 Room 2.7+，
-# 否则 Room 处理器不生成任何代码，@Database/DAO 全部解析为 error.NonExistentClass。
-room = "2.7.1"
+# 用 2.6.1：该版本 room-compiler 坐标单一（非 KMP），
+# 2.7+ 改为 KMP artifact 后需显式指定 jvm 变体，否则 Gradle 静默跳过编译器依赖。
+room = "2.6.1"
 coil = "2.6.0"
 mpandroidchart = "3.1.0"
 mlkitTextChinese = "16.0.0"
