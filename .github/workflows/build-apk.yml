@@ -173,19 +173,28 @@ jobs:
           path: dist/*.apk
           if-no-files-found: warn
 
-      # 打 vX.Y.Z 标签时自动发 Release，附上 APK（应用内「检查更新」即读取这里）
-      - name: Publish Release
-        if: startsWith(github.ref, 'refs/tags/v')
+      # 每次构建都发 Release：Release 的 assets 是原始 APK 文件，
+      # 手机浏览器点开即可直接下载安装，不像 Artifacts 那样打包成 zip。
+      # 打 vX.Y.Z 标签时使用标签号作为版本，否则用「构建号」生成滚动版本。
+      - name: Publish APK release
+        if: steps.build.outcome == 'success'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('build-{0}', github.run_number) }}
+          name: ${{ startsWith(github.ref, 'refs/tags/v') && format('v{0}', steps.ver.outputs.version) || format('构建 {0} · v{1}', github.run_number, steps.ver.outputs.version) }}
           files: dist/*.apk
           draft: false
           prerelease: false
-          generate_release_notes: true
+          generate_release_notes: false
           body: |
             ## 宋宝宝的记录 v${{ steps.ver.outputs.version }}
 
-            构建号 `${{ steps.ver.outputs.code }}`，提交 `${{ github.sha }}`。
+            **直链 APK，手机点开即可下载安装。**
 
-            安装方式：下载下方 APK，在手机上点击安装（提示未知来源时允许）。
-            手机数据保存在应用内部，升级安装不会丢失历史记录。
+            - 构建号 `${{ steps.ver.outputs.version_code }}`
+            - 提交 `${{ github.sha }}`
+            - 构建时间 ${{ github.event.repository.updated_at }}
+
+            安装提示：手机首次安装需在弹窗里允许「未知来源应用」。
+            升级安装不会丢失历史数据（数据库在应用私有目录）。
+

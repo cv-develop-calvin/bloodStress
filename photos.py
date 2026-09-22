@@ -6,12 +6,20 @@ Android 上数据目录指向应用私有目录（ANDROID_PRIVATE），
 from __future__ import annotations
 
 import os
+import shutil
 import uuid
 from datetime import datetime
 
-from PIL import Image, ImageOps
-
 import storage
+
+# Pillow 惰性导入：万一打包时没带上 pillow，也只影响照片压缩功能，
+# 不会因为顶层 ImportError 让整个应用启动失败。
+try:
+    from PIL import Image, ImageOps
+    HAS_PIL = True
+except ImportError:  # pragma: no cover
+    Image = ImageOps = None
+    HAS_PIL = False
 
 ALLOWED = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".heic", ".heif"}
 MAX_SIDE = 1600          # 原图最长边，超过则等比缩小，省空间
@@ -45,6 +53,21 @@ def save_upload(file_storage) -> dict | None:
     thumb_name = base + "_thumb.jpg"
     target = photo_path(filename)
     thumb_path = photo_path(thumb_name)
+
+    # 没有 Pillow 时退化为直接保存原文件，不再压缩
+    if not HAS_PIL:
+        try:
+            file_storage.stream.seek(0)
+            with open(target, "wb") as f:
+                shutil.copyfileobj(file_storage.stream, f)
+        except Exception:  # noqa: BLE001
+            return None
+        try:
+            shutil.copyfile(target, thumb_path)
+        except OSError:
+            thumb_name = filename
+        return {"filename": filename, "thumb": thumb_name,
+                "size": os.path.getsize(target)}
 
     try:
         img = Image.open(file_storage.stream)
