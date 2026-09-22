@@ -57,14 +57,17 @@ jobs:
       - name: Surface compile errors
         if: steps.build.outcome == 'failure'
         run: |
-          echo "::group::编译错误（前 80 行）"
-          grep -E '^e: |error: |^w: .*error|Execution failed for task|What went wrong|FAILED' build.log \
-            | head -n 80 \
-            | while IFS= read -r line; do
-                # GitHub 注解消息需转义特殊字符
-                esc=$(printf '%s' "$line" | sed 's/%/%25/g; s/\r/%0D/g')
-                echo "::error::$esc"
-              done
+          echo "::group::构建错误详情"
+          {
+            grep -E '^e: |error: |Execution failed for task|Could not resolve|Could not find|Could not determine|BUILD FAILED' build.log | head -n 40
+            # Gradle 的具体原因在 "What went wrong:" 之后若干行，需一并抓取
+            echo "==== What went wrong 详情 ===="
+            grep -A 30 'What went wrong' build.log | head -n 50
+          } | while IFS= read -r line; do
+              # GitHub 注解消息需转义特殊字符
+              esc=$(printf '%s' "$line" | sed 's/%/%25/g; s/\r/%0D/g')
+              echo "::error::$esc"
+            done
           echo "::endgroup::"
 
       - name: Check build result
