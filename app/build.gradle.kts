@@ -54,16 +54,15 @@ android {
     }
 }
 
-// Hilt 的 KSP 处理需要显式支持 correctErrorTypes 等价行为：
-// 由 Hilt 自己处理聚合，确保 Room 生成的 DAO/Database 在 Hilt 分析时已可见。
+// Hilt 的 KSP 处理使用聚合任务，确保 Room 生成的 DAO/Database 在 Hilt 分析时已可见
 hilt {
     enableAggregatingTask = true
 }
 
 ksp {
-    arg("dagger.fastInit", "enabled")
     // Room 的 schema 输出目录（exportSchema = true 时必须提供）
     arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
 }
 
 dependencies {
