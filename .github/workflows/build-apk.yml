@@ -59,20 +59,24 @@ jobs:
         if: steps.build.outcome == 'failure'
         run: |
           mkdir -p ci-build
+          cp build.log ci-build/full-build.log
           echo "::group::构建错误详情"
           {
             # 1) Kotlin 源码编译错误是根因，优先完整抓取
             echo "==== Kotlin 源码错误 ===="
-            grep -E '^e: file:///' build.log | head -n 100
-            # 2) KSP / 依赖 / 任务级错误
-            echo "==== KSP 与其他错误 ===="
-            grep -E '^e: |error: |Could not resolve|Could not find|Could not determine|Execution failed|BUILD FAILED' build.log | head -n 40
-            # 3) Gradle 的具体原因在 What went wrong 之后若干行
+            grep -E '^e: file:///' build.log | head -n 200
+            # 2) 任何以 e: 开头的编译器错误（含 kapt/KSP 阶段）
+            echo "==== 所有 e: 错误 ===="
+            grep -E '^e: ' build.log | head -n 60
+            # 3) 依赖 / 任务级错误
+            echo "==== 依赖与任务错误 ===="
+            grep -E 'error: |Unresolved|Could not resolve|Could not find|Could not determine|Execution failed|BUILD FAILED|Could not load module' build.log | head -n 60
+            # 4) Gradle 的具体原因在 What went wrong 之后若干行
             echo "==== What went wrong 详情 ===="
-            grep -A 30 'What went wrong' build.log | head -n 50
-            # 4) 兜底：原始日志尾部，避免遗漏未匹配到的错误
+            grep -A 30 'What went wrong' build.log | head -n 60
+            # 5) 兜底：原始日志尾部，避免遗漏未匹配到的错误
             echo "==== 日志尾部 ===="
-            tail -n 80 build.log
+            tail -n 120 build.log
           } | tee ci-build/errors.log | while IFS= read -r line; do
               # GitHub 注解消息需转义特殊字符
               esc=$(printf '%s' "$line" | sed 's/%/%25/g; s/\r/%0D/g')
@@ -94,7 +98,9 @@ jobs:
         with:
           tag_name: ci-build-log
           name: CI 构建错误日志
-          files: ci-build/errors.log
+          files: |
+            ci-build/errors.log
+            ci-build/full-build.log
           draft: false
           prerelease: true
 
