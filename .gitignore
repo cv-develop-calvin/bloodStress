@@ -23,7 +23,11 @@ local.properties
 out/
 
 # 旧 Flask 版本遗留（含 SQLite 数据库，未被跟踪）
-data/
+# 注意：必须限定在仓库根目录。写成 data/ 会误伤
+# app/src/main/java/org/bp/songbaobao/data/ 整个 Kotlin 源码包，
+# 导致 AppDatabase/DAO/Repository 未提交，CI 编译时报
+# "AppDatabase could not be resolved"。
+/data/
 
 # 发布产物
 /app/release
