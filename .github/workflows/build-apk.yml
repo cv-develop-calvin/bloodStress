@@ -48,8 +48,9 @@ jobs:
         id: build
         continue-on-error: true
         run: |
-          # 保存完整日志，并用 PIPESTATUS 取 gradle 真实退出码
-          ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
+          # 保存完整日志，并用 PIPESTATUS 取 gradle 真实退出码。
+          # --no-daemon：CI 上出现 Kotlin 编译守护进程崩溃，禁用更稳定。
+          ./gradlew assembleDebug --stacktrace --no-daemon 2>&1 | tee build.log
           exit "${PIPESTATUS[0]}"
 
       # 把真实编译错误输出为 GitHub 注解。
