@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -47,12 +47,30 @@ jobs:
       - name: Build debug APK
         id: build
         continue-on-error: true
-        run: ./gradlew assembleDebug --stacktrace
+        run: |
+          # 保存完整日志，并用 PIPESTATUS 取 gradle 真实退出码
+          ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
+          exit "${PIPESTATUS[0]}"
+
+      # 把真实编译错误输出为 GitHub 注解。
+      # 这样无需登录也能通过 annotations API 读取错误，便于快速定位。
+      - name: Surface compile errors
+        if: steps.build.outcome == 'failure'
+        run: |
+          echo "::group::编译错误（前 80 行）"
+          grep -E '^e: |error: |^w: .*error|Execution failed for task|What went wrong|FAILED' build.log \
+            | head -n 80 \
+            | while IFS= read -r line; do
+                # GitHub 注解消息需转义特殊字符
+                esc=$(printf '%s' "$line" | sed 's/%/%25/g; s/\r/%0D/g')
+                echo "::error::$esc"
+              done
+          echo "::endgroup::"
 
       - name: Check build result
         if: steps.build.outcome == 'failure'
         run: |
-          echo "::error::构建失败，详见上方 Build debug APK 日志"
+          echo "::error::构建失败，具体编译错误见上方注解"
           exit 1
 
       - name: Rename APK with build number
