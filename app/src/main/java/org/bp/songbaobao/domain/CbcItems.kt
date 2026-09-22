@@ -36,28 +36,14 @@ object CbcItems {
 
     fun items(): List<CbcItem> = list
 
-    /** 按 key 从报告里取值（类型安全：LabReport 实现 LabValues） */
-    fun valueOf(report: LabValues, key: String): Double? = when (key) {
-        "wbc" -> report.wbc
-        "rbc" -> report.rbc
-        "hgb" -> report.hgb
-        "hct" -> report.hct
-        "mcv" -> report.mcv
-        "mch" -> report.mch
-        "mchc" -> report.mchc
-        "plt" -> report.plt
-        "lymPct" -> report.lymPct
-        "neutPct" -> report.neutPct
-        "monoPct" -> report.monoPct
-        "eosPct" -> report.eosPct
-        "crp" -> report.crp
-        else -> null
+    /** 判定单个指标值是否异常 */
+    fun isAbnormal(key: String, v: Double?): Boolean {
+        if (v == null) return false
+        val item = get(key)
+        return v < item.low || v > item.high
     }
 
     /** 统计异常项数量 */
-    fun abnormalCount(report: LabValues): Int = ORDER.count { key ->
-        val v = valueOf(report, key) ?: return@count false
-        val item = get(key)
-        v < item.low || v > item.high
-    }
+    fun abnormalCount(values: Map<String, Double?>): Int =
+        ORDER.count { isAbnormal(it, values[it]) }
 }

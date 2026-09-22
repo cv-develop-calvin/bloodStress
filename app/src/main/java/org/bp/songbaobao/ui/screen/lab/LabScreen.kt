@@ -102,7 +102,7 @@ fun LabScreen(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 row.forEach { item ->
-                                    val v = CbcItems.valueOf(r, item.key)
+                                    val v = r.valueOf(item.key)
                                     val judge = CbcJudge.of(v, item)
                                     Box(modifier = Modifier.weight(1f)) {
                                         Column(
@@ -211,7 +211,7 @@ fun LabScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text("${r.date} ${r.time}", fontWeight = FontWeight.SemiBold)
-                                val abnormal = CbcItems.abnormalCount(r)
+                                val abnormal = CbcItems.abnormalCount(r.values())
                                 Text(
                                     buildString {
                                         if (r.hospital.isNotBlank()) append("${r.hospital} · ")

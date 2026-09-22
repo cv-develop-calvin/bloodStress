@@ -42,7 +42,7 @@ fun LabFormScreen(
                 report = r
                 inputs.clear()
                 CbcItems.items().forEach { item ->
-                    inputs[item.key] = CbcItems.valueOf(r, item.key)?.let { fmt(it) } ?: ""
+                    inputs[item.key] = r.valueOf(item.key)?.let { fmt(it) } ?: ""
                 }
             }
             loaded = true
