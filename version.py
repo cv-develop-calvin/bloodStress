@@ -11,7 +11,7 @@ import subprocess
 from datetime import datetime
 
 # 当前版本号（发版时改这里，并同步 buildozer.spec 的 version）
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 APP_NAME = "宋宝宝的记录"
 APP_NAME_EN = "songbaobao"
@@ -19,6 +19,19 @@ GITHUB_REPO = "cv-develop-calvin/bloodStress"
 
 # 更新日志：新版本加到最前面
 CHANGELOG = [
+    {
+        "version": "1.2.0",
+        "date": "2026-09-22",
+        "items": [
+            "全新星座战士主题：深空星夜背景与金色描边界面",
+            "新增笔记本：文字留言 + 照片记录（最多 9 张/次）",
+            "笔记本支持心情、标签、搜索与照片墙",
+            "拍照识别化验单并入血常规页，无需切换页面",
+            "修复安装后闪退问题",
+            "修复血常规趋势图不显示、OCR 引擎加载失败",
+            "修复心率曲线被压扁、小屏坐标轴标签重叠",
+        ],
+    },
     {
         "version": "1.1.0",
         "date": "2026-09-22",
