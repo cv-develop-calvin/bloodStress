@@ -105,12 +105,22 @@ jobs:
           draft: false
           prerelease: true
 
+      # 版本号从 build.gradle.kts 读取，避免各处硬编码不一致。
+      # 应用内「检查更新」按 APK 文件名里的版本号做比较，
+      # 所以此处必须与 build.gradle.kts 的 versionName 保持一致。
+      - name: Read app version
+        id: ver
+        run: |
+          VERSION=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts | head -n 1)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "读取到版本号: $VERSION"
+
       - name: Rename APK with build number
         run: |
           mkdir -p dist
           for f in app/build/outputs/apk/debug/*.apk; do
             [ -e "$f" ] || continue
-            cp "$f" "dist/songbaobao-v1.2.0-build${{ github.run_number }}.apk"
+            cp "$f" "dist/songbaobao-v${{ steps.ver.outputs.version }}-build${{ github.run_number }}.apk"
           done
           ls -la dist
 
@@ -133,7 +143,7 @@ jobs:
           prerelease: false
           generate_release_notes: false
           body: |
-            ## 宋宝宝的记录 v1.2.0
+            ## 宋宝宝的记录 v${{ steps.ver.outputs.version }}
 
             **点击下方的 APK 文件即可下载安装**（原始文件，非压缩包）。
 
