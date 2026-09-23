@@ -38,10 +38,10 @@ fun NoteListScreen(
             }
         }
     ) { padding ->
+      AppBackground {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Navy)
                 .padding(padding)
                 .padding(horizontal = 16.dp)
         ) {
@@ -228,5 +228,6 @@ fun NoteListScreen(
 
             item { Spacer(Modifier.height(80.dp)) }
         }
+      }
     }
 }

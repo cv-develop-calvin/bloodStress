@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.bp.songbaobao.data.local.entity.LabReport
+import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.CbcJudge
 import org.bp.songbaobao.domain.CbcItems
 import org.bp.songbaobao.ui.components.AppTextField
@@ -66,10 +67,10 @@ fun LabFormScreen(
         return
     }
 
+    AppBackground {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Navy)
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -204,6 +205,7 @@ fun LabFormScreen(
         }
 
         Spacer(Modifier.height(24.dp))
+    }
     }
 }
 

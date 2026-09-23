@@ -1,5 +1,6 @@
 package org.bp.songbaobao.ui.screen.bp
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -9,10 +10,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.components.classifyBp
 import org.bp.songbaobao.ui.components.*
 import org.bp.songbaobao.ui.components.BpLineChart
@@ -36,14 +45,20 @@ fun BpTrendScreen(
             ) { Text("＋", fontWeight = FontWeight.Bold) }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(org.bp.songbaobao.ui.theme.Navy)
-                .padding(padding)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
+        // 射手座 + 雅典娜主题背景（与各功能页共用同一组件）
+        AppBackground {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+            Spacer(Modifier.height(12.dp))
+
+            // 应用标题
+            AppHeader()
+
             Spacer(Modifier.height(12.dp))
 
             // 最新测量（圣衣卡）
@@ -231,7 +246,35 @@ fun BpTrendScreen(
             }
 
             Spacer(Modifier.height(80.dp))
+            }
         }
+    }
+}
+
+/** 首页大标题：宋宝宝的记录 */
+@Composable
+private fun AppHeader() {
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+        Text(
+            "宋宝宝的记录",
+            // 柔和的深色阴影，保证压在亮背景上依然清晰
+            style = MaterialTheme.typography.headlineMedium.copy(
+                shadow = Shadow(
+                    color = org.bp.songbaobao.ui.theme.Navy,
+                    offset = Offset(0f, 2f),
+                    blurRadius = 12f
+                )
+            ),
+            fontWeight = FontWeight.Bold,
+            color = org.bp.songbaobao.ui.theme.GoldBright
+        )
+        Spacer(Modifier.height(3.dp))
+        Text(
+            "SAINT · 健康档案",
+            style = MaterialTheme.typography.labelSmall,
+            color = org.bp.songbaobao.ui.theme.Gold.copy(alpha = 0.75f),
+            letterSpacing = 3.sp
+        )
     }
 }
 

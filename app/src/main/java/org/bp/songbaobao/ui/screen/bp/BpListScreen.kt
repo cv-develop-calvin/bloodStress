@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.classifyBp
 import org.bp.songbaobao.ui.components.AppTextField
 import org.bp.songbaobao.ui.components.EmptyHint
@@ -39,10 +40,10 @@ fun BpListScreen(
             ) { Text("＋", fontWeight = FontWeight.Bold) }
         }
     ) { padding ->
+      AppBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Navy)
                 .padding(padding)
                 .padding(16.dp)
         ) {
@@ -137,6 +138,7 @@ fun BpListScreen(
                 }
             }
         }
+      }
     }
 }
 

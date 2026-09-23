@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import org.bp.songbaobao.data.local.entity.Note
 import org.bp.songbaobao.data.local.entity.NotePhoto
+import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.AppTextField
 import org.bp.songbaobao.ui.components.GoldButton
 import org.bp.songbaobao.ui.components.PanelCard
@@ -73,10 +74,10 @@ fun NoteFormScreen(
 
     val moods = listOf("😊", "😄", "🥰", "😌", "😐", "😟", "😢", "🤒", "😴", "🎉")
 
+    AppBackground {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Navy)
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -259,6 +260,7 @@ fun NoteFormScreen(
         }
 
         Spacer(Modifier.height(24.dp))
+    }
     }
 }
 

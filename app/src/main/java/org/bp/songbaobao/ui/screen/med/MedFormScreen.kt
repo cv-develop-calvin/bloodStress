@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.AppTextField
 import org.bp.songbaobao.ui.components.GoldButton
 import org.bp.songbaobao.ui.components.PanelCard
@@ -47,10 +48,10 @@ fun MedFormScreen(
 
     val freqs = listOf("每日 1 次", "每日 2 次", "每日 3 次", "隔日 1 次", "每周 1 次", "按需服用")
 
+    AppBackground {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Navy)
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -176,6 +177,7 @@ fun MedFormScreen(
         }
 
         Spacer(Modifier.height(24.dp))
+    }
     }
 }
 

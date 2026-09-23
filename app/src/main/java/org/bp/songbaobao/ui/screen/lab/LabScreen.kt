@@ -38,10 +38,10 @@ fun LabScreen(
             }
         }
     ) { padding ->
+      AppBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Navy)
                 .padding(padding)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
@@ -233,6 +233,7 @@ fun LabScreen(
 
             Spacer(Modifier.height(80.dp))
         }
+      }
     }
 }
 

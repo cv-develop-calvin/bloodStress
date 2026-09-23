@@ -1,5 +1,6 @@
 package org.bp.songbaobao.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,13 +8,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.theme.*
 
 /** 金色渐变主按钮（对应 Web 版 btn-gold） */
@@ -190,4 +195,47 @@ fun AppTextField(
             unfocusedContainerColor = Color.Transparent
         )
     )
+}
+
+/**
+ * 全局页面背景：射手座 + 雅典娜圣斗士主题底图。
+ * 固定铺满视口（不随内容滚动），仅顶部保留少量压暗保证标题可读，
+ * 底部渐隐到 Navy 与原页面底色自然衔接。
+ *
+ * 用法：把页面内容包进 [AppBackground] 的 content 即可。
+ */
+@Composable
+fun AppBackground(
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(modifier = modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.bg_sagittarius_athena),
+            contentDescription = null,
+            // Fit 完整呈现两位人物，避免窄屏下被裁掉两侧
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.88f)
+                .align(Alignment.TopCenter)
+                .alpha(0.95f)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.88f)
+                .align(Alignment.TopCenter)
+                .background(
+                    Brush.verticalGradient(
+                        0f to Navy.copy(alpha = 0.45f),
+                        0.18f to Navy.copy(alpha = 0.16f),
+                        0.64f to Navy.copy(alpha = 0.22f),
+                        0.86f to Navy.copy(alpha = 0.72f),
+                        1f to Navy.copy(alpha = 0.96f)
+                    )
+                )
+        )
+        content()
+    }
 }

@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.EmptyHint
 import org.bp.songbaobao.ui.components.PanelCard
 import org.bp.songbaobao.ui.theme.*
@@ -53,10 +54,10 @@ fun NoteDetailScreen(
         return
     }
 
+    AppBackground {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Navy)
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -147,6 +148,7 @@ fun NoteDetailScreen(
         }
 
         Spacer(Modifier.height(24.dp))
+    }
     }
 }
 

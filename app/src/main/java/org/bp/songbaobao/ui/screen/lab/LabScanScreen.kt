@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import org.bp.songbaobao.domain.CbcItems
+import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.GoldButton
 import org.bp.songbaobao.ui.components.PanelCard
 import org.bp.songbaobao.ui.theme.*
@@ -52,10 +53,10 @@ fun LabScanScreen(
         }
     }
 
+    AppBackground {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Navy)
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -201,6 +202,7 @@ fun LabScanScreen(
         }
 
         Spacer(Modifier.height(24.dp))
+    }
     }
 }
 

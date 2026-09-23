@@ -34,10 +34,10 @@ fun MedScreen(
             ) { Text("＋", fontWeight = FontWeight.Bold) }
         }
     ) { padding ->
+      AppBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Navy)
                 .padding(padding)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
@@ -204,5 +204,6 @@ fun MedScreen(
 
             Spacer(Modifier.height(80.dp))
         }
+      }
     }
 }
