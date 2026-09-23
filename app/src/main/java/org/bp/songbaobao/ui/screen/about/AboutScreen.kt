@@ -8,8 +8,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.bp.songbaobao.CrashHandler
 import org.bp.songbaobao.ui.components.HeroCard
 import org.bp.songbaobao.ui.components.PanelCard
 import org.bp.songbaobao.ui.components.SectionTitle
@@ -139,6 +141,39 @@ fun AboutScreen() {
         }
 
         Spacer(Modifier.height(12.dp))
+
+        // 上次崩溃日志（若存在），便于把闪退原因反馈给开发者
+        val context = LocalContext.current
+        var crash by remember { mutableStateOf(CrashHandler.read(context)) }
+        if (crash != null) {
+            PanelCard {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    SectionTitle("上次崩溃日志")
+                    Text(
+                        "应用上次运行时异常退出。点击下方按钮把日志发出来即可定位原因。",
+                        style = MaterialTheme.typography.bodySmall, color = TextDim
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Row {
+                        Button(onClick = {
+                            context.startActivity(CrashHandler.shareIntent(context, crash!!))
+                        }) { Text("分享日志") }
+                        Spacer(Modifier.width(8.dp))
+                        TextButton(onClick = {
+                            CrashHandler.clear(context)
+                            crash = null
+                        }) { Text("清除", color = Gold) }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        crash!!.take(2000),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = TextDim
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+        }
 
         Text(
             "数据全部保存在手机本地，卸载应用会一并删除，请定期导出备份。",

@@ -24,7 +24,9 @@ sealed class Screen(
     object LabScan : Screen("lab/scan", "拍照识别", "", false)
     object NoteAdd : Screen("note/add", "写留言", "", false)
     object NoteEdit : Screen("note/edit/{id}", "编辑留言", "", false)
-    object NoteDetail : Screen("note/{id}", "留言详情", "", false)
+    // 用 note/detail/{id} 而非 note/{id}：后者会与 note/edit/{id} 前缀冲突，
+    // 导航时可能把 "edit" 当作 id 解析而抛异常。
+    object NoteDetail : Screen("note/detail/{id}", "留言详情", "", false)
 
     companion object {
         val barItems = listOf(Bp, Med, Lab, Notes, About)
@@ -33,6 +35,6 @@ sealed class Screen(
         fun medEdit(id: Long) = "med/edit/$id"
         fun labEdit(id: Long) = "lab/edit/$id"
         fun noteEdit(id: Long) = "note/edit/$id"
-        fun noteDetail(id: Long) = "note/$id"
+        fun noteDetail(id: Long) = "note/detail/$id"
     }
 }
