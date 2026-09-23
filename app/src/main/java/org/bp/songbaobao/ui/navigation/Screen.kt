@@ -29,7 +29,12 @@ sealed class Screen(
     object NoteDetail : Screen("note/detail/{id}", "留言详情", "", false)
 
     companion object {
-        val barItems = listOf(Bp, Med, Lab, Notes, About)
+        // 必须用 get() 而非 val 初始化：
+        // companion object 的静态初始化早于外部类各 object 单例的初始化，
+        // 若写成 val barItems = listOf(Bp, ...)，此处 Bp 等仍为 null，
+        // 会导致底部栏渲染时 NPE 崩溃。
+        val barItems: List<Screen>
+            get() = listOf(Bp, Med, Lab, Notes, About)
 
         fun bpEdit(id: Long) = "bp/edit/$id"
         fun medEdit(id: Long) = "med/edit/$id"

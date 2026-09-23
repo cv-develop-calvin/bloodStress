@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+
 package org.bp.songbaobao.ui.screen.bp
 
 import androidx.lifecycle.SavedStateHandle

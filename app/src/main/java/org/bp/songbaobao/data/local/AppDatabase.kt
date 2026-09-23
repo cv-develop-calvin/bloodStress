@@ -18,7 +18,9 @@ import org.bp.songbaobao.data.local.entity.*
         NotePhoto::class
     ],
     version = 1,
-    exportSchema = true
+    // 本项目不使用 schema 迁移文件（升级走 fallbackToDestructiveMigration），
+    // 设为 false 避免 Room 要求提供 schemaLocation。
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun bpDao(): BpDao
