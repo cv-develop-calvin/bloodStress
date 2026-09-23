@@ -23,6 +23,7 @@ fun MedScreen(
     vm: MedViewModel = hiltViewModel()
 ) {
     val state by vm.uiState.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     Scaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
@@ -156,8 +157,15 @@ fun MedScreen(
                             }
 
                             Spacer(Modifier.height(6.dp))
-                            Row {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 TextButton(onClick = { onEdit(med.id) }) { Text("编辑", color = Gold) }
+                                TextButton(onClick = {
+                                    org.bp.songbaobao.util.MedPurchase.buy(
+                                        context = context,
+                                        name = med.name,
+                                        dosage = med.dosage
+                                    )
+                                }) { Text("购买", color = SuccessGreen) }
                                 var confirm by remember { mutableStateOf(false) }
                                 TextButton(onClick = { confirm = true }) { Text("删除", color = DangerRed) }
                                 if (confirm) {

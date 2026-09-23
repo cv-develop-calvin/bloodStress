@@ -108,6 +108,13 @@ interface MedDao {
 
     @Query("SELECT * FROM med_logs WHERE date >= :from")
     suspend fun logsSince(from: String): List<MedLog>
+
+    // ---- 导出 ----
+    @Query("SELECT * FROM meds ORDER BY id ASC")
+    suspend fun allForExport(): List<Medication>
+
+    @Query("SELECT * FROM med_logs ORDER BY id ASC")
+    suspend fun allLogsForExport(): List<MedLog>
 }
 
 data class MedLogWithMed(
@@ -187,6 +194,9 @@ interface NoteDao {
 
     @Query("SELECT MIN(date) FROM notes")
     fun firstDate(): Flow<String?>
+
+    @Query("SELECT * FROM note_photos ORDER BY id ASC")
+    suspend fun allPhotosForExport(): List<NotePhoto>
 
     // ---- 照片 ----
     @Insert

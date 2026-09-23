@@ -14,8 +14,8 @@ android {
         applicationId = "org.bp.songbaobao"
         minSdk = 26          // ML Kit 与通知渠道要求，覆盖绝大多数在用机型
         targetSdk = 34
-        versionCode = 10200
-        versionName = "1.2.0"
+        versionCode = 10300
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -89,4 +89,7 @@ dependencies {
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // 单元测试：验证版本比较等纯逻辑
+    testImplementation("junit:junit:4.13.2")
 }

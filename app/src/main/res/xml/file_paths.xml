@@ -2,4 +2,6 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 拍照时系统相机写入的临时文件位置 -->
     <cache-path name="images" path="images/" />
+    <!-- 从 GitHub 下载的更新包，需通过 FileProvider 交给系统安装器 -->
+    <cache-path name="updates" path="updates/" />
 </paths>
