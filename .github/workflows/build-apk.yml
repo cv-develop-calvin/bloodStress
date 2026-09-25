@@ -51,11 +51,16 @@ jobs:
           SB_KEY_PASSWORD: ${{ secrets.SB_KEY_PASSWORD }}
         run: |
           set -u
+          mkdir -p ci-build
+          DIAG=ci-build/signing-diag.txt
           # 诊断：只输出「是否为空」与长度，绝不打印密钥内容
-          echo "SB_KEYSTORE_BASE64 已配置: $([ -n "${SB_KEYSTORE_BASE64:-}" ] && echo yes || echo NO)，长度 ${#SB_KEYSTORE_BASE64}"
-          echo "SB_STORE_PASSWORD 已配置: $([ -n "${SB_STORE_PASSWORD:-}" ] && echo yes || echo NO)"
-          echo "SB_KEY_ALIAS       已配置: $([ -n "${SB_KEY_ALIAS:-}" ] && echo yes || echo NO)"
-          echo "SB_KEY_PASSWORD    已配置: $([ -n "${SB_KEY_PASSWORD:-}" ] && echo yes || echo NO)"
+          {
+            echo "==== 签名密钥诊断 ===="
+            echo "SB_KEYSTORE_BASE64 已配置: $([ -n "${SB_KEYSTORE_BASE64:-}" ] && echo yes || echo NO)，长度 ${#SB_KEYSTORE_BASE64}"
+            echo "SB_STORE_PASSWORD  已配置: $([ -n "${SB_STORE_PASSWORD:-}" ] && echo yes || echo NO)"
+            echo "SB_KEY_ALIAS       已配置: $([ -n "${SB_KEY_ALIAS:-}" ] && echo yes || echo NO)"
+            echo "SB_KEY_PASSWORD    已配置: $([ -n "${SB_KEY_PASSWORD:-}" ] && echo yes || echo NO)"
+          } | tee "$DIAG"
 
           if [ -z "${SB_KEYSTORE_BASE64:-}" ] || [ -z "${SB_STORE_PASSWORD:-}" ]; then
             echo "::error::签名密钥 Secret 未配置或为空。请在仓库 Settings → Secrets and variables → Actions 中添加 SB_KEYSTORE_BASE64 / SB_STORE_PASSWORD / SB_KEY_ALIAS / SB_KEY_PASSWORD"
@@ -65,16 +70,17 @@ jobs:
 
           KS="$GITHUB_WORKSPACE/songbaobao.jks"
           printf '%s' "$SB_KEYSTORE_BASE64" | base64 -d > "$KS" 2>/dev/null
-          echo "解码后文件大小: $(stat -c%s "$KS" 2>/dev/null || echo 0) 字节"
+          echo "解码后文件大小: $(stat -c%s "$KS" 2>/dev/null || echo 0) 字节" | tee -a "$DIAG"
 
           # 校验：能列出别名才说明密钥与密码正确（不会输出密钥内容）
-          keytool -list -keystore "$KS" -storepass "$SB_STORE_PASSWORD" \
-            -alias "${SB_KEY_ALIAS:-songbaobao}" > /dev/null 2>&1
-          if [ $? -ne 0 ]; then
+          if ! keytool -list -keystore "$KS" -storepass "$SB_STORE_PASSWORD" \
+            -alias "${SB_KEY_ALIAS:-songbaobao}" > /dev/null 2>&1; then
             echo "::error::密钥文件或密码校验失败，请检查 Secret 内容是否完整（不要包含换行或空格）"
+            echo "密钥校验失败：keytool 无法用给定密码打开别名" | tee -a "$DIAG"
             echo "SIGNING_ENABLED=false" >> "$GITHUB_ENV"
             exit 1
           fi
+          echo "密钥校验通过" | tee -a "$DIAG"
 
           echo "SB_KEYSTORE_FILE=$KS" >> "$GITHUB_ENV"
           echo "SB_STORE_PASSWORD=$SB_STORE_PASSWORD" >> "$GITHUB_ENV"
@@ -144,6 +150,7 @@ jobs:
           files: |
             ci-build/errors.log
             ci-build/full-build.log
+            ci-build/signing-diag.txt
           draft: false
           prerelease: true
 
