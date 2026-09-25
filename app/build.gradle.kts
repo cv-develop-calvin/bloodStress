@@ -66,9 +66,20 @@ android {
                 keyAlias = signingValue("SB_KEY_ALIAS", "sb.keyAlias", "songbaobao")
                 keyPassword = signingValue("SB_KEY_PASSWORD", "sb.keyPassword")
             } else {
-                logger.warn(
-                    "未找到发布密钥（songbaobao.jks），将退回默认 debug 签名。" +
-                        "正式分发前请配置 SB_KEYSTORE_FILE / SB_STORE_PASSWORD / SB_KEY_PASSWORD。"
+                // 不静默退回 debug 签名：那样产出的包与上一版签名不一致，
+                // 用户升级时会安装失败，问题更隐蔽。
+                error(
+                    """
+                    |未找到发布签名密钥 songbaobao.jks。
+                    |
+                    |本机构建：把密钥放到项目根目录，或在 local.properties 中配置
+                    |  sb.storePassword / sb.keyAlias / sb.keyPassword
+                    |
+                    |CI 构建：需在仓库 Settings → Secrets and variables → Actions 中配置
+                    |  SB_KEYSTORE_BASE64 / SB_STORE_PASSWORD / SB_KEY_ALIAS / SB_KEY_PASSWORD
+                    |
+                    |签名不一致会导致用户升级时必须先卸载旧版本，因此这里直接失败而不是静默降级。
+                    """.trimMargin()
                 )
             }
         }
