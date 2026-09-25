@@ -14,19 +14,37 @@ android {
         applicationId = "org.bp.songbaobao"
         minSdk = 26          // ML Kit 与通知渠道要求，覆盖绝大多数在用机型
         targetSdk = 34
-        versionCode = 10400
-        versionName = "1.4.0"
+        versionCode = 10500
+        versionName = "1.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // 统一签名：本机与 CI 必须共用同一份 keystore。
+    // 否则每次构建都会换新签名，覆盖安装时报 INSTALL_FAILED_UPDATE_INCOMPATIBLE，
+    // 用户升级前只能先卸载旧版（数据也会跟着没了）。
+    // 后续若要换成私有密钥，把三个值改用 secrets / 环境变量覆盖即可，无需再改脚本
+    // （变量名：SB_STORE_PASSWORD、SB_KEY_ALIAS、SB_KEY_PASSWORD）。
+    signingConfigs {
+        create("unified") {
+            storeFile = file("signing/debug.keystore")
+            storePassword = System.getenv("SB_STORE_PASSWORD") ?: "android"
+            keyAlias = System.getenv("SB_KEY_ALIAS") ?: "androiddebugkey"
+            keyPassword = System.getenv("SB_KEY_PASSWORD") ?: "android"
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("unified")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            signingConfig = signingConfigs.getByName("unified")
         }
     }
 

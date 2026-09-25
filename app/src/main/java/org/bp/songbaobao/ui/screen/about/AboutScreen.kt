@@ -30,6 +30,13 @@ import org.bp.songbaobao.ui.theme.*
 fun AboutScreen() {
     val changelog = remember {
         listOf(
+            "1.5.0" to (
+                "2026-09-25" to listOf(
+                    "统一 APK 签名：本机构建与 GitHub 构建改用同一份签名密钥",
+                    "从本版起升级不再需要先卸载旧版本，直接覆盖安装即可，数据不会丢失",
+                    "注意：从 v1.4.0 及更早版本首次升级时，因签名变更仍需卸载一次（请先导出备份）"
+                )
+            ),
             "1.4.0" to (
                 "2026-09-25" to listOf(
                     "服药提醒按钮与统计文案由「已服」改为「打卡」",
