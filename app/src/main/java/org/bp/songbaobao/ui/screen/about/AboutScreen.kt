@@ -30,6 +30,14 @@ import org.bp.songbaobao.ui.theme.*
 fun AboutScreen(onLegal: () -> Unit = {}) {
     val changelog = remember {
         listOf(
+            "1.6.1" to (
+                "2026-09-26" to listOf(
+                    "修复「购买」按钮跳转报错：原美团买药链接已失效（404），改用有效地址",
+                    "购药改为可选渠道：美团买药 / 京东健康 / 淘宝 / 阿里健康",
+                    "新增「复制药名」兜底：渠道打不开时可粘贴到常用购药 App 搜索",
+                    "打开前预检可处理的应用，避免渠道不可用时闪退"
+                )
+            ),
             "1.6.0" to (
                 "2026-09-25" to listOf(
                     "启用正式发布签名（密钥不再入库，改由 GitHub Secrets 注入）",

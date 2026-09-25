@@ -1,6 +1,8 @@
 package org.bp.songbaobao.ui.screen.med
 
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -159,13 +161,10 @@ fun MedScreen(
                             Spacer(Modifier.height(6.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 TextButton(onClick = { onEdit(med.id) }) { Text("编辑", color = Gold) }
-                                TextButton(onClick = {
-                                    org.bp.songbaobao.util.MedPurchase.buy(
-                                        context = context,
-                                        name = med.name,
-                                        dosage = med.dosage
-                                    )
-                                }) { Text("购买", color = SuccessGreen) }
+                                var showBuy by remember { mutableStateOf(false) }
+                                TextButton(onClick = { showBuy = true }) {
+                                    Text("购买", color = SuccessGreen)
+                                }
                                 var confirm by remember { mutableStateOf(false) }
                                 TextButton(onClick = { confirm = true }) { Text("删除", color = DangerRed) }
                                 if (confirm) {
@@ -173,6 +172,42 @@ fun MedScreen(
                                         text = "删除「${med.name}」及其服药记录？",
                                         onDismiss = { confirm = false },
                                         onConfirm = { vm.delete(med); confirm = false }
+                                    )
+                                }
+                                if (showBuy) {
+                                    BuyChannelDialog(
+                                        name = med.name,
+                                        dosage = med.dosage,
+                                        onDismiss = { showBuy = false },
+                                        onPick = { channel ->
+                                            val ok = org.bp.songbaobao.util.MedPurchase.buyWith(
+                                                context = context,
+                                                channel = channel,
+                                                name = med.name,
+                                                dosage = med.dosage
+                                            )
+                                            if (!ok) {
+                                                Toast.makeText(
+                                                    context,
+                                                    "无法打开${channel.name}，已复制药名，可粘贴到该 App 搜索",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                                org.bp.songbaobao.util.MedPurchase.copyName(
+                                                    context,
+                                                    org.bp.songbaobao.util.MedPurchase
+                                                        .keywordOf(med.name, med.dosage)
+                                                )
+                                            }
+                                            showBuy = false
+                                        },
+                                        onCopy = {
+                                            org.bp.songbaobao.util.MedPurchase.copyName(
+                                                context,
+                                                org.bp.songbaobao.util.MedPurchase
+                                                    .keywordOf(med.name, med.dosage)
+                                            )
+                                            showBuy = false
+                                        }
                                     )
                                 }
                             }
@@ -214,4 +249,78 @@ fun MedScreen(
         }
       }
     }
+}
+
+/**
+ * 购买渠道选择。
+ *
+ * 之所以让用户选而不是直接跳转：电商 H5 地址会随时间失效，
+ * 单一渠道失效就等于功能不可用。这里给出多个渠道，
+ * 并提供「复制药名」兜底——即使全部渠道都打不开，
+ * 用户也能粘贴药名到自己常用的购药 App 里搜索。
+ */
+@Composable
+private fun BuyChannelDialog(
+    name: String,
+    dosage: String,
+    onDismiss: () -> Unit,
+    onPick: (org.bp.songbaobao.util.MedPurchase.Channel) -> Unit,
+    onCopy: () -> Unit
+) {
+    val keyword = org.bp.songbaobao.util.MedPurchase.keywordOf(name, dosage)
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = NavySoft,
+        title = {
+            Text(
+                "购买「$name」",
+                fontWeight = FontWeight.Bold,
+                color = GoldBright
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    "将按「$keyword」搜索，请选择购药渠道：",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextDim
+                )
+                Spacer(Modifier.height(10.dp))
+                org.bp.songbaobao.util.MedPurchase.channels.forEach { ch ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onPick(ch) }
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Text(
+                            ch.name,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = GoldBright
+                        )
+                        Text(
+                            ch.desc,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TextDim
+                        )
+                    }
+                    HorizontalDivider(color = DividerGold.copy(alpha = 0.25f))
+                }
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    "若渠道打不开或链接失效，可复制药名后自行在购药 App 中搜索。",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextDim
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onCopy) { Text("复制药名", color = Gold) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("取消", color = TextDim) }
+        }
+    )
 }
