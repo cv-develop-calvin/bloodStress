@@ -142,7 +142,7 @@ fun BpTrendScreen(
                 StatCard(
                     label = "近 7 天服药",
                     value = state.adherence?.rate?.let { "$it%" } ?: "--",
-                    sub = "已服 ${state.adherence?.taken ?: 0} / ${state.adherence?.expected ?: 0}",
+                    sub = "打卡 ${state.adherence?.taken ?: 0} / ${state.adherence?.expected ?: 0}",
                     valueColor = if ((state.adherence?.rate ?: 100) < 80)
                         org.bp.songbaobao.ui.theme.DangerRed
                     else org.bp.songbaobao.ui.theme.SuccessGreen,

@@ -59,7 +59,7 @@ fun MedScreen(
                     Text("近 7 天依从性", style = MaterialTheme.typography.labelMedium, color = TextDim)
                 }
                 Text(
-                    "已服 ${state.adherence?.taken ?: 0} / ${state.adherence?.expected ?: 0} 次",
+                    "打卡 ${state.adherence?.taken ?: 0} / ${state.adherence?.expected ?: 0} 次",
                     style = MaterialTheme.typography.bodySmall,
                     color = TextDim
                 )
@@ -89,7 +89,7 @@ fun MedScreen(
                                     )
                                 }
                                 GoldButton(onClick = { vm.toggleTaken(p.med.id, p.slot) }) {
-                                    Text("已服")
+                                    Text("打卡")
                                 }
                             }
                         }

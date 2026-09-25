@@ -46,7 +46,7 @@ class MedRepository @Inject constructor(private val dao: MedDao) {
     // ---------------- 打卡 ----------------
     fun recentLogs(limit: Int = 20): Flow<List<MedLogWithMed>> = dao.recentLogs(limit)
 
-    /** 打卡；若该时段已打卡则撤销，返回 true 表示变为「已服」 */
+    /** 打卡；若该时段已打卡则撤销，返回 true 表示变为「已打卡」 */
     suspend fun toggleTaken(medId: Long, slot: String, date: String = todayStr()): Boolean {
         val existing = dao.logsOfDate(date).firstOrNull { it.medId == medId && it.time == slot }
         if (existing != null) {

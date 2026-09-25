@@ -30,6 +30,14 @@ import org.bp.songbaobao.ui.theme.*
 fun AboutScreen() {
     val changelog = remember {
         listOf(
+            "1.4.0" to (
+                "2026-09-25" to listOf(
+                    "服药提醒按钮与统计文案由「已服」改为「打卡」",
+                    "修复药品「购买」按钮跳转报错：改为系统统一处理，装了美团会自动唤起，否则用浏览器打开美团买药搜索页",
+                    "补上 Android 11+ 包可见性声明，并避免无应用可处理时崩溃",
+                    "关于页的版本号改为随构建自动显示，不再固定写死"
+                )
+            ),
             "1.3.0" to (
                 "2026-09-24" to listOf(
                     "新增数据导出与导入备份，换机或重装可一键恢复",
@@ -78,8 +86,11 @@ fun AboutScreen() {
             Spacer(Modifier.height(8.dp))
             Text("宋宝宝的记录", style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold, color = GoldBright)
-            Text("版本 1.2.0（build 10200）",
-                style = MaterialTheme.typography.bodySmall, color = TextDim)
+            Text(
+                "版本 ${org.bp.songbaobao.BuildConfig.VERSION_NAME}" +
+                    "（build ${org.bp.songbaobao.BuildConfig.VERSION_CODE}）",
+                style = MaterialTheme.typography.bodySmall, color = TextDim
+            )
             Spacer(Modifier.height(4.dp))
             AssistChip(onClick = {}, label = { Text("正式版") })
         }
@@ -90,8 +101,8 @@ fun AboutScreen() {
         PanelCard {
             Column(modifier = Modifier.padding(12.dp)) {
                 SectionTitle("构建信息")
-                InfoRow("版本号", "1.2.0")
-                InfoRow("版本代码", "10200")
+                InfoRow("版本号", org.bp.songbaobao.BuildConfig.VERSION_NAME)
+                InfoRow("版本代码", "${org.bp.songbaobao.BuildConfig.VERSION_CODE}")
                 InfoRow("最低系统", "Android 8.0（API 26）")
                 InfoRow("目标系统", "Android 14（API 34）")
                 InfoRow("架构", "arm64-v8a")
@@ -137,7 +148,9 @@ fun AboutScreen() {
                 SectionTitle("更新日志")
                 changelog.forEach { (version, pair) ->
                     val (date, items) = pair
-                    var expanded by remember { mutableStateOf(version == "1.2.0") }
+                    var expanded by remember {
+                        mutableStateOf(version == org.bp.songbaobao.BuildConfig.VERSION_NAME)
+                    }
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically

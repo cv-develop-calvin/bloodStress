@@ -3,18 +3,21 @@ package org.bp.songbaobao.util
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 
 /**
  * 药品购买跳转。
  *
- * 优先唤起「美团」App，失败则退回浏览器打开美团买药搜索页，
- * 再失败则用系统搜索。全程不依赖任何 SDK，仅用 Intent。
+ * 用统一的外链 Intent 交给系统处理：
+ * - 手机上装了美团且美团接管了该域名，会直接唤起美团原生页面；
+ * - 否则由浏览器打开美团买药搜索页；
+ * - 都没有时用系统搜索兜底。
+ *
+ * 全程不依赖任何 SDK，也不强制指定包名打开网页（美团内打开外链 H5 容易出现错误页）。
  */
 object MedPurchase {
-
-    /** 美团包名 */
-    private const val MEITUAN_PKG = "com.sankuai.meituan"
 
     /** 美团买药网页版搜索地址 */
     private fun webUrl(keyword: String): String =
@@ -27,7 +30,7 @@ object MedPurchase {
      */
     fun buy(context: Context, name: String, dosage: String = "") {
         if (name.isBlank()) {
-            Toast.makeText(context, "药品名称为空", Toast.LENGTH_SHORT).show()
+            toast(context, "请先填写药品名称")
             return
         }
         val keyword = buildString {
@@ -35,50 +38,61 @@ object MedPurchase {
             if (dosage.isNotBlank()) append(' ').append(dosage.trim())
         }
 
-        // 1) 尝试直接唤起美团 App
-        if (openApp(context, keyword)) return
-        // 2) 退回浏览器打开美团买药搜索页
-        if (openWeb(context, keyword)) return
-        // 3) 最后兜底：系统搜索
-        openSystemSearch(context, keyword)
+        // 1) 交给系统：美团若能接管该链接会被直接唤起，否则由浏览器打开
+        if (openExternal(context, keyword)) return
+        // 2) 最后兜底：系统搜索
+        if (openSystemSearch(context, keyword)) return
+        toast(context, "未找到可用的购买渠道，请手动搜索「$keyword」")
     }
 
-    private fun openApp(context: Context, keyword: String): Boolean {
-        return try {
-            // 先用包名做一次可见性判断，避免直接抛异常
-            context.packageManager.getLaunchIntentForPackage(MEITUAN_PKG) ?: return false
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(webUrl(keyword))).apply {
-                setPackage(MEITUAN_PKG)
+    private fun openExternal(context: Context, keyword: String): Boolean {
+        val uri = Uri.parse(webUrl(keyword))
+        val pm = context.packageManager
+        // 先带 CATEGORY_BROWSABLE（规范做法），不行再退回不带类别的纯 VIEW
+        val candidates = listOf(
+            Intent(Intent.ACTION_VIEW, uri).apply {
+                addCategory(Intent.CATEGORY_BROWSABLE)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            },
+            Intent(Intent.ACTION_VIEW, uri).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
-            context.startActivity(intent)
-            true
-        } catch (_: Throwable) {
-            false
-        }
-    }
-
-    private fun openWeb(context: Context, keyword: String): Boolean {
-        return try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(webUrl(keyword))).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+        for (intent in candidates) {
+            val resolved = intent.resolveActivity(pm) != null
+            if (!resolved) continue
+            return try {
+                context.startActivity(intent)
+                true
+            } catch (_: Throwable) {
+                false
             }
-            context.startActivity(intent)
-            true
-        } catch (_: Throwable) {
-            false
         }
+        return false
     }
 
-    private fun openSystemSearch(context: Context, keyword: String) {
-        try {
+    private fun openSystemSearch(context: Context, keyword: String): Boolean {
+        return try {
             val intent = Intent(Intent.ACTION_WEB_SEARCH).apply {
                 putExtra("query", "$keyword 购买")
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
+            if (intent.resolveActivity(context.packageManager) == null) return false
             context.startActivity(intent)
+            true
         } catch (_: Throwable) {
-            Toast.makeText(context, "未找到可用的购买渠道", Toast.LENGTH_SHORT).show()
+            false
+        }
+    }
+
+    /** Toast 必须在主线程弹出，这里统一兜底切换线程 */
+    private fun toast(context: Context, msg: String) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+        } else {
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
