@@ -28,6 +28,9 @@ sealed class Screen(
     // 导航时可能把 "edit" 当作 id 解析而抛异常。
     object NoteDetail : Screen("note/detail/{id}", "留言详情", "", false)
 
+    // 合规文档（应用商店上架必需，从关于页进入）
+    object Legal : Screen("legal", "隐私与协议", "", false)
+
     companion object {
         // 必须用 get() 而非 val 初始化：
         // companion object 的静态初始化早于外部类各 object 单例的初始化，

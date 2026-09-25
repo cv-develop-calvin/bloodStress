@@ -6,6 +6,43 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+// ---------------------------------------------------------------------------
+// 发布签名配置
+//
+// 密钥文件本身绝不入库（.gitignore 已排除 *.jks），取值优先级：
+//   1) 环境变量 SB_KEYSTORE_FILE —— CI 用，由 GitHub Secret 解码后落地
+//   2) 项目根 songbaobao.jks   —— 本机用（同样不入库）
+//   3) ~/.android/songbaobao.jks —— 备选位置
+// 密码同理：环境变量优先，其次 local.properties（也不入库）。
+//
+// 本机与 CI 必须指向同一份密钥，否则覆盖安装会报
+// INSTALL_FAILED_UPDATE_INCOMPATIBLE（用户升级前只能先卸载）。
+// ---------------------------------------------------------------------------
+// 直接按行解析 local.properties（Kotlin DSL 顶层作用域下 java.util.Properties
+// 会被脚本隐式接收者遮蔽，故不采用 Properties 类）
+fun localProp(key: String): String? {
+    val f = rootProject.file("local.properties")
+    if (!f.exists()) return null
+    return f.readLines()
+        .firstOrNull { it.trim().startsWith("$key=") }
+        ?.substringAfter("=")
+        ?.trim()
+        ?.takeIf { it.isNotBlank() }
+}
+
+fun signingValue(envKey: String, propKey: String, fallback: String = ""): String =
+    System.getenv(envKey)?.takeIf { it.isNotBlank() }
+        ?: localProp(propKey)
+        ?: fallback
+
+val releaseKeystore: File? =
+    System.getenv("SB_KEYSTORE_FILE")?.takeIf { it.isNotBlank() }?.let { file(it) }
+        ?: listOf(
+            rootProject.file("songbaobao.jks"),
+            rootProject.file("app/songbaobao.jks"),
+            file("${System.getProperty("user.home")}/.android/songbaobao.jks")
+        ).firstOrNull { it.exists() }
+
 android {
     namespace = "org.bp.songbaobao"
     compileSdk = 34
@@ -14,37 +51,43 @@ android {
         applicationId = "org.bp.songbaobao"
         minSdk = 26          // ML Kit 与通知渠道要求，覆盖绝大多数在用机型
         targetSdk = 34
-        versionCode = 10500
-        versionName = "1.5.0"
+        versionCode = 10600
+        versionName = "1.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // 统一签名：本机与 CI 必须共用同一份 keystore。
-    // 否则每次构建都会换新签名，覆盖安装时报 INSTALL_FAILED_UPDATE_INCOMPATIBLE，
-    // 用户升级前只能先卸载旧版（数据也会跟着没了）。
-    // 后续若要换成私有密钥，把三个值改用 secrets / 环境变量覆盖即可，无需再改脚本
-    // （变量名：SB_STORE_PASSWORD、SB_KEY_ALIAS、SB_KEY_PASSWORD）。
     signingConfigs {
-        create("unified") {
-            storeFile = file("signing/debug.keystore")
-            storePassword = System.getenv("SB_STORE_PASSWORD") ?: "android"
-            keyAlias = System.getenv("SB_KEY_ALIAS") ?: "androiddebugkey"
-            keyPassword = System.getenv("SB_KEY_PASSWORD") ?: "android"
+        create("releaseSign") {
+            val ks = releaseKeystore
+            if (ks != null) {
+                storeFile = ks
+                storePassword = signingValue("SB_STORE_PASSWORD", "sb.storePassword")
+                keyAlias = signingValue("SB_KEY_ALIAS", "sb.keyAlias", "songbaobao")
+                keyPassword = signingValue("SB_KEY_PASSWORD", "sb.keyPassword")
+            } else {
+                logger.warn(
+                    "未找到发布密钥（songbaobao.jks），将退回默认 debug 签名。" +
+                        "正式分发前请配置 SB_KEYSTORE_FILE / SB_STORE_PASSWORD / SB_KEY_PASSWORD。"
+                )
+            }
         }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("unified")
+            // 商业版开启混淆与资源缩减：减小体积并增加逆向难度
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("releaseSign")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        // debug 也用同一份签名：保证本地调试包与正式包可互相覆盖安装
         debug {
-            signingConfig = signingConfigs.getByName("unified")
+            signingConfig = signingConfigs.getByName("releaseSign")
         }
     }
 

@@ -29,6 +29,16 @@ out/
 # "AppDatabase could not be resolved"。
 /data/
 
+# 发布签名密钥：严禁入库，CI 通过 GitHub Secrets 注入
+*.jks
+*.keystore
+*.p12
+/app/signing/
+/songbaobao.jks.base64.txt
+
+# 本地签名密码（local.properties 本身已忽略）
+# sb.storePassword / sb.keyAlias / sb.keyPassword 写在这里
+
 # 发布产物
 /app/release
 *.apk

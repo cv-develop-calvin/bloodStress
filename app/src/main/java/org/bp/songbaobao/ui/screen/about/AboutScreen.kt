@@ -27,9 +27,18 @@ import org.bp.songbaobao.ui.theme.*
 
 /** 关于与版本：构建信息 + 更新日志 */
 @Composable
-fun AboutScreen() {
+fun AboutScreen(onLegal: () -> Unit = {}) {
     val changelog = remember {
         listOf(
+            "1.6.0" to (
+                "2026-09-25" to listOf(
+                    "启用正式发布签名（密钥不再入库，改由 GitHub Secrets 注入）",
+                    "新增隐私政策、用户协议与合规清单页（关于页可进入）",
+                    "首次启动需阅读并同意隐私政策后方可使用",
+                    "新增个人信息收集清单、系统权限清单、第三方 SDK 与开源许可声明",
+                    "注意：签名更换为正式密钥，从更早版本升级时需先卸载旧版（请先导出备份）"
+                )
+            ),
             "1.5.0" to (
                 "2026-09-25" to listOf(
                     "统一 APK 签名：本机构建与 GitHub 构建改用同一份签名密钥",
@@ -183,6 +192,29 @@ fun AboutScreen() {
                     }
                     HorizontalDivider(color = DividerGold.copy(alpha = 0.35f))
                 }
+            }
+        }
+
+        // 合规文档入口：隐私政策、用户协议、个人信息与权限清单、第三方与开源许可
+        PanelCard {
+            Column(modifier = Modifier.padding(12.dp)) {
+                SectionTitle("隐私与合规")
+                TextButton(onClick = onLegal) {
+                    Text("查看隐私政策 / 用户协议 / 合规清单", color = Gold)
+                }
+                val acceptedAt = org.bp.songbaobao.util.PrivacyConsent
+                    .acceptedAt(androidx.compose.ui.platform.LocalContext.current)
+                Text(
+                    if (acceptedAt != null) "你已于 $acceptedAt 同意隐私政策" else "尚未同意隐私政策",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextDim
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "不同意也可随时查看本文档。如需撤回同意，请在系统设置中清除应用数据。",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextDim
+                )
             }
         }
 

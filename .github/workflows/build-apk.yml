@@ -41,6 +41,28 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # 发布签名密钥不入库，从 GitHub Secrets 解码后再构建。
+      # 未配置时不会中断构建，但会退回 debug 签名（届时必须先卸载旧版才能装）。
+      - name: Restore signing keystore
+        env:
+          SB_KEYSTORE_BASE64: ${{ secrets.SB_KEYSTORE_BASE64 }}
+          SB_STORE_PASSWORD: ${{ secrets.SB_STORE_PASSWORD }}
+          SB_KEY_ALIAS: ${{ secrets.SB_KEY_ALIAS }}
+          SB_KEY_PASSWORD: ${{ secrets.SB_KEY_PASSWORD }}
+        run: |
+          if [ -z "$SB_KEYSTORE_BASE64" ] || [ -z "$SB_STORE_PASSWORD" ]; then
+            echo "::warning::未配置签名密钥 Secret，本次将退回 debug 签名（升级需先卸载旧版）"
+            echo "SIGNING_ENABLED=false" >> "$GITHUB_ENV"
+          else
+            echo "$SB_KEYSTORE_BASE64" | base64 -d > "$GITHUB_WORKSPACE/songbaobao.jks"
+            echo "SB_KEYSTORE_FILE=$GITHUB_WORKSPACE/songbaobao.jks" >> "$GITHUB_ENV"
+            echo "SB_STORE_PASSWORD=$SB_STORE_PASSWORD" >> "$GITHUB_ENV"
+            echo "SB_KEY_ALIAS=${SB_KEY_ALIAS:-songbaobao}" >> "$GITHUB_ENV"
+            echo "SB_KEY_PASSWORD=$SB_KEY_PASSWORD" >> "$GITHUB_ENV"
+            echo "SIGNING_ENABLED=true" >> "$GITHUB_ENV"
+            echo "签名密钥已恢复"
+          fi
+
       - name: Setup Gradle with cache
         uses: gradle/actions/setup-gradle@v4
 
@@ -155,6 +177,6 @@ jobs:
             数据保存在手机本地，卸载会一并删除。
 
             **升级说明**
-            从 ${{ steps.ver.outputs.version }} 起 APK 签名固定不变，后续升级直接覆盖安装即可，
-            不需要卸载旧版本，数据也不会丢失。
-            若从 v1.4.0 及更早版本升级，因签名变更请先卸载旧版再安装（建议先导出备份）。
+            APK 签名固定不变（${{ env.SIGNING_ENABLED == 'true' && '已启用正式签名' || '本次未启用正式签名，需先卸载旧版' }}），
+            后续升级直接覆盖安装即可，不需要卸载旧版本，数据也不会丢失。
+            若从 v1.5.0 及更早版本升级，因签名更换为正式发布密钥，需先卸载旧版再安装（建议先导出备份）。
