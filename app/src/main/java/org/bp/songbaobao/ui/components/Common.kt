@@ -30,7 +30,7 @@ import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.theme.*
 import org.bp.songbaobao.util.UserPrefs
 
-/** 金色渐变主按钮（对应 Web 版 btn-gold） */
+/** 主按钮（强调色随「系统色系」动态变化，默认金色的圣衣色） */
 @Composable
 fun GoldButton(
     onClick: () -> Unit,
@@ -38,16 +38,17 @@ fun GoldButton(
     enabled: Boolean = true,
     content: @Composable RowScope.() -> Unit
 ) {
+    val scheme = MaterialTheme.colorScheme
     Button(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Gold,
-            contentColor = Navy,
-            disabledContainerColor = Gold.copy(alpha = 0.4f),
-            disabledContentColor = Navy.copy(alpha = 0.6f)
+            containerColor = scheme.primary,
+            contentColor = scheme.onPrimary,
+            disabledContainerColor = scheme.primary.copy(alpha = 0.4f),
+            disabledContentColor = scheme.onPrimary.copy(alpha = 0.6f)
         ),
         content = content
     )
@@ -78,7 +79,10 @@ fun HeroCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = androidx.compose.foundation.BorderStroke(1.dp, GoldBright.copy(alpha = 0.6f))
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+        )
     ) {
         Box(
             modifier = Modifier
@@ -100,7 +104,7 @@ fun StatCard(
     label: String,
     value: String,
     sub: String,
-    valueColor: Color = GoldBright,
+    valueColor: Color = MaterialTheme.colorScheme.primary,
     modifier: Modifier = Modifier
 ) {
     PanelCard(modifier = modifier) {
@@ -122,16 +126,17 @@ fun StatCard(
 /** 星座角标 */
 @Composable
 fun ZodiacChip(text: String) {
+    val accent = MaterialTheme.colorScheme.primary
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(50))
-            .background(Gold.copy(alpha = 0.14f))
+            .background(accent.copy(alpha = 0.14f))
             .padding(horizontal = 10.dp, vertical = 3.dp)
     ) {
         Text(
             text,
             style = MaterialTheme.typography.labelSmall,
-            color = Gold,
+            color = accent,
             letterSpacing = 2.sp
         )
     }
@@ -163,7 +168,7 @@ fun SectionTitle(text: String, action: (@Composable () -> Unit)? = null) {
             text,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = GoldBright,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.weight(1f)
         )
         action?.invoke()
@@ -206,13 +211,13 @@ fun AppTextField(
         supportingText = supportingText?.let { { Text(it) } },
         shape = RoundedCornerShape(10.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Gold,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = PanelBorder,
             focusedTextColor = TextMain,
             unfocusedTextColor = TextMain,
-            focusedLabelColor = Gold,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
             unfocusedLabelColor = TextDim,
-            cursorColor = Gold,
+            cursorColor = MaterialTheme.colorScheme.primary,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent
         )

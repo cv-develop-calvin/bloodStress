@@ -35,7 +35,7 @@ fun LabScreen(
     Scaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
         floatingActionButton = {
-            FloatingActionButton(onClick = onAdd, containerColor = Gold, contentColor = Navy) {
+            FloatingActionButton(onClick = onAdd, containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary) {
                 Text("＋", fontWeight = FontWeight.Bold)
             }
         }
@@ -55,7 +55,7 @@ fun LabScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 stringResource(R.string.lab_scan_title),
-                                fontWeight = FontWeight.Bold, color = GoldBright
+                                fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary
                             )
                             Text(
                                 stringResource(R.string.lab_scan_tip),
@@ -67,7 +67,7 @@ fun LabScreen(
                                 stringResource(
                                     if (showScan) R.string.about_collapse else R.string.about_expand
                                 ),
-                                color = Gold
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -176,8 +176,8 @@ fun LabScreen(
                                     onClick = { vm.setSeriesItem(item.key) },
                                     label = { Text(stringResource(item.labelRes), style = MaterialTheme.typography.labelSmall) },
                                     colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = Gold.copy(alpha = 0.25f),
-                                        selectedLabelColor = GoldBright,
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+                                        selectedLabelColor = MaterialTheme.colorScheme.primary,
                                         containerColor = androidx.compose.ui.graphics.Color.Transparent,
                                         labelColor = TextDim
                                     )
@@ -200,8 +200,8 @@ fun LabScreen(
                                     onClick = { vm.setDays(v) },
                                     label = { Text(label, style = MaterialTheme.typography.labelSmall) },
                                     colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = Gold.copy(alpha = 0.2f),
-                                        selectedLabelColor = GoldBright,
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                        selectedLabelColor = MaterialTheme.colorScheme.primary,
                                         containerColor = androidx.compose.ui.graphics.Color.Transparent,
                                         labelColor = TextDim
                                     )
@@ -260,7 +260,7 @@ fun LabScreen(
                                 })
                             }
                             TextButton(onClick = { onEdit(r.id) }) {
-                                Text(stringResource(R.string.action_edit), color = Gold)
+                                Text(stringResource(R.string.action_edit), color = MaterialTheme.colorScheme.primary)
                             }
                         }
                     }

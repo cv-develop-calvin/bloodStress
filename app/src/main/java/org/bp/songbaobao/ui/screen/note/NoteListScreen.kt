@@ -35,7 +35,7 @@ fun NoteListScreen(
     Scaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
         floatingActionButton = {
-            FloatingActionButton(onClick = onAdd, containerColor = Gold, contentColor = Navy) {
+            FloatingActionButton(onClick = onAdd, containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary) {
                 Text("＋", fontWeight = FontWeight.Bold)
             }
         }
@@ -54,12 +54,12 @@ fun NoteListScreen(
                     Spacer(Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text("${state.stats.notes}", style = MaterialTheme.typography.displaySmall,
-                            fontWeight = FontWeight.Bold, color = GoldBright)
+                            fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(4.dp))
                         Text(stringResource(R.string.note_count_notes), color = TextDim)
                         Spacer(Modifier.width(12.dp))
                         Text("${state.stats.photos}", style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold, color = GoldBright)
+                            fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(4.dp))
                         Text(stringResource(R.string.note_count_photos), color = TextDim)
                     }
@@ -108,8 +108,8 @@ fun NoteListScreen(
                                 onClick = { vm.setTag(if (tag == name) "" else name) },
                                 label = { Text("#$name $count", style = MaterialTheme.typography.labelSmall) },
                                 colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = Gold.copy(alpha = 0.25f),
-                                    selectedLabelColor = GoldBright,
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+                                    selectedLabelColor = MaterialTheme.colorScheme.primary,
                                     containerColor = androidx.compose.ui.graphics.Color.Transparent,
                                     labelColor = TextDim
                                 )
@@ -178,7 +178,7 @@ fun NoteListScreen(
                                 Text(
                                     n.title.ifBlank { stringResource(R.string.note_untitled) },
                                     fontWeight = FontWeight.Bold,
-                                    color = GoldBright,
+                                    color = MaterialTheme.colorScheme.primary,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.weight(1f)
@@ -234,7 +234,7 @@ fun NoteListScreen(
 
                             Spacer(Modifier.height(4.dp))
                             TextButton(onClick = { onOpen(n.id) }) {
-                                Text(stringResource(R.string.note_view_detail), color = Gold)
+                                Text(stringResource(R.string.note_view_detail), color = MaterialTheme.colorScheme.primary)
                             }
                         }
                     }

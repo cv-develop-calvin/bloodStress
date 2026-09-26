@@ -166,10 +166,10 @@ fun AboutScreen(
                     stringResource(R.string.settings_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = GoldBright,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
                 )
-                Text("›", color = Gold, style = MaterialTheme.typography.titleMedium)
+                Text("›", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleMedium)
             }
         }
 
@@ -266,7 +266,7 @@ fun AboutScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("v$version", fontWeight = FontWeight.Bold, color = GoldBright)
+                                Text("v$version", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                                 Spacer(Modifier.width(6.dp))
                                 Text(date, style = MaterialTheme.typography.labelSmall, color = TextDim)
                             }
@@ -279,11 +279,11 @@ fun AboutScreen(
                             }
                         }
                         TextButton(onClick = { expanded = !expanded }) {
-                            Text(if (expanded) stringResource(R.string.about_collapse) else stringResource(R.string.about_expand), color = Gold,
+                            Text(if (expanded) stringResource(R.string.about_collapse) else stringResource(R.string.about_expand), color = MaterialTheme.colorScheme.primary,
                                 style = MaterialTheme.typography.labelSmall)
                         }
                     }
-                    HorizontalDivider(color = DividerGold.copy(alpha = 0.35f))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f))
                 }
             }
         }
@@ -293,7 +293,7 @@ fun AboutScreen(
             Column(modifier = Modifier.padding(12.dp)) {
                 SectionTitle(stringResource(R.string.about_privacy_compliance))
                 TextButton(onClick = onLegal) {
-                    Text(stringResource(R.string.about_view_legal), color = Gold)
+                    Text(stringResource(R.string.about_view_legal), color = MaterialTheme.colorScheme.primary)
                 }
                 val acceptedAt = org.bp.songbaobao.util.PrivacyConsent
                     .acceptedAt(androidx.compose.ui.platform.LocalContext.current)
@@ -333,7 +333,7 @@ fun AboutScreen(
                         TextButton(onClick = {
                             CrashHandler.clear(context)
                             crash = null
-                        }) { Text(stringResource(R.string.about_clear), color = Gold) }
+                        }) { Text(stringResource(R.string.about_clear), color = MaterialTheme.colorScheme.primary) }
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -468,7 +468,7 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                     OutlinedButton(
                         onClick = { vm.downloadUpdate(context) },
                         enabled = !u.downloading
-                    ) { Text(if (u.downloading) stringResource(R.string.update_downloading) else stringResource(R.string.update_download), color = Gold) }
+                    ) { Text(if (u.downloading) stringResource(R.string.update_downloading) else stringResource(R.string.update_download), color = MaterialTheme.colorScheme.primary) }
                 }
 
                 Spacer(Modifier.weight(1f))
@@ -483,12 +483,12 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                 Spacer(Modifier.height(10.dp))
                 val p = u.progress
                 if (p == null) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = Gold)
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primary)
                 } else {
                     LinearProgressIndicator(
                         progress = { p },
                         modifier = Modifier.fillMaxWidth(),
-                        color = Gold
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
@@ -504,7 +504,7 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Gold.copy(alpha = 0.10f), RoundedCornerShape(10.dp))
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.10f), RoundedCornerShape(10.dp))
                         .padding(10.dp)
                 ) {
                     Column {
@@ -512,7 +512,7 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                             stringResource(R.string.update_found, info.versionName, info.versionCode),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
-                            color = GoldBright
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Spacer(Modifier.height(3.dp))
                         Text(
@@ -548,7 +548,7 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                 if (u.downloadedApk != null) {
                     Spacer(Modifier.height(6.dp))
                     TextButton(onClick = { vm.openInstallSettings(context) }) {
-                        Text(stringResource(R.string.update_install_blocked), color = Gold)
+                        Text(stringResource(R.string.update_install_blocked), color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -608,7 +608,7 @@ private fun BackupCard(vm: AboutViewModel = hiltViewModel()) {
                         importLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
                     },
                     enabled = !state.busy
-                ) { Text(stringResource(R.string.backup_import), color = Gold) }
+                ) { Text(stringResource(R.string.backup_import), color = MaterialTheme.colorScheme.primary) }
             }
 
             if (state.busy) {
@@ -617,7 +617,7 @@ private fun BackupCard(vm: AboutViewModel = hiltViewModel()) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(16.dp),
                         strokeWidth = 2.dp,
-                        color = Gold
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(stringResource(R.string.common_processing), style = MaterialTheme.typography.bodySmall, color = TextDim)

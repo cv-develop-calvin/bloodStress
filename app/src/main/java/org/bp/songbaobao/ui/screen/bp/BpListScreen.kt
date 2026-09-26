@@ -37,8 +37,8 @@ fun BpListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAdd,
-                containerColor = Gold,
-                contentColor = Navy
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) { Text("＋", fontWeight = FontWeight.Bold) }
         }
     ) { padding ->
@@ -51,13 +51,13 @@ fun BpListScreen(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) {
-                    Text("‹", style = MaterialTheme.typography.headlineMedium, color = Gold)
+                    Text("‹", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
                 }
                 Text(
                     stringResource(R.string.title_all_records),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = GoldBright,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
                 )
                 Text(stringResource(R.string.bp_records_count, records.size), style = MaterialTheme.typography.labelMedium, color = TextDim)
@@ -119,7 +119,7 @@ fun BpListScreen(
                                 }
                                 Column(horizontalAlignment = Alignment.End) {
                                     TextButton(onClick = { onEdit(r.id) }) {
-                                        Text(stringResource(R.string.action_edit), color = Gold)
+                                        Text(stringResource(R.string.action_edit), color = MaterialTheme.colorScheme.primary)
                                     }
                                     var confirm by remember { mutableStateOf(false) }
                                     TextButton(onClick = { confirm = true }) {
@@ -152,7 +152,7 @@ fun ConfirmDelete(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.confirm_delete_title), color = GoldBright) },
+        title = { Text(stringResource(R.string.confirm_delete_title), color = MaterialTheme.colorScheme.primary) },
         text = { Text(text, color = TextMain) },
         confirmButton = {
             TextButton(onClick = onConfirm) { Text(stringResource(R.string.action_delete), color = DangerRed) }
@@ -161,7 +161,7 @@ fun ConfirmDelete(
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel), color = TextDim) }
         },
         containerColor = NavySoft,
-        titleContentColor = GoldBright,
+        titleContentColor = MaterialTheme.colorScheme.primary,
         textContentColor = TextMain
     )
 }

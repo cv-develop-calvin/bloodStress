@@ -130,7 +130,7 @@ fun MedScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(med.name, style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold, color = GoldBright)
+                                        fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                                     Text(
                                         "${med.dosage}${med.unit} · ${med.freq}",
                                         style = MaterialTheme.typography.bodySmall, color = TextDim
@@ -152,8 +152,8 @@ fun MedScreen(
                                     checked = med.active,
                                     onCheckedChange = { vm.setActive(med, it) },
                                     colors = SwitchDefaults.colors(
-                                        checkedThumbColor = Gold,
-                                        checkedTrackColor = GoldDeep
+                                        checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                        checkedTrackColor = MaterialTheme.colorScheme.primary
                                     )
                                 )
                             }
@@ -181,7 +181,7 @@ fun MedScreen(
                             Spacer(Modifier.height(6.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 TextButton(onClick = { onEdit(med.id) }) {
-                                    Text(stringResource(R.string.action_edit), color = Gold)
+                                    Text(stringResource(R.string.action_edit), color = MaterialTheme.colorScheme.primary)
                                 }
                                 var showBuy by remember { mutableStateOf(false) }
                                 TextButton(onClick = { showBuy = true }) {
@@ -306,7 +306,7 @@ private fun BuyChannelDialog(
             Text(
                 stringResource(R.string.buy_title, name),
                 fontWeight = FontWeight.Bold,
-                color = GoldBright
+                color = MaterialTheme.colorScheme.primary
             )
         },
         text = {
@@ -328,7 +328,7 @@ private fun BuyChannelDialog(
                             stringResource(ch.nameRes),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = GoldBright
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             stringResource(ch.descRes),
@@ -348,7 +348,7 @@ private fun BuyChannelDialog(
         },
         confirmButton = {
             TextButton(onClick = onCopy) {
-                Text(stringResource(R.string.action_copy), color = Gold)
+                Text(stringResource(R.string.action_copy), color = MaterialTheme.colorScheme.primary)
             }
         },
         dismissButton = {

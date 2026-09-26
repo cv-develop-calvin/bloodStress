@@ -35,8 +35,8 @@ fun GlucoseListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAdd,
-                containerColor = Gold,
-                contentColor = Navy
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) { Text("＋", fontWeight = FontWeight.Bold) }
         }
     ) { padding ->
@@ -66,14 +66,14 @@ fun GlucoseListScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 stringResource(R.string.glucose_scan_entry_title),
-                                fontWeight = FontWeight.Bold, color = GoldBright
+                                fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary
                             )
                             Text(
                                 stringResource(R.string.glucose_scan_entry_sub),
                                 style = MaterialTheme.typography.bodySmall, color = TextDim
                             )
                         }
-                        Text("›", color = Gold, style = MaterialTheme.typography.titleLarge)
+                        Text("›", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleLarge)
                     }
                 }
 
@@ -86,7 +86,7 @@ fun GlucoseListScreen(
                     if (state.latest == null) {
                         Text(
                             stringResource(R.string.glucose_no_data),
-                            color = GoldBright,
+                            color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(Modifier.height(8.dp))
@@ -215,7 +215,7 @@ fun GlucoseListScreen(
                             TextButton(onClick = onList) {
                                 Text(
                                     stringResource(R.string.glucose_view_all),
-                                    color = Gold
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -249,11 +249,11 @@ fun GlucoseListScreen(
                                         Text(
                                             "›",
                                             style = MaterialTheme.typography.titleLarge,
-                                            color = Gold
+                                            color = MaterialTheme.colorScheme.primary
                                         )
                                     }
                                 }
-                                HorizontalDivider(color = DividerGold.copy(alpha = 0.4f))
+                                HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
                             }
                         }
                     }
@@ -272,7 +272,7 @@ private fun AppHeader() {
         Text(
             stringResource(R.string.glucose_app_subtitle),
             style = MaterialTheme.typography.labelSmall,
-            color = Gold.copy(alpha = 0.75f),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f),
             letterSpacing = 3.sp
         )
     }
@@ -298,8 +298,8 @@ private fun RangeChips(days: Int?, onSelect: (Int?) -> Unit) {
                 onClick = { onSelect(value) },
                 label = { Text(label) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = Gold.copy(alpha = 0.25f),
-                    selectedLabelColor = GoldBright,
+                    selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
+                    selectedLabelColor = MaterialTheme.colorScheme.primary,
                     containerColor = Color.Transparent,
                     labelColor = TextDim
                 ),

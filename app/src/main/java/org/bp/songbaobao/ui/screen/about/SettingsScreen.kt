@@ -103,10 +103,10 @@ fun SettingsScreen(onBack: () -> Unit) {
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(if (selected) Gold.copy(alpha = 0.16f) else PanelBg)
+                                    .background(if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.16f) else PanelBg)
                                     .border(
                                         1.dp,
-                                        if (selected) Gold else PanelBorder,
+                                        if (selected) MaterialTheme.colorScheme.primary else PanelBorder,
                                         RoundedCornerShape(12.dp)
                                     )
                                     .clickable { UserPrefs.setThemeScheme(preset.id) }

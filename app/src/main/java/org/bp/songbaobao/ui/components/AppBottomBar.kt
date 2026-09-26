@@ -54,7 +54,7 @@ fun AppBottomBar(
                             style = MaterialTheme.typography.labelSmall,
                             fontSize = 10.sp,
                             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (selected) GoldBright else TextDim,
+                            color = if (selected) MaterialTheme.colorScheme.primary else TextDim,
                             maxLines = 1
                         )
                     }
