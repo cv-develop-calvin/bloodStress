@@ -45,7 +45,8 @@ hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.re
 
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
-mlkit-text-chinese = { module = "com.google.android.gms:play-services-mlkit-text-recognition-chinese", version.ref = "mlkitTextChinese" }
+# 内置打包版：中文识别模型直接打进 APK，无需运行时从 Google 下载（国内网络必需）
+mlkit-text-chinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "mlkitTextChinese" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

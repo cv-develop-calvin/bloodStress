@@ -10,9 +10,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.Tasks
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +23,7 @@ import org.bp.songbaobao.data.repository.GlucoseRepository
 import org.bp.songbaobao.domain.GlucoseOcrParser
 import org.bp.songbaobao.domain.GlucoseOcrResultHolder
 import org.bp.songbaobao.domain.OcrImagePreprocessor
+import org.bp.songbaobao.domain.TextRecognizerProvider
 import org.bp.songbaobao.ui.components.GlucoseContext
 import org.bp.songbaobao.util.nowStamp
 import org.bp.songbaobao.util.nowTimeStr
@@ -110,16 +108,12 @@ class GlucoseViewModel @Inject constructor(
             try {
                 val result = withContext(Dispatchers.IO) {
                     val image = OcrImagePreprocessor.preprocess(appContext, uri)
-                    val vision = Tasks.await(
-                        TextRecognition
-                            .getClient(ChineseTextRecognizerOptions.Builder().build())
-                            .process(image)
-                    )
+                    val vision = Tasks.await(TextRecognizerProvider.client.process(image))
                     GlucoseOcrParser.parse(vision.text)
                 }
                 _ocrState.value = OcrState.Done(result)
             } catch (e: Exception) {
-                _ocrState.value = OcrState.Error(e.message ?: appContext.getString(R.string.ocr_fail))
+                _ocrState.value = OcrState.Error(TextRecognizerProvider.errorMessage(e))
             }
         }
     }

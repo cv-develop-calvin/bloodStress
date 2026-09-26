@@ -6,9 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.Tasks
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +17,9 @@ import org.bp.songbaobao.data.repository.LabPoint
 import org.bp.songbaobao.data.repository.LabRepository
 import org.bp.songbaobao.R
 import org.bp.songbaobao.domain.CbcItems
+import org.bp.songbaobao.domain.OcrImagePreprocessor
 import org.bp.songbaobao.domain.OcrParser
+import org.bp.songbaobao.domain.TextRecognizerProvider
 import org.bp.songbaobao.util.nowStamp
 import org.bp.songbaobao.util.nowTimeStr
 import org.bp.songbaobao.util.todayStr
@@ -87,17 +86,15 @@ class LabViewModel @Inject constructor(
         viewModelScope.launch {
             _ocrState.value = OcrState.Loading
             runCatching {
-                val image = InputImage.fromFilePath(appContext, uri)
-                val recognizer = TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
+                val image = OcrImagePreprocessor.preprocess(appContext, uri)
                 val result = withContext(Dispatchers.IO) {
-                    Tasks.await(recognizer.process(image))
+                    Tasks.await(TextRecognizerProvider.client.process(image))
                 }
                 val text = result.text
                 val values = OcrParser.parse(text)
                 _ocrState.value = OcrState.Done(text, values)
-                recognizer.close()
             }.onFailure { e ->
-                _ocrState.value = OcrState.Error(e.message ?: appContext.getString(R.string.ocr_fail))
+                _ocrState.value = OcrState.Error(TextRecognizerProvider.errorMessage(e))
             }
         }
     }
