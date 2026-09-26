@@ -49,6 +49,7 @@ import org.bp.songbaobao.ui.screen.about.SettingsScreen
 import org.bp.songbaobao.ui.screen.bp.BpAddScreen
 import org.bp.songbaobao.ui.screen.bp.BpEditScreen
 import org.bp.songbaobao.ui.screen.bp.BpListScreen
+import org.bp.songbaobao.ui.screen.bp.BpScanScreen
 import org.bp.songbaobao.ui.screen.bp.BpTrendScreen
 import org.bp.songbaobao.ui.screen.lab.LabAddScreen
 import org.bp.songbaobao.ui.screen.lab.LabEditScreen
@@ -282,7 +283,8 @@ fun AppNavHost(
                 BpTrendScreen(
                     onAdd = { navController.navigate(Screen.BpAdd.route) },
                     onEdit = { id -> navController.navigate(Screen.bpEdit(id)) },
-                    onList = { navController.navigate(Screen.BpList.route) }
+                    onList = { navController.navigate(Screen.BpList.route) },
+                    onScan = { navController.navigate(Screen.BpScan.route) }
                 )
             }
             composable(Screen.BpAdd.route) {
@@ -299,6 +301,12 @@ fun AppNavHost(
                     onBack = { navController.popBackStack() },
                     onAdd = { navController.navigate(Screen.BpAdd.route) },
                     onEdit = { id -> navController.navigate(Screen.bpEdit(id)) }
+                )
+            }
+            composable(Screen.BpScan.route) {
+                BpScanScreen(
+                    onBack = { navController.popBackStack() },
+                    onConfirm = { navController.navigate(Screen.BpAdd.route) }
                 )
             }
 

@@ -14,20 +14,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import org.bp.songbaobao.R
+import org.bp.songbaobao.data.local.entity.BpRecord
+import org.bp.songbaobao.domain.BpOcrResultHolder
 import org.bp.songbaobao.ui.components.classifyBp
 import org.bp.songbaobao.ui.components.AppTextField
 import org.bp.songbaobao.ui.components.GoldButton
 import org.bp.songbaobao.ui.components.PanelCard
 import org.bp.songbaobao.ui.theme.*
+import org.bp.songbaobao.util.nowStamp
+import org.bp.songbaobao.util.nowTimeStr
+import org.bp.songbaobao.util.todayStr
 
-/** 血压录入/编辑：新增与编辑共用，id==null 表示新增 */
+/** 血压录入/编辑：新增与编辑共用，id==null 表示新增。
+ *  @param prefill 由「拍照识别」页识别后带入的初始值（仅新增页使用）。 */
 @Composable
 fun BpFormScreen(
     recordId: Long? = null,
     onBack: () -> Unit,
+    prefill: BpRecord? = null,
     vm: BpViewModel = hiltViewModel()
 ) {
-    var record by remember { mutableStateOf(vm.emptyRecord()) }
+    var record by remember(prefill) { mutableStateOf(prefill ?: vm.emptyRecord()) }
     var loaded by remember { mutableStateOf(recordId == null) }
     var error by remember { mutableStateOf<String?>(null) }
 
@@ -64,6 +71,22 @@ fun BpFormScreen(
             color = GoldBright
         )
         Spacer(Modifier.height(12.dp))
+
+        // 由照片识别带入时的核对提示
+        if (prefill != null) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = ChartPulse.copy(alpha = 0.12f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    stringResource(R.string.bp_ocr_prefill),
+                    modifier = Modifier.padding(12.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextMain
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+        }
 
         // 实时分级预览
         PanelCard {
@@ -182,5 +205,17 @@ private fun validate(
 
 @Composable
 fun BpAddScreen(onBack: () -> Unit) {
-    BpFormScreen(recordId = null, onBack = onBack)
+    val prefill = remember { BpOcrResultHolder.consume() }
+    val rec = prefill?.let {
+        BpRecord(
+            date = todayStr(),
+            time = nowTimeStr(),
+            systolic = it.systolic ?: 0,
+            diastolic = it.diastolic ?: 0,
+            pulse = it.pulse,
+            note = "",
+            createdAt = nowStamp()
+        )
+    }
+    BpFormScreen(recordId = null, onBack = onBack, prefill = rec)
 }

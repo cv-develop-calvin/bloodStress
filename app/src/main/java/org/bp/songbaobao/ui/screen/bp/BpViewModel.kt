@@ -2,16 +2,29 @@
 
 package org.bp.songbaobao.ui.screen.bp
 
+import android.content.Context
+import android.net.Uri
+import androidx.core.content.FileProvider
+import java.io.File
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.tasks.Tasks
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.bp.songbaobao.R
 import org.bp.songbaobao.data.local.dao.BpStats
 import org.bp.songbaobao.data.local.entity.BpRecord
 import org.bp.songbaobao.data.repository.*
+import org.bp.songbaobao.domain.BpOcrParser
 import org.bp.songbaobao.util.nowStamp
 import org.bp.songbaobao.util.nowTimeStr
 import org.bp.songbaobao.util.todayStr
@@ -34,6 +47,7 @@ data class BpUiState(
 class BpViewModel @Inject constructor(
     private val bpRepo: BpRepository,
     private val medRepo: MedRepository,
+    @ApplicationContext private val appContext: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -124,4 +138,44 @@ class BpViewModel @Inject constructor(
             onDone()
         }
     }
+
+    // ---------------- 拍照识别（OCR） ----------------
+    sealed class OcrState {
+        object Idle : OcrState()
+        object Loading : OcrState()
+        data class Error(val message: String) : OcrState()
+        data class Done(val result: BpOcrParser.BpOcrResult) : OcrState()
+    }
+
+    private val _ocrState = MutableStateFlow<OcrState>(OcrState.Idle)
+    val ocrState: StateFlow<OcrState> = _ocrState.asStateFlow()
+
+    /** 识别照片中的血压计读数，解析为收缩压/舒张压/心率。 */
+    fun recognize(uri: Uri) {
+        _ocrState.value = OcrState.Loading
+        viewModelScope.launch {
+            try {
+                val result = withContext(Dispatchers.IO) {
+                    val image = InputImage.fromFilePath(appContext, uri)
+                    val vision = Tasks.await(
+                        TextRecognition
+                            .getClient(ChineseTextRecognizerOptions.Builder().build())
+                            .process(image)
+                    )
+                    BpOcrParser.parse(vision.text)
+                }
+                _ocrState.value = OcrState.Done(result)
+            } catch (e: Exception) {
+                _ocrState.value = OcrState.Error(e.message ?: appContext.getString(R.string.ocr_fail))
+            }
+        }
+    }
+
+    fun resetOcr() { _ocrState.value = OcrState.Idle }
+
+    /** 创建供系统相机写入的临时图片 Uri（与 Lab 一致，使用 FileProvider）。 */
+    fun createTempImageUri(): Uri? = try {
+        val file = File(appContext.cacheDir, "bp_${nowStamp()}.jpg")
+        FileProvider.getUriForFile(appContext, "${appContext.packageName}.fileprovider", file)
+    } catch (e: Exception) { null }
 }

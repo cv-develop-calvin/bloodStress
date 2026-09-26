@@ -37,6 +37,11 @@ fun AboutScreen(
 ) {
     val changelog = remember {
         listOf(
+            "1.8.2" to (
+                "2026-09-26" to listOf(
+                    "新增血压/心率「拍照识别录入」：血压页-拍照识别录入，拍血压计照片自动读取收缩压/舒张压/心率并预填表单"
+                )
+            ),
             "1.8.1" to (
                 "2026-09-26" to listOf(
                     "修复应用内「检查更新」下载安装包失败：GitHub Releases 的 302 跳转改为手动跟随，并新增整体超时与失败重试"

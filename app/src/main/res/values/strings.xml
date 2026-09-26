@@ -124,6 +124,12 @@
 
     <string name="bp_form_title_add">添加血压记录</string>
     <string name="bp_form_title_edit">编辑血压记录</string>
+    <string name="bp_scan_title">📷 拍照识别血压心率</string>
+    <string name="bp_scan_tip">把血压计屏幕拍清楚：平放、光线均匀、正对镜头、避免反光。本机会自动识别收缩压/舒张压/心率，识别后请核对再保存。</string>
+    <string name="bp_scan_found">已识别到 %1$d 项数值</string>
+    <string name="bp_scan_entry_title">拍照识别录入</string>
+    <string name="bp_scan_entry_sub">拍一张血压计照片，自动读取血压和心率</string>
+    <string name="bp_ocr_prefill">已从照片识别到血压/心率，请核对数值后保存。</string>
     <string name="bp_form_current">本次测量</string>
     <string name="bp_form_date">测量日期</string>
     <string name="bp_form_time">测量时间</string>

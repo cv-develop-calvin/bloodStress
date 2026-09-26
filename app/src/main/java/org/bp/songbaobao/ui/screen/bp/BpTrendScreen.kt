@@ -2,6 +2,7 @@ package org.bp.songbaobao.ui.screen.bp
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -26,12 +27,14 @@ import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.components.classifyBp
 import org.bp.songbaobao.ui.components.*
 import org.bp.songbaobao.ui.components.BpLineChart
+import org.bp.songbaobao.ui.theme.*
 
 @Composable
 fun BpTrendScreen(
     onAdd: () -> Unit,
     onEdit: (Long) -> Unit,
     onList: () -> Unit,
+    onScan: () -> Unit = {},
     vm: BpViewModel = hiltViewModel()
 ) {
     val state by vm.uiState.collectAsState()
@@ -59,6 +62,33 @@ fun BpTrendScreen(
 
             // 应用标题
             AppHeader()
+
+            Spacer(Modifier.height(12.dp))
+
+            // 拍照识别录入入口
+            Card(
+                modifier = Modifier.fillMaxWidth().clickable { onScan() },
+                colors = CardDefaults.cardColors(containerColor = ChartPulse.copy(alpha = 0.14f))
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("📷", style = MaterialTheme.typography.titleLarge)
+                    Spacer(Modifier.width(10.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.bp_scan_entry_title),
+                            fontWeight = FontWeight.Bold, color = GoldBright
+                        )
+                        Text(
+                            stringResource(R.string.bp_scan_entry_sub),
+                            style = MaterialTheme.typography.bodySmall, color = TextDim
+                        )
+                    }
+                    Text("›", color = Gold, style = MaterialTheme.typography.titleLarge)
+                }
+            }
 
             Spacer(Modifier.height(12.dp))
 

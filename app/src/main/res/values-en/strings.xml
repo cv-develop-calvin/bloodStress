@@ -124,6 +124,12 @@
 
     <string name="bp_form_title_add">Add blood pressure</string>
     <string name="bp_form_title_edit">Edit blood pressure</string>
+    <string name="bp_scan_title">📷 Scan blood pressure &amp; heart rate</string>
+    <string name="bp_scan_tip">Photo the monitor clearly: lay flat, even light, face the lens, avoid glare. We auto-read systolic/diastolic/pulse; please verify before saving.</string>
+    <string name="bp_scan_found">Recognized %1$d value(s)</string>
+    <string name="bp_scan_entry_title">Scan to add</string>
+    <string name="bp_scan_entry_sub">Take a photo of the monitor to read BP &amp; pulse</string>
+    <string name="bp_ocr_prefill">Auto-recognized from photo. Please verify before saving.</string>
     <string name="bp_form_current">This reading</string>
     <string name="bp_form_date">Date</string>
     <string name="bp_form_time">Time</string>

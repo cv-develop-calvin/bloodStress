@@ -25,6 +25,7 @@ sealed class Screen(
     object BpAdd : Screen("bp/add", R.string.title_add_bp, "", false)
     object BpEdit : Screen("bp/edit/{id}", R.string.title_edit_bp, "", false)
     object BpList : Screen("bp/list", R.string.title_all_records, "", false)
+    object BpScan : Screen("bp/scan", R.string.bp_scan_title, "", false)
     object MedAdd : Screen("med/add", R.string.title_add_med, "", false)
     object MedEdit : Screen("med/edit/{id}", R.string.title_edit_med, "", false)
     object LabAdd : Screen("lab/add", R.string.title_add_lab, "", false)
