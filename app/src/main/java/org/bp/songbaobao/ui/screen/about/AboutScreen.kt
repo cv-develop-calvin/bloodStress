@@ -390,22 +390,25 @@ private fun LanguageCard() {
     var selected by remember { mutableStateOf(LanguageManager.getSavedLanguage(context)) }
 
     val onSelect: (String) -> Unit = { code ->
-        if (selected == code) return@onSelect
-        selected = code
-        LanguageManager.setLanguage(context, code)
-        // 语言在 attachBaseContext 注入，只有重建 Activity
-        // 才会重新走资源解析，因此这里必须触发重建。
-        // LocalContext 通常是 ContextWrapper，需递归解包找 Activity。
-        val activity = findActivity(context)
-        if (activity != null) {
-            activity.recreate()
-        } else {
-            context.startActivity(
-                android.content.Intent(
-                    context,
-                    org.bp.songbaobao.MainActivity::class.java
-                ).addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            )
+        // 用正向判断代替带标签 return：lambda 赋值给变量时没有隐式标签，
+        // return@onSelect 无法解析会直接编译失败。
+        if (selected != code) {
+            selected = code
+            LanguageManager.setLanguage(context, code)
+            // 语言在 attachBaseContext 注入，只有重建 Activity
+            // 才会重新走资源解析，因此这里必须触发重建。
+            // LocalContext 通常是 ContextWrapper，需递归解包找 Activity。
+            val activity = findActivity(context)
+            if (activity != null) {
+                activity.recreate()
+            } else {
+                context.startActivity(
+                    android.content.Intent(
+                        context,
+                        org.bp.songbaobao.MainActivity::class.java
+                    ).addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                )
+            }
         }
     }
 
