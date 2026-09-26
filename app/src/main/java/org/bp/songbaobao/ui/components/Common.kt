@@ -2,19 +2,19 @@ package org.bp.songbaobao.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.foundation.focusable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -171,8 +171,8 @@ fun SectionTitle(text: String, action: (@Composable () -> Unit)? = null) {
 }
 
 /** 通用文本输入。
- * @param clearOnFocus 为 true 时，首次聚焦（点击）该栏位会清空其内容，
- *   方便直接重新输入（含默认 0 也会清空）。再次聚焦已清空则不重复触发。 */
+ * @param clearOnFocus 为 true 时，每次聚焦（点击）该栏位都会清空其内容，
+ *   方便直接重新输入（含默认 0 也会清空）。 */
 @Composable
 fun AppTextField(
     value: String,
@@ -185,20 +185,22 @@ fun AppTextField(
     supportingText: String? = null,
     clearOnFocus: Boolean = false
 ) {
-    var hadFocus by remember { mutableStateOf(false) }
+    // 用 InteractionSource 观察聚焦，并在聚焦完成后的协程里清空，
+    // 避免“聚焦过渡帧内改 value 被 TextField 内部状态吞掉”导致点击不生效。
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+    LaunchedEffect(isFocused) {
+        if (isFocused && clearOnFocus) {
+            onValueChange("")
+        }
+    }
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
         placeholder = placeholder?.let { { Text(it, color = TextDim) } },
-        modifier = modifier
-            .fillMaxWidth()
-            .onFocusChanged { state ->
-                if (state.isFocused && !hadFocus && clearOnFocus) {
-                    onValueChange("")
-                }
-                hadFocus = state.isFocused
-            },
+        modifier = modifier.fillMaxWidth(),
+        interactionSource = interactionSource,
         singleLine = singleLine,
         isError = isError,
         supportingText = supportingText?.let { { Text(it) } },
