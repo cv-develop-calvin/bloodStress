@@ -293,7 +293,7 @@
     <string name="legal_updated">Last updated: 2026-09-25 (policy version v%1$d)</string>
 
     <string name="legal_privacy_1">1. What we collect\nThis is a local-first health journal. Blood pressure, medication, blood test, note and photo data you enter stay in a local database on your device and are never uploaded automatically.\nHealth data is sensitive personal information under the Personal Information Protection Law. We use it only for recording, reminders, trends and the export you trigger yourself — never for advertising, profiling or unrelated purposes.</string>
-    <string name="legal_privacy_2">2. Network usage\nThe app accesses the network only in these three cases, all triggered by you:\n1. Update check: requests the latest version from GitHub (api.github.com), carrying no personal data;\n2. Download: fetches the APK installer from GitHub;\n3. Purchase: opens a pharmacy search page, passing only the medication name.\nOtherwise the app never connects in the background, and there is no implicit usage reporting.</string>
+    <string name="legal_privacy_2">2. Network usage\nThe app accesses the network only in these cases, all triggered by you:\n1. Update check: requests the latest version from GitHub (api.github.com), carrying no personal data;\n2. Download: fetches the APK installer from GitHub;\n3. Purchase: opens a pharmacy search page, passing only the medication name.\n4. Membership: opens a third-party payment page (PayPal) to complete the payment.\nOtherwise the app never connects in the background, and there is no implicit usage reporting.</string>
     <string name="legal_privacy_3">3. Crash logs\nOn a crash, the stack trace is written to a local file in the app\'s private directory (crash/last_crash.txt), containing time, device model, OS version, app version and the exception stack.\nIt is never uploaded automatically. It leaves the device only when you tap "Share log" on the Version page, and you can read it before sending.</string>
     <string name="legal_privacy_4">4. Permissions\nNotifications: to deliver medication reminders on time;\nExact alarms: to fire reminders at the scheduled time;\nBoot completed: to re-register reminders after a reboot, without collecting data;\nInternet: only for update check, APK download and pharmacy links;\nInstall packages: to install a new version you downloaded;\nMedia images: only to read a photo you picked for lab scanning or notes.\nPermissions are requested at the point of use. You can revoke any of them in system settings; the related feature stops working, the rest still do.</string>
     <string name="legal_privacy_5">5. Storage and security\nData lives in a local database (SQLite/Room) and the app\'s private directory, which other apps cannot read directly.\nImportant: uninstalling erases all local data. Please export a JSON backup regularly to cloud storage or a computer, so you can restore after switching or reinstalling.</string>
@@ -304,7 +304,7 @@
     <string name="legal_terms_1">1. Service\nThe app provides blood pressure recording and trends, medication reminders and check-in, blood test records with photo recognition, notes, backup and restore, and in-app updates.</string>
     <string name="legal_terms_2">2. Important disclaimer\nThis app is a recording tool, not a medical device, and provides no diagnosis, treatment advice or prescription.\nBlood pressure categories, reference ranges and hints shown come from public sources, are for reference only, and cannot replace a licensed physician\'s judgement.\nAny medication change must follow your doctor\'s advice; consequences of self-judgement are borne by you.\nIf you feel unwell, seek medical care promptly — do not act on this app\'s statistics alone.</string>
     <string name="legal_terms_3">3. Data responsibility\nYour data is stored on your device; you are responsible for its safety and backups.\nWe recommend exporting regularly. We cannot restore data lost through device loss, damage, uninstall or system cleanup.</string>
-    <string name="legal_terms_4">4. Accounts and payment\nThis version has no account system: no registration, no login, no fees.</string>
+    <string name="legal_terms_4">4. Accounts and payment\nThis version has no account system: no registration, no login. The app offers an optional membership subscription to unlock premium features and support development. Payments are processed by a third-party platform (PayPal); prices are shown in the app. Cancellation and refunds follow PayPal and applicable law. Core recording features remain free forever.</string>
     <string name="legal_terms_5">5. Intellectual property\nThe app\'s design, copy and code belong to the developer.\nThird-party open-source components follow their own licenses; see the Compliance tab.</string>
     <string name="legal_terms_6">6. Changes and termination\nWe may change or pause features for product, compliance or technical reasons and will try to notify you in the app.\nIf you use the app in violation of law or these terms, we may terminate the service.</string>
     <string name="legal_terms_7">7. Disputes\nThese terms are governed by the laws of the People\'s Republic of China. Disputes should be settled amicably; failing that, they go to the competent court where the developer is located.</string>
@@ -622,5 +622,44 @@
     <string name="glucose_ref_low">Low line 3.9</string>
     <string name="glucose_ref_high">High line 11.1</string>
     <string name="glucose_value">Glucose</string>
+
+    <!-- membership -->
+    <string name="nav_membership">Membership</string>
+    <string name="sub_chip">MEMBERSHIP</string>
+    <string name="sub_title">Upgrade to unlock more</string>
+    <string name="sub_subtitle">SAINT · HEALTH RECORD</string>
+    <string name="sub_benefits_title">Member benefits</string>
+    <string name="sub_benefit_1">Advanced trends &amp; reports</string>
+    <string name="sub_benefit_2">Share membership across devices</string>
+    <string name="sub_benefit_3">Priority support</string>
+    <string name="sub_benefit_4">Early access to new features</string>
+    <string name="sub_note">This version ships core features; member perks roll out gradually.</string>
+    <string name="sub_select_hint">Choose a membership plan</string>
+    <string name="sub_recommended">Popular</string>
+    <string name="sub_plan_monthly">Monthly</string>
+    <string name="sub_plan_monthly_price">¥18</string>
+    <string name="sub_plan_monthly_period">/ month</string>
+    <string name="sub_plan_quarterly">Quarterly</string>
+    <string name="sub_plan_quarterly_price">¥48</string>
+    <string name="sub_plan_quarterly_period">/ quarter</string>
+    <string name="sub_plan_yearly">Yearly</string>
+    <string name="sub_plan_yearly_price">¥168</string>
+    <string name="sub_plan_yearly_period">/ year</string>
+    <string name="sub_plan_lifetime">Lifetime</string>
+    <string name="sub_plan_lifetime_price">¥498</string>
+    <string name="sub_plan_lifetime_period">one-time</string>
+    <string name="sub_pay_paypal">Pay with PayPal</string>
+    <string name="sub_paypal_hint">Opens the secure PayPal page. Completing payment activates your subscription.</string>
+    <string name="sub_paid">I have paid</string>
+    <string name="sub_open_failed">Could not open PayPal. Link copied — paste it in a browser.</string>
+    <string name="sub_copied">Payment link copied</string>
+    <string name="sub_status_title">My subscription</string>
+    <string name="sub_status_active">Membership active</string>
+    <string name="sub_status_inactive">No membership yet</string>
+    <string name="sub_expiry">Expires: %1$s</string>
+    <string name="sub_plan_label">Plan: %1$s</string>
+    <string name="sub_forever">Forever</string>
+    <string name="sub_cancel">Cancel membership mark</string>
+    <string name="sub_please_select">Please choose a plan first</string>
 
 </resources>

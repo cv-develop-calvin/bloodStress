@@ -128,7 +128,8 @@ class GlucoseViewModel @Inject constructor(
 
     /** 创建供系统相机写入的临时图片 Uri（与血压一致，使用 FileProvider）。 */
     fun createTempImageUri(): Uri? = try {
-        val file = File(appContext.cacheDir, "glucose_${nowStamp()}.jpg")
+        val dir = File(appContext.cacheDir, "images").apply { mkdirs() }
+        val file = File(dir, "glucose_${nowStamp()}.jpg")
         FileProvider.getUriForFile(appContext, "${appContext.packageName}.fileprovider", file)
     } catch (e: Exception) { null }
 }

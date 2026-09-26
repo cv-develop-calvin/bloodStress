@@ -2,7 +2,6 @@ package org.bp.songbaobao.ui.screen.lab
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,6 +22,7 @@ import org.bp.songbaobao.domain.CbcItems
 import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.GoldButton
 import org.bp.songbaobao.ui.components.PanelCard
+import org.bp.songbaobao.ui.components.rememberGalleryPicker
 import org.bp.songbaobao.ui.theme.*
 
 /**
@@ -38,13 +38,9 @@ fun LabScanScreen(
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val ocrState by vm.ocrState.collectAsState()
 
-    val pickMedia = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        if (uri != null) {
-            imageUri = uri
-            vm.recognize(uri)
-        }
+    val openGallery = rememberGalleryPicker { uri ->
+        imageUri = uri
+        vm.recognize(uri)
     }
 
     val takePhoto = rememberLauncherForActivityResult(
@@ -105,11 +101,7 @@ fun LabScanScreen(
             ) { Text(stringResource(R.string.scan_open_camera)) }
 
             OutlinedButton(
-                onClick = {
-                    pickMedia.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                },
+                onClick = openGallery,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDim)
             ) { Text(stringResource(R.string.scan_from_gallery)) }

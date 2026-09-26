@@ -2,7 +2,6 @@ package org.bp.songbaobao.ui.screen.glucose
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -41,9 +40,10 @@ fun GlucoseScanScreen(
     // 识别结果里可被用户改写的值（初始来自 OCR 解析）
     var valueText by remember { mutableStateOf("") }
 
-    val pickMedia = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri -> if (uri != null) { imageUri = uri; vm.recognize(uri) } }
+    val openGallery = rememberGalleryPicker { uri ->
+        imageUri = uri
+        vm.recognize(uri)
+    }
 
     val takePhoto = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
@@ -105,11 +105,7 @@ fun GlucoseScanScreen(
                 ) { Text(stringResource(R.string.scan_open_camera)) }
 
                 OutlinedButton(
-                    onClick = {
-                        pickMedia.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    },
+                    onClick = openGallery,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDim)
                 ) { Text(stringResource(R.string.scan_from_gallery)) }

@@ -2,7 +2,6 @@ package org.bp.songbaobao.ui.screen.note
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -27,6 +26,7 @@ import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.AppTextField
 import org.bp.songbaobao.ui.components.GoldButton
 import org.bp.songbaobao.ui.components.PanelCard
+import org.bp.songbaobao.ui.components.rememberGalleryPickerMultiple
 import org.bp.songbaobao.ui.theme.*
 import org.bp.songbaobao.util.normalizeTags
 import org.bp.songbaobao.util.nowStamp
@@ -57,9 +57,7 @@ fun NoteFormScreen(
     }
 
     // 图片选择（多选）
-    val pickMultiple = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickMultipleVisualMedia(9)
-    ) { uris -> pickedUris = pickedUris + uris }
+    val openGallery = rememberGalleryPickerMultiple(9) { uris -> pickedUris = pickedUris + uris }
 
     // 拍照
     val takePhoto = rememberLauncherForActivityResult(
@@ -169,11 +167,7 @@ fun NoteFormScreen(
                         modifier = Modifier.weight(1f)
                     ) { Text(stringResource(R.string.note_take_photo)) }
                     OutlinedButton(
-                        onClick = {
-                            pickMultiple.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                            )
-                        },
+                        onClick = openGallery,
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDim)
                     ) { Text(stringResource(R.string.note_gallery)) }

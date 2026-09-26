@@ -21,6 +21,9 @@ sealed class Screen(
     object Notes : Screen("notes", R.string.nav_notes, "📖")
     object About : Screen("about", R.string.nav_about, "⚙️")
 
+    // 会员订阅（独立底栏标签）
+    object Subscription : Screen("subscription", R.string.nav_membership, "👑")
+
     // 血糖（与血压并列的健康监测功能）
     object Glucose : Screen("glucose", R.string.nav_glucose, "🍬")
     object GlucoseList : Screen("glucose/all", R.string.title_all_records, "", false)
@@ -56,7 +59,7 @@ sealed class Screen(
         // 若写成 val barItems = listOf(Bp, ...)，此处 Bp 等仍为 null，
         // 会导致底部栏渲染时 NPE 崩溃。
         val barItems: List<Screen>
-            get() = listOf(Bp, Glucose, Med, Lab, Notes, About)
+            get() = listOf(Bp, Glucose, Med, Lab, Notes, Subscription, About)
 
         fun bpEdit(id: Long) = "bp/edit/$id"
         fun medEdit(id: Long) = "med/edit/$id"

@@ -293,7 +293,7 @@
     <string name="legal_updated">本文档最后更新：2026-09-25（政策版本 v%1$d）</string>
 
     <string name="legal_privacy_1">一、我们收集哪些信息\n本应用是一款本地优先的健康记录工具。你录入的血压、用药、血常规、笔记与照片，默认全部保存在手机本地数据库中，不会自动上传到任何服务器。\n需要特别说明：健康医疗数据属于《个人信息保护法》所称的敏感个人信息。我们仅在为你提供记录、提醒、趋势统计与你主动发起的导出功能时使用这些数据，不会用于广告、画像或任何无关用途。</string>
-    <string name="legal_privacy_2">二、网络访问的用途\n应用仅在以下三种由你主动触发的场景访问网络：\n1. 检查更新：请求 GitHub（api.github.com）获取最新版本号，不携带任何个人数据；\n2. 下载安装：从 GitHub 下载 APK 安装包；\n3. 药品购买：跳转购药平台搜索页，跳转时仅传递药品名称用于搜索。\n除此之外，应用不会在后台静默联网，也不存在任何隐式的用户行为上报。</string>
+    <string name="legal_privacy_2">二、网络访问的用途\n应用仅在以下由你主动触发的场景访问网络：\n1. 检查更新：请求 GitHub（api.github.com）获取最新版本号，不携带任何个人数据；\n2. 下载安装：从 GitHub 下载 APK 安装包；\n3. 药品购买：跳转购药平台搜索页，跳转时仅传递药品名称用于搜索；\n4. 会员订阅：跳转第三方支付平台（PayPal）完成付款。\n除此之外，应用不会在后台静默联网，也不存在任何隐式的用户行为上报。</string>
     <string name="legal_privacy_3">三、崩溃日志\n应用发生闪退时，会把崩溃堆栈写入手机本地文件（应用私有目录 crash/last_crash.txt），内容包含时间、设备型号、系统版本、应用版本与异常堆栈。\n该日志不会自动上传。只有你在「版本」页主动点击「分享日志」时才会发出，发出前你可以看到完整内容。</string>
     <string name="legal_privacy_4">四、系统权限说明\n通知权限：用于到点推送服药提醒；\n精确闹钟：用于在设定的服药时间准时触发提醒；\n开机启动：用于手机重启后重新注册提醒，不会因此收集数据；\n网络访问：仅用于上述检查更新、下载安装包与药品购买跳转；\n安装未知应用：用于安装你主动下载的新版本；\n相册读取：仅在识别化验单、为笔记添加照片时由你选择图片后使用。\n所有权限都在用到时才申请，你可以随时在系统设置中关闭，关闭后相应功能不可用，但不影响其余功能。</string>
     <string name="legal_privacy_5">五、数据存储与安全\n数据保存在手机本地数据库（SQLite/Room）与应用私有目录中，其他应用无法直接读取。\n重要提醒：卸载应用会一并删除全部本地数据。请定期使用「数据备份」导出 JSON 文件，保存到网盘或电脑，以便换机、重装或误删后恢复。</string>
@@ -304,7 +304,7 @@
     <string name="legal_terms_1">一、服务内容\n本应用为你提供血压记录与趋势、用药提醒与打卡、血常规记录与拍照识别、笔记留言、数据备份与恢复，以及应用内版本升级等工具功能。</string>
     <string name="legal_terms_2">二、重要免责声明\n本应用是健康记录工具，不是医疗器械，不提供诊断、治疗建议或医嘱。\n应用中展示的血压分级、指标参考范围与提示均来自公开资料，仅供参考，不能替代执业医师的判断。\n任何用药、停药、剂量调整都必须遵医嘱。因自行判断造成的后果由用户自行承担。\n如出现身体不适，请及时就医，不要依据本应用的统计结果自行处理。</string>
     <string name="legal_terms_3">三、数据责任\n你的数据保存在本机，你对自己数据的安全与备份负责。\n我们建议你定期导出备份。因设备丢失、损坏、卸载应用或系统清理导致的数据丢失，我们无法代为恢复。</string>
-    <string name="legal_terms_4">四、账号与付费\n当前版本不提供账号体系，无需注册登录，也不收取任何费用。</string>
+    <string name="legal_terms_4">四、账号与付费\n当前版本不提供账号体系，无需注册登录。应用提供可选的会员订阅（用于解锁高级功能与支持开发），订阅款项通过第三方支付平台（PayPal）收取，价格以应用内页面显示为准；退订与退款遵循 PayPal 及相关法律法规。基础记录功能永久免费。</string>
     <string name="legal_terms_5">五、知识产权\n本应用的界面设计、文案与代码归开发者所有。\n应用内使用的第三方开源组件遵循各自的开源许可证，详见「合规清单」页。</string>
     <string name="legal_terms_6">六、服务变更与终止\n我们可能出于功能调整、合规要求或技术原因变更、暂停部分功能，并将尽力在应用内告知。\n若你违反法律法规或本协议使用本应用，我们有权终止向您提供服务。</string>
     <string name="legal_terms_7">七、争议解决\n本协议适用中华人民共和国法律。因本协议产生的争议应友好协商解决；协商不成的，提交开发者所在地有管辖权的人民法院处理。</string>
@@ -622,5 +622,44 @@
     <string name="glucose_ref_low">偏低线 3.9</string>
     <string name="glucose_ref_high">偏高线 11.1</string>
     <string name="glucose_value">血糖</string>
+
+    <!-- 会员订阅 -->
+    <string name="nav_membership">会员</string>
+    <string name="sub_chip">会员 · MEMBERSHIP</string>
+    <string name="sub_title">升级会员，解锁更多</string>
+    <string name="sub_subtitle">SAINT · 健康档案</string>
+    <string name="sub_benefits_title">会员权益</string>
+    <string name="sub_benefit_1">解锁高级趋势与统计报表</string>
+    <string name="sub_benefit_2">多设备会员共享</string>
+    <string name="sub_benefit_3">专属优先客服支持</string>
+    <string name="sub_benefit_4">抢先体验新功能</string>
+    <string name="sub_note">当前版本为基础功能，会员权益将随版本逐步开放。</string>
+    <string name="sub_select_hint">请选择一个会员套餐</string>
+    <string name="sub_recommended">推荐</string>
+    <string name="sub_plan_monthly">月度会员</string>
+    <string name="sub_plan_monthly_price">¥18</string>
+    <string name="sub_plan_monthly_period">每月</string>
+    <string name="sub_plan_quarterly">季度会员</string>
+    <string name="sub_plan_quarterly_price">¥48</string>
+    <string name="sub_plan_quarterly_period">每季度</string>
+    <string name="sub_plan_yearly">年度会员</string>
+    <string name="sub_plan_yearly_price">¥168</string>
+    <string name="sub_plan_yearly_period">每年</string>
+    <string name="sub_plan_lifetime">终身会员</string>
+    <string name="sub_plan_lifetime_price">¥498</string>
+    <string name="sub_plan_lifetime_period">一次付费</string>
+    <string name="sub_pay_paypal">去 PayPal 支付</string>
+    <string name="sub_paypal_hint">将打开 PayPal 安全支付页面，完成付款即视为订阅成功。</string>
+    <string name="sub_paid">我已完成支付</string>
+    <string name="sub_open_failed">无法打开 PayPal，已复制支付链接，请在浏览器中粘贴打开</string>
+    <string name="sub_copied">已复制支付链接</string>
+    <string name="sub_status_title">我的订阅</string>
+    <string name="sub_status_active">会员生效中</string>
+    <string name="sub_status_inactive">尚未开通会员</string>
+    <string name="sub_expiry">到期时间：%1$s</string>
+    <string name="sub_plan_label">当前套餐：%1$s</string>
+    <string name="sub_forever">永久</string>
+    <string name="sub_cancel">取消会员标记</string>
+    <string name="sub_please_select">请先选择一个套餐</string>
 
 </resources>

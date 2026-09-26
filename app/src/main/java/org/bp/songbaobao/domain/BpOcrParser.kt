@@ -3,13 +3,17 @@ package org.bp.songbaobao.domain
 /**
  * 把 ML Kit 识别出的血压计文本解析为收缩压 / 舒张压 / 心率(脉搏)。
  *
- * 常见排版：
- *  - 带标签："收缩压 120"、"舒张压 80"、"脉搏 72"、"SBP 118"、"心率 76"
- *  - 分数式："120/80"、"118/76"
- *  - 裸数字（血压计最常见）：三行或同行排列的 "120 80 72"，无标签
+ * 识别主策略（按用户要求）：**不看标签，只看行的位置**——
+ *  - 第 1 行 = 收缩压(SYS)
+ *  - 第 2 行 = 舒张压(DIA)
+ *  - 第 3 行 = 心率(PUL)
+ * 这与绝大多数电子血压计的屏幕排版一致（顶部时间戳会被先剥离，不计入行）。
  *
- * “分类”即在此完成：优先按标签 / 分数式落位；都没有时，收集文本里所有
- * 落在合理区间的 2~3 位数字，按 SYS→DIA→PUL 的常见顺序兜底赋值。
+ * 兜底策略（当行数不足或某行没有数字时）：
+ *  1) 标签识别：「收缩压 120」「SBP 118」「脉搏 72」等；
+ *  2) 分数式：「120/80」；
+ *  3) 其余裸数字按 SYS>DIA>PUL 的合理性排序补齐。
+ *
  * 另外修正 OCR 常见的数码管误认（如 0→O、1→I/l、5→S、8→B）。
  */
 object BpOcrParser {
@@ -50,6 +54,13 @@ object BpOcrParser {
     private val TIME_RE = Regex("\\d{1,2}\\s*[:：]\\s*\\d{2}")
     /** 日期 yyyy-MM-dd / yyyy/MM/dd 等，连同其数字一并剥离。 */
     private val DATE_RE = Regex("\\d{2,4}\\s*[-/.年月]\\s*\\d{1,2}\\s*[-/.月日]?\\s*\\d{0,2}")
+    /** 「130/81」分数式。 */
+    private val FRAC_RE = Regex("(\\d{2,3})\\s*[/／]\\s*(\\d{2,3})")
+
+    // 各行数字的合理区间
+    private val SYS_RANGE = 70..260
+    private val DIA_RANGE = 40..160
+    private val PUL_RANGE = 30..180
 
     fun parse(text: String): BpOcrResult {
         var systolic: Int? = null
@@ -59,7 +70,8 @@ object BpOcrParser {
         // 0) 先剥离时间戳与日期，避免其数字污染读数（血压计常在顶部显示 HH:MM）
         val cleaned = DATE_RE.replace(TIME_RE.replace(text, " "), " ")
 
-        // 1) 标签识别（按行，长别名优先，避免“脉”误命中“脉搏/脉率”）
+        // 1) 主策略：按行位置落位（第一行 SYS / 第二行 DIA / 第三行 PUL）
+        //    先做标签识别，用于在行内排除标签自带的说明数字，并兜底。
         for (line in cleaned.lineSequence()) {
             val l = line.trim()
             if (l.isEmpty()) continue
@@ -68,10 +80,27 @@ object BpOcrParser {
             if (pulse == null) labeledNumber(l, PULSE_ALIASES)?.let { pulse = it }
         }
 
+        // 收集每一行中的数字（按自然顺序），供位置解析使用
+        val rowNumbers = cleaned.lineSequence()
+            .map { lineNumbers(it) }
+            .filter { it.isNotEmpty() }
+            .toList()
+
+        // 位置优先：只要某行有数字且该位尚未由标签确定，就采用它
+        assignByPosition(
+            rowNumbers,
+            systolicFixed = systolic,
+            diastolicFixed = diastolic,
+            pulseFixed = pulse
+        )?.let { (s, d, p) ->
+            systolic = systolic ?: s
+            diastolic = diastolic ?: d
+            pulse = pulse ?: p
+        }
+
         // 2) 分数式 X/Y（仅在收缩压/舒张压尚未都识别到时兜底）
         if (systolic == null || diastolic == null) {
-            val frac = Regex("(\\d{2,3})\\s*[/／]\\s*(\\d{2,3})").find(fixDigits(cleaned))
-            if (frac != null) {
+            FRAC_RE.find(fixDigits(cleaned))?.let { frac ->
                 val a = frac.groupValues[1].toIntOrNull()
                 val b = frac.groupValues[2].toIntOrNull()
                 if (a != null && b != null) {
@@ -83,12 +112,12 @@ object BpOcrParser {
             }
         }
 
-        // 3) 兜底：裸数字排版（血压计最常见，如竖排 130 / 81 / 78）
+        // 3) 最终兜底：对所有裸数字按 SYS>DIA>PUL 合理性补齐
         if (systolic == null || diastolic == null || pulse == null) {
             val nums = collectNumbers(cleaned).toMutableList()
-            // 去掉已通过标签/分数式确定的值，避免重复占用
             systolic?.let { nums.remove(it) }
             diastolic?.let { nums.remove(it) }
+            pulse?.let { nums.remove(it) }
             assignBareNumbers(nums, systolic, diastolic, pulse)?.let { (s, d, p) ->
                 systolic = systolic ?: s
                 diastolic = diastolic ?: d
@@ -100,8 +129,56 @@ object BpOcrParser {
     }
 
     /**
+     * 按行位置落位：第 1 行收缩压、第 2 行舒张压、第 3 行脉搏。
+     * 每一行取其首个合理区间内的数字；若该行有多个数字（如两侧各一组读数），取最大值。
+     */
+    private fun assignByPosition(
+        rows: List<List<Int>>,
+        systolicFixed: Int?,
+        diastolicFixed: Int?,
+        pulseFixed: Int?
+    ): Triple<Int?, Int?, Int?>? {
+        if (rows.isEmpty()) return null
+        var s: Int? = null
+        var d: Int? = null
+        var p: Int? = null
+
+        val row0 = rows.getOrNull(0).orEmpty()
+        val row1 = rows.getOrNull(1).orEmpty()
+        val row2 = rows.getOrNull(2).orEmpty()
+
+        if (systolicFixed == null) s = bestIn(row0, SYS_RANGE)
+        if (diastolicFixed == null) d = bestIn(row1, DIA_RANGE)
+        if (pulseFixed == null) p = bestIn(row2, PUL_RANGE)
+
+        // 单行多数字（例如同一行有 SYS/DIA）时的补充：
+        // 若第 1 行同时给出两个数字，第二个作为舒张压；
+        // 若第 2 行同时给出两个数字，第二个作为脉搏。
+        if (diastolicFixed == null && d == null && row0.size >= 2) {
+            d = row0.drop(1).lastOrNull { it in DIA_RANGE }
+        }
+        if (pulseFixed == null && p == null && row1.size >= 2) {
+            p = row1.drop(1).lastOrNull { it in PUL_RANGE }
+        }
+
+        if (s == null && d == null && p == null) return null
+        return Triple(s, d, p)
+    }
+
+    /** 取某行中落在区间内的数字；多个时取最大值，单个时直接采用。 */
+    private fun bestIn(row: List<Int>, range: IntRange): Int? {
+        val hits = row.filter { it in range }
+        return if (hits.isEmpty()) null else hits.max()
+    }
+
+    /** 提取一行中的所有 2~3 位数字（已做字母→数字还原）。 */
+    private fun lineNumbers(line: String): List<Int> {
+        val norm = fixDigits(line)
+        return NUM.findAll(norm).mapNotNull { it.groupValues[1].toIntOrNull() }.toList()
+    }
+
+    /**
      * 对裸数字做“合理性排序”：收缩压应最大、舒张压次之、脉搏最小且通常 ≤120。
-     * 若能找到满足该关系的三元组，按此落位；否则退回按出现顺序赋值。
      */
     private fun assignBareNumbers(
         numsIn: MutableList<Int>,
@@ -117,28 +194,22 @@ object BpOcrParser {
         // 情况 A：三个都缺 —— 尝试找 SYS>DIA>PUL 的合理三元组
         if (needSys && needDia && needPul) {
             val cand = numsIn.distinct().sortedDescending()
-            // 收缩压候选应偏大、脉搏偏小
             for (s in cand) {
                 for (d in cand) {
                     for (p in cand) {
-                        if (s > d && d >= p && s in 70..260 && d in 40..160 && p in 35..150) {
+                        if (s > d && d >= p && s in SYS_RANGE && d in DIA_RANGE && p in PUL_RANGE) {
                             return Triple(s, d, p)
                         }
                     }
                 }
             }
-            // 找不到完美三元组：按“最大=收缩压、次大=舒张压、其后=脉搏”启发式
             val sorted = numsIn.sortedDescending()
-            val s = sorted.getOrNull(0)
-            val d = sorted.getOrNull(1)
-            val p = sorted.getOrNull(2)
-            return Triple(s, d, p)
+            return Triple(sorted.getOrNull(0), sorted.getOrNull(1), sorted.getOrNull(2))
         }
 
         // 情况 B：部分已知（常见：只缺脉搏）——剩余数字里挑最小的作脉搏
         if (needPul && !needSys && !needDia) {
-            val p = numsIn.minOrNull()
-            return Triple(null, null, p)
+            return Triple(null, null, numsIn.minOrNull())
         }
         // 情况 C：其它部分缺失 —— 按出现顺序补齐
         val it = numsIn.iterator()
@@ -154,8 +225,7 @@ object BpOcrParser {
         val out = mutableListOf<Int>()
         for (m in NUM.findAll(norm)) {
             val v = m.groupValues[1].toIntOrNull() ?: continue
-            // 收缩压/舒张压/脉搏的合理范围；排除日期、时间等杂项数字
-            if (v in 35..280) out.add(v)
+            if (v in 30..280) out.add(v)
         }
         return out
     }

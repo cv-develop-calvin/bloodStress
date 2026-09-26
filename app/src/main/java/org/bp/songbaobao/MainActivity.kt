@@ -68,6 +68,7 @@ import org.bp.songbaobao.ui.screen.note.NoteAddScreen
 import org.bp.songbaobao.ui.screen.note.NoteDetailScreen
 import org.bp.songbaobao.ui.screen.note.NoteEditScreen
 import org.bp.songbaobao.ui.screen.note.NoteListScreen
+import org.bp.songbaobao.ui.screen.subscription.SubscriptionScreen
 import org.bp.songbaobao.ui.theme.SongBaoBaoTheme
 import org.bp.songbaobao.util.LanguageManager
 import org.bp.songbaobao.util.UserPrefs
@@ -417,6 +418,11 @@ fun AppNavHost(
                     onBack = { navController.popBackStack() },
                     onEdit = { id -> navController.navigate(Screen.noteEdit(id)) }
                 )
+            }
+
+            // ---------- 会员订阅 ----------
+            composable(Screen.Subscription.route) {
+                SubscriptionScreen()
             }
 
             // ---------- 关于 ----------
