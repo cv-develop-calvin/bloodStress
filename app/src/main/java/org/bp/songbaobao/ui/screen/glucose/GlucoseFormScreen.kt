@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -32,17 +33,28 @@ fun GlucoseFormScreen(
     prefill: GlucoseRecord? = null,
     vm: GlucoseViewModel = hiltViewModel()
 ) {
-    var record by remember(prefill) { mutableStateOf(prefill ?: vm.emptyRecord()) }
-    var valueText by remember { mutableStateOf(formatValue(record.value)) }
-    var loaded by remember { mutableStateOf(recordId == null) }
+    // 每个字段用独立的 rememberSaveable 文本状态作为显示唯一来源，
+    // 不受父级重组 / 软键盘弹出导致 record 被重置的影响，避免预填值被清空。
+    val init = prefill ?: vm.emptyRecord()
+    var dateText by rememberSaveable { mutableStateOf(init.date) }
+    var timeText by rememberSaveable { mutableStateOf(init.time) }
+    var valueText by rememberSaveable { mutableStateOf(formatValue(init.value)) }
+    var noteText by rememberSaveable { mutableStateOf(init.note) }
+    var contextKey by rememberSaveable { mutableStateOf(init.context) }
+    var createdAt by rememberSaveable { mutableStateOf(init.createdAt) }
+    var loaded by rememberSaveable { mutableStateOf(recordId == null) }
     var error by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(recordId) {
         if (recordId != null) {
             val r = vm.load(recordId)
             if (r != null) {
-                record = r
+                dateText = r.date
+                timeText = r.time
                 valueText = formatValue(r.value)
+                noteText = r.note
+                contextKey = r.context
+                createdAt = r.createdAt
             }
             loaded = true
         }
@@ -53,9 +65,19 @@ fun GlucoseFormScreen(
         return
     }
 
-    val ctx = GlucoseContext.fromKey(record.context)
+    val ctx = GlucoseContext.fromKey(contextKey)
     val parsedValue = valueText.toFloatOrNull() ?: 0f
-    val level = remember(valueText, record.context) { classifyGlucose(parsedValue, ctx) }
+    val level = remember(valueText, contextKey) { classifyGlucose(parsedValue, ctx) }
+
+    val record = GlucoseRecord(
+        id = recordId ?: 0,
+        date = dateText,
+        time = timeText,
+        value = parsedValue,
+        context = contextKey,
+        note = noteText,
+        createdAt = createdAt.ifBlank { nowStamp() }
+    )
 
     Column(
         modifier = Modifier
@@ -133,8 +155,8 @@ fun GlucoseFormScreen(
         ) {
             GlucoseContext.list().forEach { c ->
                 FilterChip(
-                    selected = c == ctx,
-                    onClick = { record = record.copy(context = c.key) },
+                    selected = c.key == contextKey,
+                    onClick = { contextKey = c.key },
                     label = { Text(stringResource(c.labelRes)) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = Gold.copy(alpha = 0.25f),
@@ -150,14 +172,14 @@ fun GlucoseFormScreen(
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             AppTextField(
-                value = record.date,
-                onValueChange = { record = record.copy(date = it) },
+                value = dateText,
+                onValueChange = { dateText = it },
                 label = stringResource(R.string.glucose_form_date),
                 modifier = Modifier.weight(1f)
             )
             AppTextField(
-                value = record.time,
-                onValueChange = { record = record.copy(time = it) },
+                value = timeText,
+                onValueChange = { timeText = it },
                 label = stringResource(R.string.glucose_form_time),
                 modifier = Modifier.weight(1f)
             )
@@ -166,16 +188,18 @@ fun GlucoseFormScreen(
         AppTextField(
             value = valueText,
             onValueChange = {
-                valueText = it
-                record = record.copy(value = it.toFloatOrNull() ?: 0f)
+                // 仅允许数字与最多一个小数点
+                val filtered = it.filter { c -> c.isDigit() || c == '.' }
+                val dots = filtered.count { c -> c == '.' }
+                valueText = if (dots <= 1) filtered.take(6) else filtered.replaceFirst(".", "")
             },
             label = stringResource(R.string.glucose_form_value),
             placeholder = stringResource(R.string.glucose_form_value_hint)
         )
         Spacer(Modifier.height(10.dp))
         AppTextField(
-            value = record.note,
-            onValueChange = { record = record.copy(note = it) },
+            value = noteText,
+            onValueChange = { noteText = it },
             label = stringResource(R.string.glucose_form_note),
             placeholder = stringResource(R.string.glucose_form_note_hint)
         )
@@ -226,16 +250,19 @@ private fun validate(
 
 @Composable
 fun GlucoseAddScreen(onBack: () -> Unit) {
-    val prefill = remember { GlucoseOcrResultHolder.consume() }
-    val rec = prefill?.let {
-        GlucoseRecord(
-            date = todayStr(),
-            time = nowTimeStr(),
-            value = it.value ?: 5.5f,
-            context = GlucoseContext.FASTING.key,
-            note = "",
-            createdAt = nowStamp()
-        )
+    // 消费一次识别结果，并稳定持有，避免父级重组导致 prefill 引用变化而重置表单
+    val scanned = remember { GlucoseOcrResultHolder.consume() }
+    val rec = remember(scanned) {
+        scanned?.let {
+            GlucoseRecord(
+                date = todayStr(),
+                time = nowTimeStr(),
+                value = it.value ?: 5.5f,
+                context = GlucoseContext.FASTING.key,
+                note = "",
+                createdAt = nowStamp()
+            )
+        }
     }
     GlucoseFormScreen(recordId = null, onBack = onBack, prefill = rec)
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -34,14 +35,31 @@ fun BpFormScreen(
     prefill: BpRecord? = null,
     vm: BpViewModel = hiltViewModel()
 ) {
-    var record by remember(prefill) { mutableStateOf(prefill ?: vm.emptyRecord()) }
-    var loaded by remember { mutableStateOf(recordId == null) }
+    // 每个字段用独立的 rememberSaveable 文本状态作为显示唯一来源，
+    // 不受父级重组 / 软键盘弹出导致 record 被重置的影响，避免预填值被清空。
+    val init = prefill ?: vm.emptyRecord()
+    var dateText by rememberSaveable { mutableStateOf(init.date) }
+    var timeText by rememberSaveable { mutableStateOf(init.time) }
+    var sysText by rememberSaveable { mutableStateOf(init.systolic.toString()) }
+    var diaText by rememberSaveable { mutableStateOf(init.diastolic.toString()) }
+    var pulseText by rememberSaveable { mutableStateOf(init.pulse?.toString() ?: "") }
+    var noteText by rememberSaveable { mutableStateOf(init.note) }
+    var createdAt by rememberSaveable { mutableStateOf(init.createdAt) }
+    var loaded by rememberSaveable { mutableStateOf(recordId == null) }
     var error by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(recordId) {
         if (recordId != null) {
             val r = vm.load(recordId)
-            if (r != null) record = r
+            if (r != null) {
+                dateText = r.date
+                timeText = r.time
+                sysText = r.systolic.toString()
+                diaText = r.diastolic.toString()
+                pulseText = r.pulse?.toString() ?: ""
+                noteText = r.note
+                createdAt = r.createdAt
+            }
             loaded = true
         }
     }
@@ -51,9 +69,21 @@ fun BpFormScreen(
         return
     }
 
-    val sys = record.systolic
-    val dia = record.diastolic
-    val level = remember(sys, dia) { classifyBp(sys, dia) }
+    val sys = sysText.toIntOrNull()
+    val dia = diaText.toIntOrNull()
+    val level = remember(sys, dia) { classifyBp(sys ?: 0, dia ?: 0) }
+
+    // 合成待保存记录
+    val record = BpRecord(
+        id = recordId ?: 0,
+        date = dateText,
+        time = timeText,
+        systolic = sys ?: 0,
+        diastolic = dia ?: 0,
+        pulse = pulseText.toIntOrNull(),
+        note = noteText,
+        createdAt = createdAt.ifBlank { nowStamp() }
+    )
 
     Column(
         modifier = Modifier
@@ -117,14 +147,14 @@ fun BpFormScreen(
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             AppTextField(
-                value = record.date,
-                onValueChange = { record = record.copy(date = it) },
+                value = dateText,
+                onValueChange = { dateText = it },
                 label = stringResource(R.string.bp_form_date),
                 modifier = Modifier.weight(1f)
             )
             AppTextField(
-                value = record.time,
-                onValueChange = { record = record.copy(time = it) },
+                value = timeText,
+                onValueChange = { timeText = it },
                 label = stringResource(R.string.bp_form_time),
                 modifier = Modifier.weight(1f)
             )
@@ -132,28 +162,28 @@ fun BpFormScreen(
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             AppTextField(
-                value = record.systolic.toString(),
-                onValueChange = { record = record.copy(systolic = it.toIntOrNull() ?: 0) },
+                value = sysText,
+                onValueChange = { sysText = it.filter { c -> c.isDigit() }.take(3) },
                 label = stringResource(R.string.bp_form_sys),
                 modifier = Modifier.weight(1f)
             )
             AppTextField(
-                value = record.diastolic.toString(),
-                onValueChange = { record = record.copy(diastolic = it.toIntOrNull() ?: 0) },
+                value = diaText,
+                onValueChange = { diaText = it.filter { c -> c.isDigit() }.take(3) },
                 label = stringResource(R.string.bp_form_dia),
                 modifier = Modifier.weight(1f)
             )
         }
         Spacer(Modifier.height(10.dp))
         AppTextField(
-            value = record.pulse?.toString() ?: "",
-            onValueChange = { record = record.copy(pulse = it.toIntOrNull()) },
+            value = pulseText,
+            onValueChange = { pulseText = it.filter { c -> c.isDigit() }.take(3) },
             label = stringResource(R.string.bp_form_pulse)
         )
         Spacer(Modifier.height(10.dp))
         AppTextField(
-            value = record.note,
-            onValueChange = { record = record.copy(note = it) },
+            value = noteText,
+            onValueChange = { noteText = it },
             label = stringResource(R.string.bp_form_note),
             placeholder = stringResource(R.string.bp_form_note_hint)
         )
@@ -205,17 +235,20 @@ private fun validate(
 
 @Composable
 fun BpAddScreen(onBack: () -> Unit) {
-    val prefill = remember { BpOcrResultHolder.consume() }
-    val rec = prefill?.let {
-        BpRecord(
-            date = todayStr(),
-            time = nowTimeStr(),
-            systolic = it.systolic ?: 0,
-            diastolic = it.diastolic ?: 0,
-            pulse = it.pulse,
-            note = "",
-            createdAt = nowStamp()
-        )
+    // 消费一次识别结果，并稳定持有，避免父级重组导致 prefill 引用变化而重置表单
+    val scanned = remember { BpOcrResultHolder.consume() }
+    val rec = remember(scanned) {
+        scanned?.let {
+            BpRecord(
+                date = todayStr(),
+                time = nowTimeStr(),
+                systolic = it.systolic ?: 0,
+                diastolic = it.diastolic ?: 0,
+                pulse = it.pulse,
+                note = "",
+                createdAt = nowStamp()
+            )
+        }
     }
     BpFormScreen(recordId = null, onBack = onBack, prefill = rec)
 }
