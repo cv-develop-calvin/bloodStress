@@ -11,9 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.components.*
 import org.bp.songbaobao.ui.theme.*
 import org.bp.songbaobao.util.parseTimes
@@ -47,7 +49,7 @@ fun MedScreen(
         ) {
             // 概览
             HeroCard {
-                ZodiacChip("用药管理 · MEDICATION")
+                ZodiacChip(stringResource(R.string.med_header))
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
@@ -58,10 +60,18 @@ fun MedScreen(
                     )
                     Text("%", color = TextDim)
                     Spacer(Modifier.width(8.dp))
-                    Text("近 7 天依从性", style = MaterialTheme.typography.labelMedium, color = TextDim)
+                    Text(
+                        stringResource(R.string.med_adherence_7d),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = TextDim
+                    )
                 }
                 Text(
-                    "打卡 ${state.adherence?.taken ?: 0} / ${state.adherence?.expected ?: 0} 次",
+                    stringResource(
+                        R.string.med_taken_of,
+                        state.adherence?.taken ?: 0,
+                        state.adherence?.expected ?: 0
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = TextDim
                 )
@@ -76,7 +86,11 @@ fun MedScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        Text("⏰ 该吃药了", fontWeight = FontWeight.Bold, color = WarnAmber)
+                        Text(
+                            stringResource(R.string.med_time_to_take),
+                            fontWeight = FontWeight.Bold,
+                            color = WarnAmber
+                        )
                         Spacer(Modifier.height(6.dp))
                         state.pending.forEach { p ->
                             Row(
@@ -91,7 +105,7 @@ fun MedScreen(
                                     )
                                 }
                                 GoldButton(onClick = { vm.toggleTaken(p.med.id, p.slot) }) {
-                                    Text("打卡")
+                                    Text(stringResource(R.string.med_checkin))
                                 }
                             }
                         }
@@ -101,10 +115,13 @@ fun MedScreen(
             }
 
             // 药品列表
-            SectionTitle("药品（${state.meds.size}）")
+            SectionTitle(stringResource(R.string.med_list_title, state.meds.size))
 
             if (state.meds.isEmpty()) {
-                EmptyHint("还没有添加药品", "点击右下角＋添加")
+                EmptyHint(
+                    stringResource(R.string.med_empty_title),
+                    stringResource(R.string.med_empty_hint)
+                )
             } else {
                 state.meds.forEach { med ->
                     val slots = parseTimes(med.times)
@@ -120,7 +137,10 @@ fun MedScreen(
                                     )
                                     if (med.startDate.isNotBlank()) {
                                         Text(
-                                            "起 ${med.startDate}${if (med.endDate.isNotBlank()) " · 止 ${med.endDate}" else ""}",
+                                            if (med.endDate.isNotBlank())
+                                                stringResource(R.string.med_period, med.startDate, med.endDate)
+                                            else
+                                                stringResource(R.string.med_period_start, med.startDate),
                                             style = MaterialTheme.typography.labelSmall, color = TextDim
                                         )
                                     }
@@ -160,16 +180,23 @@ fun MedScreen(
 
                             Spacer(Modifier.height(6.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                TextButton(onClick = { onEdit(med.id) }) { Text("编辑", color = Gold) }
+                                TextButton(onClick = { onEdit(med.id) }) {
+                                    Text(stringResource(R.string.action_edit), color = Gold)
+                                }
                                 var showBuy by remember { mutableStateOf(false) }
                                 TextButton(onClick = { showBuy = true }) {
-                                    Text("购买", color = SuccessGreen)
+                                    Text(stringResource(R.string.action_buy), color = SuccessGreen)
                                 }
                                 var confirm by remember { mutableStateOf(false) }
-                                TextButton(onClick = { confirm = true }) { Text("删除", color = DangerRed) }
+                                TextButton(onClick = { confirm = true }) {
+                                    Text(stringResource(R.string.action_delete), color = DangerRed)
+                                }
                                 if (confirm) {
                                     org.bp.songbaobao.ui.screen.bp.ConfirmDelete(
-                                        text = "删除「${med.name}」及其服药记录？",
+                                        text = stringResource(
+                                            R.string.med_delete_confirm,
+                                            med.name
+                                        ),
                                         onDismiss = { confirm = false },
                                         onConfirm = { vm.delete(med); confirm = false }
                                     )
@@ -189,7 +216,10 @@ fun MedScreen(
                                             if (!ok) {
                                                 Toast.makeText(
                                                     context,
-                                                    "无法打开${channel.name}，已复制药名，可粘贴到该 App 搜索",
+                                                    context.getString(
+                                                        R.string.buy_open_failed,
+                                                        context.getString(channel.nameRes)
+                                                    ),
                                                     Toast.LENGTH_LONG
                                                 ).show()
                                                 org.bp.songbaobao.util.MedPurchase.copyName(
@@ -222,14 +252,14 @@ fun MedScreen(
             if (state.logs.isNotEmpty()) {
                 PanelCard {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        SectionTitle("服药记录")
+                        SectionTitle(stringResource(R.string.med_logs_title))
                         state.logs.take(10).forEach { log ->
                             Row(
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
-                                    Text(log.medName ?: "已删除药品", fontWeight = FontWeight.SemiBold)
+                                    Text(log.medName ?: stringResource(R.string.med_removed), fontWeight = FontWeight.SemiBold)
                                     Text("${log.date} ${log.time}", style = MaterialTheme.typography.labelSmall, color = TextDim)
                                 }
                                 if (log.medDosage != null) {
@@ -274,7 +304,7 @@ private fun BuyChannelDialog(
         containerColor = NavySoft,
         title = {
             Text(
-                "购买「$name」",
+                stringResource(R.string.buy_title, name),
                 fontWeight = FontWeight.Bold,
                 color = GoldBright
             )
@@ -282,7 +312,7 @@ private fun BuyChannelDialog(
         text = {
             Column {
                 Text(
-                    "将按「$keyword」搜索，请选择购药渠道：",
+                    stringResource(R.string.buy_search_hint, keyword),
                     style = MaterialTheme.typography.bodySmall,
                     color = TextDim
                 )
@@ -295,13 +325,13 @@ private fun BuyChannelDialog(
                             .padding(vertical = 8.dp)
                     ) {
                         Text(
-                            ch.name,
+                            stringResource(ch.nameRes),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = GoldBright
                         )
                         Text(
-                            ch.desc,
+                            stringResource(ch.descRes),
                             style = MaterialTheme.typography.labelSmall,
                             color = TextDim
                         )
@@ -310,17 +340,21 @@ private fun BuyChannelDialog(
                 }
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "若渠道打不开或链接失效，可复制药名后自行在购药 App 中搜索。",
+                    stringResource(R.string.buy_fallback_hint),
                     style = MaterialTheme.typography.labelSmall,
                     color = TextDim
                 )
             }
         },
         confirmButton = {
-            TextButton(onClick = onCopy) { Text("复制药名", color = Gold) }
+            TextButton(onClick = onCopy) {
+                Text(stringResource(R.string.action_copy), color = Gold)
+            }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消", color = TextDim) }
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_cancel), color = TextDim)
+            }
         }
     )
 }

@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.room.withTransaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.bp.songbaobao.R
 import org.bp.songbaobao.data.local.AppDatabase
 import org.json.JSONArray
 import org.json.JSONObject
@@ -80,7 +81,9 @@ class BackupRepository @Inject constructor(
             }
 
             val out = context.contentResolver.openOutputStream(target, "wt")
-                ?: return@withContext BackupResult(false, "无法写入所选位置")
+                ?: return@withContext BackupResult(
+                    false, context.getString(R.string.msg_write_failed)
+                )
             out.use {
                 it.write(root.toString(2).toByteArray(Charsets.UTF_8))
                 it.flush()
@@ -88,11 +91,20 @@ class BackupRepository @Inject constructor(
 
             BackupResult(
                 ok = true,
-                message = "导出成功",
-                counts = countsText(records.size, meds.size, logs.size, labs.size, notes.size, photos.size)
+                message = context.getString(R.string.msg_export_ok),
+                counts = countsText(
+                    context,
+                    records.size, meds.size, logs.size, labs.size, notes.size, photos.size
+                )
             )
         } catch (t: Throwable) {
-            BackupResult(false, "导出失败：${t.message ?: t.javaClass.simpleName}")
+            BackupResult(
+                false,
+                context.getString(
+                    R.string.msg_export_failed,
+                    t.message ?: t.javaClass.simpleName
+                )
+            )
         }
     }
 
@@ -103,17 +115,23 @@ class BackupRepository @Inject constructor(
             try {
                 val text = context.contentResolver.openInputStream(source)?.use {
                     it.readBytes().toString(Charsets.UTF_8)
-                } ?: return@withContext BackupResult(false, "无法读取所选文件")
+                } ?: return@withContext BackupResult(
+                    false, context.getString(R.string.msg_read_failed)
+                )
 
                 val root = JSONObject(text)
                 if (root.optString("magic") != MAGIC) {
-                    return@withContext BackupResult(false, "这不是本应用导出的备份文件")
+                    return@withContext BackupResult(
+                        false, context.getString(R.string.msg_not_backup_file)
+                    )
                 }
                 val ver = root.optInt("version", 0)
                 if (ver > FORMAT_VERSION) {
                     return@withContext BackupResult(
                         false,
-                        "备份版本(v$ver)高于当前应用支持(v$FORMAT_VERSION)，请先升级应用"
+                        context.getString(
+                            R.string.msg_backup_too_new, ver, FORMAT_VERSION
+                        )
                     )
                 }
 
@@ -140,17 +158,21 @@ class BackupRepository @Inject constructor(
 
                 BackupResult(
                     ok = true,
-                    message = "导入成功（${if (mode == ImportMode.MERGE) "合并" else "覆盖"}）",
-                    counts = countsText(records.size, meds.size, logs.size, labs.size, notes.size, photos.size)
+                    message = context.getString(
+                        if (mode == ImportMode.MERGE) R.string.msg_import_ok_merge
+                        else R.string.msg_import_ok_replace
+                    ),
+                    counts = countsText(context, records.size, meds.size, logs.size, labs.size, notes.size, photos.size)
                 )
             } catch (t: Throwable) {
-                BackupResult(false, "导入失败：${t.message ?: t.javaClass.simpleName}")
+                BackupResult(false, context.getString(R.string.msg_import_failed, t.message ?: t.javaClass.simpleName))
             }
         }
 
     private fun countsText(
+        context: Context,
         r: Int, m: Int, l: Int, lab: Int, n: Int, p: Int
-    ) = "血压 $r · 药品 $m · 服药 $l · 血常规 $lab · 留言 $n · 照片 $p"
+    ) = context.getString(R.string.msg_backup_summary, r, m, l, lab, n, p)
 
     /** 合并模式下把主键置 0，交给自增重新分配，避免与既有记录 id 冲突 */
     private fun Long.forMode(mode: ImportMode): Long = if (mode == ImportMode.MERGE) 0L else this

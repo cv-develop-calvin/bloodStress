@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,17 +64,20 @@ fun BpTrendScreen(
 
             // 最新测量（圣衣卡）
             HeroCard {
-                ZodiacChip("天马座 · PEGASUS")
+                ZodiacChip(stringResource(R.string.bp_chip))
                 Spacer(Modifier.height(8.dp))
                 if (state.latest == null) {
-                    Text("暂无数据", color = org.bp.songbaobao.ui.theme.GoldBright,
+                    Text(stringResource(R.string.bp_no_data),
+                        color = org.bp.songbaobao.ui.theme.GoldBright,
                         style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(8.dp))
-                    GoldButton(onClick = onAdd) { Text("添加第一条记录") }
+                    GoldButton(onClick = onAdd) {
+                        Text(stringResource(R.string.bp_add_first))
+                    }
                 } else {
                     val r = state.latest!!
                     val lv = classifyBp(r.systolic, r.diastolic)
-                    Text("最新测量 · ${r.date} ${r.time}",
+                    Text(stringResource(R.string.bp_latest, r.date, r.time),
                         style = MaterialTheme.typography.labelMedium,
                         color = org.bp.songbaobao.ui.theme.TextDim)
                     Row(verticalAlignment = Alignment.Bottom) {
@@ -91,14 +95,16 @@ fun BpTrendScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         AssistChip(
                             onClick = {},
-                            label = { Text(lv.name) },
+                            label = { Text(stringResource(lv.nameRes)) },
                             colors = AssistChipDefaults.assistChipColors(
                                 containerColor = lv.color.copy(alpha = 0.25f),
                                 labelColor = lv.color
                             )
                         )
                         if (r.pulse != null) {
-                            AssistChip(onClick = {}, label = { Text("心率 ${r.pulse}") })
+                            AssistChip(onClick = {}, label = {
+                                Text(stringResource(R.string.bp_pulse, r.pulse!!))
+                            })
                         }
                     }
                     if (r.note.isNotBlank()) {
@@ -119,30 +125,42 @@ fun BpTrendScreen(
             // 统计
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 StatCard(
-                    label = "平均收缩压",
+                    label = stringResource(R.string.bp_avg_sys),
                     value = state.stats?.avgSys?.let { "%.1f".format(it) } ?: "--",
-                    sub = "最高 ${state.stats?.maxSys ?: "--"} · 最低 ${state.stats?.minSys ?: "--"}",
+                    sub = stringResource(
+                        R.string.bp_range_max_min,
+                        state.stats?.maxSys?.toString() ?: "--",
+                        state.stats?.minSys?.toString() ?: "--"
+                    ),
                     modifier = Modifier.weight(1f)
                 )
                 StatCard(
-                    label = "平均舒张压",
+                    label = stringResource(R.string.bp_avg_dia),
                     value = state.stats?.avgDia?.let { "%.1f".format(it) } ?: "--",
-                    sub = "最高 ${state.stats?.maxDia ?: "--"} · 最低 ${state.stats?.minDia ?: "--"}",
+                    sub = stringResource(
+                        R.string.bp_range_max_min,
+                        state.stats?.maxDia?.toString() ?: "--",
+                        state.stats?.minDia?.toString() ?: "--"
+                    ),
                     modifier = Modifier.weight(1f)
                 )
             }
             Spacer(Modifier.height(10.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 StatCard(
-                    label = "平均心率",
+                    label = stringResource(R.string.bp_avg_pulse),
                     value = state.stats?.avgPulse?.let { "%.1f".format(it) } ?: "--",
-                    sub = "记录 ${state.stats?.n ?: 0} 条",
+                    sub = stringResource(R.string.bp_count_records, state.stats?.n ?: 0),
                     modifier = Modifier.weight(1f)
                 )
                 StatCard(
-                    label = "近 7 天服药",
+                    label = stringResource(R.string.bp_adherence_7d),
                     value = state.adherence?.rate?.let { "$it%" } ?: "--",
-                    sub = "打卡 ${state.adherence?.taken ?: 0} / ${state.adherence?.expected ?: 0}",
+                    sub = stringResource(
+                        R.string.med_taken_of,
+                        state.adherence?.taken ?: 0,
+                        state.adherence?.expected ?: 0
+                    ),
                     valueColor = if ((state.adherence?.rate ?: 100) < 80)
                         org.bp.songbaobao.ui.theme.DangerRed
                     else org.bp.songbaobao.ui.theme.SuccessGreen,
@@ -166,7 +184,11 @@ fun BpTrendScreen(
                     ) {
                         Text("⏰ ", style = MaterialTheme.typography.titleMedium)
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("该吃药了", fontWeight = FontWeight.Bold, color = org.bp.songbaobao.ui.theme.WarnAmber)
+                            Text(
+                                stringResource(R.string.bp_time_to_take),
+                                fontWeight = FontWeight.Bold,
+                                color = org.bp.songbaobao.ui.theme.WarnAmber
+                            )
                             Text(
                                 state.pending.joinToString("、") { "${it.med.name}(${it.slot})" },
                                 style = MaterialTheme.typography.bodySmall,
@@ -181,15 +203,21 @@ fun BpTrendScreen(
             // 趋势曲线
             PanelCard {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    SectionTitle("血压趋势曲线")
+                    SectionTitle(stringResource(R.string.bp_trend_title))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        ToggleChip("收缩压", state.showSys) { vm.toggleSeries(0) }
-                        ToggleChip("舒张压", state.showDia) { vm.toggleSeries(1) }
-                        ToggleChip("心率", state.showPulse) { vm.toggleSeries(2) }
+                        ToggleChip(stringResource(R.string.bp_series_sys),
+                            state.showSys) { vm.toggleSeries(0) }
+                        ToggleChip(stringResource(R.string.bp_series_dia),
+                            state.showDia) { vm.toggleSeries(1) }
+                        ToggleChip(stringResource(R.string.bp_series_pulse),
+                            state.showPulse) { vm.toggleSeries(2) }
                     }
                     Spacer(Modifier.height(8.dp))
                     if (state.trend.isEmpty()) {
-                        EmptyHint("暂无数据", "点击右下角＋添加记录")
+                        EmptyHint(
+                            stringResource(R.string.bp_no_data),
+                            stringResource(R.string.bp_trend_empty_hint)
+                        )
                     } else {
                         Box(modifier = Modifier.fillMaxWidth().height(240.dp)) {
                             BpLineChart(
@@ -211,11 +239,16 @@ fun BpTrendScreen(
             // 最近记录
             PanelCard {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    SectionTitle("最近记录") {
-                        TextButton(onClick = onList) { Text("查看全部 →", color = org.bp.songbaobao.ui.theme.Gold) }
+                    SectionTitle(stringResource(R.string.bp_recent_title)) {
+                        TextButton(onClick = onList) {
+                            Text(
+                                stringResource(R.string.bp_view_all),
+                                color = org.bp.songbaobao.ui.theme.Gold
+                            )
+                        }
                     }
                     if (state.recent.isEmpty()) {
-                        EmptyHint("还没有记录")
+                        EmptyHint(stringResource(R.string.bp_no_records))
                     } else {
                         state.recent.forEach { r ->
                             val lv = classifyBp(r.systolic, r.diastolic)
@@ -232,7 +265,7 @@ fun BpTrendScreen(
                                 }
                                 Column(horizontalAlignment = Alignment.End) {
                                     Text("${r.systolic}/${r.diastolic}", fontWeight = FontWeight.Bold)
-                                    Text(lv.name, style = MaterialTheme.typography.labelSmall, color = lv.color)
+                                    Text(stringResource(lv.nameRes), style = MaterialTheme.typography.labelSmall, color = lv.color)
                                 }
                                 IconButton(onClick = { onEdit(r.id) }) {
                                     Text("›", style = MaterialTheme.typography.titleLarge,
@@ -256,7 +289,7 @@ fun BpTrendScreen(
 private fun AppHeader() {
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
         Text(
-            "宋宝宝的记录",
+            stringResource(R.string.app_name),
             // 柔和的深色阴影，保证压在亮背景上依然清晰
             style = MaterialTheme.typography.headlineMedium.copy(
                 shadow = Shadow(
@@ -270,7 +303,7 @@ private fun AppHeader() {
         )
         Spacer(Modifier.height(3.dp))
         Text(
-            "SAINT · 健康档案",
+            stringResource(R.string.bp_app_subtitle),
             style = MaterialTheme.typography.labelSmall,
             color = org.bp.songbaobao.ui.theme.Gold.copy(alpha = 0.75f),
             letterSpacing = 3.sp
@@ -280,7 +313,12 @@ private fun AppHeader() {
 
 @Composable
 private fun RangeChips(days: Int?, onSelect: (Int?) -> Unit) {
-    val options = listOf(7 to "7 天", 30 to "30 天", 90 to "90 天", null to "全部")
+    val options: List<Pair<Int?, String>> = listOf(
+        7 to stringResource(R.string.bp_range_7d),
+        30 to stringResource(R.string.bp_range_30d),
+        90 to stringResource(R.string.bp_range_90d),
+        null to stringResource(R.string.bp_range_all)
+    )
     Row(
         modifier = Modifier
             .fillMaxWidth()

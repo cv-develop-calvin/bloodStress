@@ -9,10 +9,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.EmptyHint
 import org.bp.songbaobao.ui.components.PanelCard
@@ -49,7 +51,7 @@ fun NoteDetailScreen(
     val n = note
     if (n == null) {
         Box(Modifier.fillMaxSize().background(Navy)) {
-            EmptyHint("留言不存在")
+            EmptyHint(stringResource(R.string.note_not_found))
         }
         return
     }
@@ -62,9 +64,13 @@ fun NoteDetailScreen(
             .verticalScroll(rememberScrollState())
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onBack) { Text("‹ 返回", color = Gold) }
+            TextButton(onClick = onBack) {
+                Text(stringResource(R.string.scan_back), color = Gold)
+            }
             Spacer(Modifier.weight(1f))
-            TextButton(onClick = { onEdit(n.id) }) { Text("编辑", color = Gold) }
+            TextButton(onClick = { onEdit(n.id) }) {
+                Text(stringResource(R.string.action_edit), color = Gold)
+            }
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -73,7 +79,7 @@ fun NoteDetailScreen(
                 Spacer(Modifier.width(8.dp))
             }
             Text(
-                n.title.ifBlank { "无标题" },
+                n.title.ifBlank { stringResource(R.string.note_untitled) },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold, color = GoldBright
             )
@@ -104,7 +110,10 @@ fun NoteDetailScreen(
             Spacer(Modifier.height(12.dp))
             PanelCard {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    Text("📷 照片（${photos.size}）", fontWeight = FontWeight.Bold, color = GoldBright)
+                    Text(
+                        stringResource(R.string.note_photos_count, photos.size),
+                        fontWeight = FontWeight.Bold, color = GoldBright
+                    )
                     Spacer(Modifier.height(8.dp))
                     // 每行 3 张
                     photos.chunkedSafe(3).forEach { row ->
@@ -131,7 +140,7 @@ fun NoteDetailScreen(
                                     }
                                     if (confirm) {
                                         org.bp.songbaobao.ui.screen.bp.ConfirmDelete(
-                                            text = "删除这张照片？",
+                                            text = stringResource(R.string.note_delete_photo),
                                             onDismiss = { confirm = false },
                                             onConfirm = { vm.deletePhoto(p.id); confirm = false }
                                         )

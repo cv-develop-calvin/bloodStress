@@ -14,6 +14,7 @@ import org.bp.songbaobao.data.local.entity.Medication
 import org.bp.songbaobao.data.repository.Adherence
 import org.bp.songbaobao.data.repository.MedRepository
 import org.bp.songbaobao.data.repository.PendingMed
+import org.bp.songbaobao.R
 import org.bp.songbaobao.util.nowStamp
 import org.bp.songbaobao.util.todayStr
 import javax.inject.Inject
@@ -109,7 +110,7 @@ class MedViewModel @Inject constructor(
     }
 
     fun newMed(): Medication = Medication(
-        name = "", dosage = "", unit = "mg", freq = "每日 1 次",
+        name = "", dosage = "", unit = "mg", freq = appContext.getString(R.string.freq_daily_1),
         times = "08:00", startDate = todayStr(), endDate = "",
         note = "", active = true, createdAt = nowStamp()
     )

@@ -1,5 +1,6 @@
 package org.bp.songbaobao.data.repository
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -7,6 +8,7 @@ import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.bp.songbaobao.BuildConfig
+import org.bp.songbaobao.R
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -52,7 +54,7 @@ sealed interface UpdateCheck {
 }
 
 @Singleton
-class VersionRepository @Inject constructor() {
+class VersionRepository @Inject constructor(private val app: Application) {
 
     companion object {
         /** 仓库地址与 Releases API（公开仓库，匿名可读） */
@@ -83,10 +85,10 @@ class VersionRepository @Inject constructor() {
             val tag = root.optString("tag_name")
             // CI 会把构建错误日志以 pre-release 形式发布，只接受 build-<数字> 形式的正式构建
             if (!tag.startsWith(TAG_PREFIX)) {
-                return@withContext UpdateCheck.Failed("最新发布不是应用构建（$tag）")
+                return@withContext UpdateCheck.Failed(app.getString(R.string.msg_not_app_build, tag))
             }
             val buildNo = tag.removePrefix(TAG_PREFIX).toIntOrNull()
-                ?: return@withContext UpdateCheck.Failed("无法解析构建号（$tag）")
+                ?: return@withContext UpdateCheck.Failed(app.getString(R.string.msg_bad_build_number, tag))
 
             val assets = root.optJSONArray("assets") ?: JSONArray()
             var apkUrl = ""
@@ -103,7 +105,7 @@ class VersionRepository @Inject constructor() {
                 }
             }
             if (apkUrl.isBlank()) {
-                return@withContext UpdateCheck.Failed("该版本没有可下载的 APK")
+                return@withContext UpdateCheck.Failed(app.getString(R.string.msg_no_apk_link))
             }
 
             // 从 songbaobao-v1.2.0-build45.apk 解析出 1.2.0
@@ -147,7 +149,7 @@ class VersionRepository @Inject constructor() {
             pool.submit(java.util.concurrent.Callable { block() })
                 .get(timeoutMs, java.util.concurrent.TimeUnit.MILLISECONDS)
         } catch (e: java.util.concurrent.TimeoutException) {
-            throw java.net.SocketTimeoutException("请求超时")
+            throw java.net.SocketTimeoutException(app.getString(R.string.msg_timeout))
         } catch (e: java.util.concurrent.ExecutionException) {
             throw (e.cause ?: e)
         } finally {
@@ -194,7 +196,7 @@ class VersionRepository @Inject constructor() {
         }
         try {
             if (conn.responseCode !in 200..299) {
-                error("下载失败：HTTP ${conn.responseCode}")
+                error(app.getString(R.string.msg_download_http, conn.responseCode))
             }
             val total = conn.contentLengthLong.takeIf { it > 0 } ?: update.apkSize
             conn.inputStream.use { input ->
@@ -274,9 +276,9 @@ class VersionRepository @Inject constructor() {
 
     /** 把网络异常翻译成用户能看懂的中文提示 */
     private fun friendlyError(t: Throwable): String = when (t) {
-        is java.net.UnknownHostException -> "无法连接网络，请检查手机网络后重试"
-        is java.net.SocketTimeoutException -> "网络请求超时，请检查手机网络后重试"
-        is java.net.ConnectException -> "网络连接失败，请检查手机网络后重试"
+        is java.net.UnknownHostException -> app.getString(R.string.msg_net_unavailable)
+        is java.net.SocketTimeoutException -> app.getString(R.string.msg_net_timeout)
+        is java.net.ConnectException -> app.getString(R.string.msg_net_failed)
         else -> t.message ?: t.javaClass.simpleName
     }
 }

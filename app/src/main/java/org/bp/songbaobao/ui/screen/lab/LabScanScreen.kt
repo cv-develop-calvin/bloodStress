@@ -13,10 +13,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import org.bp.songbaobao.R
 import org.bp.songbaobao.domain.CbcItems
 import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.GoldButton
@@ -61,13 +63,17 @@ fun LabScanScreen(
             .verticalScroll(rememberScrollState())
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onBack) { Text("‹ 返回", color = Gold) }
+            TextButton(onClick = onBack) {
+                Text(stringResource(R.string.scan_back), color = Gold)
+            }
             Spacer(Modifier.weight(1f))
         }
 
-        Text("拍化验单，自动读指标",
+        Text(
+            stringResource(R.string.scan_title),
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold, color = GoldBright)
+            fontWeight = FontWeight.Bold, color = GoldBright
+        )
         Spacer(Modifier.height(8.dp))
 
         Card(
@@ -75,8 +81,7 @@ fun LabScanScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                "建议：把化验单平铺在桌面，光线均匀、镜头正对、避免反光和阴影；" +
-                    "只拍包含「项目 / 结果」的那一块，识别率最高。",
+                stringResource(R.string.scan_tip),
                 modifier = Modifier.padding(12.dp),
                 style = MaterialTheme.typography.bodySmall,
                 color = TextMain
@@ -97,7 +102,7 @@ fun LabScanScreen(
                     }
                 },
                 modifier = Modifier.weight(1f)
-            ) { Text("📸 打开相机") }
+            ) { Text(stringResource(R.string.scan_open_camera)) }
 
             OutlinedButton(
                 onClick = {
@@ -107,7 +112,7 @@ fun LabScanScreen(
                 },
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDim)
-            ) { Text("🖼️ 从相册选择") }
+            ) { Text(stringResource(R.string.scan_from_gallery)) }
         }
 
         Spacer(Modifier.height(12.dp))
@@ -117,7 +122,7 @@ fun LabScanScreen(
             Card(modifier = Modifier.fillMaxWidth().height(200.dp)) {
                 AsyncImage(
                     model = imageUri,
-                    contentDescription = "化验单照片",
+                    contentDescription = stringResource(R.string.scan_photo_desc),
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -129,7 +134,9 @@ fun LabScanScreen(
         when (val s = ocrState) {
             is LabViewModel.OcrState.Idle -> {
                 if (imageUri == null) {
-                    org.bp.songbaobao.ui.components.EmptyHint("请选择或拍摄一张化验单照片")
+                    org.bp.songbaobao.ui.components.EmptyHint(
+                        stringResource(R.string.scan_idle_hint)
+                    )
                 }
             }
             is LabViewModel.OcrState.Loading -> {
@@ -139,21 +146,34 @@ fun LabScanScreen(
                         color = Gold, strokeWidth = 2.dp
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("识别中…", color = TextDim, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        stringResource(R.string.scan_loading),
+                        color = TextDim, style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
             is LabViewModel.OcrState.Error -> {
-                Text("识别失败：${s.message}", color = DangerRed,
-                    style = MaterialTheme.typography.bodySmall)
+                Text(
+                    stringResource(R.string.scan_error, s.message),
+                    color = DangerRed,
+                    style = MaterialTheme.typography.bodySmall
+                )
                 Spacer(Modifier.height(8.dp))
-                Text("可手动录入，或重拍更清晰的照片。", color = TextDim,
-                    style = MaterialTheme.typography.bodySmall)
+                Text(
+                    stringResource(R.string.scan_error_hint),
+                    color = TextDim,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
             is LabViewModel.OcrState.Done -> {
                 PanelCard {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
-                            if (s.values.isEmpty()) "没有识别到可用指标" else "识别到 ${s.values.size} 项指标",
+                            if (s.values.isEmpty()) {
+                                stringResource(R.string.scan_none)
+                            } else {
+                                stringResource(R.string.scan_found, s.values.size)
+                            },
                             fontWeight = FontWeight.Bold,
                             color = if (s.values.isEmpty()) WarnAmber else SuccessGreen
                         )
@@ -168,7 +188,7 @@ fun LabScanScreen(
                                         .padding(vertical = 3.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(item.label, modifier = Modifier.weight(1f),
+                                    Text(stringResource(item.labelRes), modifier = Modifier.weight(1f),
                                         style = MaterialTheme.typography.bodySmall)
                                     Text(
                                         "${fmt(v)} ${item.unit}",
@@ -185,13 +205,21 @@ fun LabScanScreen(
                                     onConfirm(s.values, s.text)
                                 },
                                 modifier = Modifier.fillMaxWidth()
-                            ) { Text("确认并填入表单 →", fontWeight = FontWeight.Bold) }
+                            ) {
+                                Text(
+                                    stringResource(R.string.scan_confirm),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
 
                         Spacer(Modifier.height(8.dp))
-                        Text("识别原文（可核对）", style = MaterialTheme.typography.labelSmall, color = TextDim)
                         Text(
-                            s.text.ifBlank { "（无文字）" }.take(600),
+                            stringResource(R.string.scan_raw_text),
+                            style = MaterialTheme.typography.labelSmall, color = TextDim
+                        )
+                        Text(
+                            s.text.ifBlank { stringResource(R.string.scan_no_text) }.take(600),
                             style = MaterialTheme.typography.labelSmall,
                             color = TextDim,
                             maxLines = 12

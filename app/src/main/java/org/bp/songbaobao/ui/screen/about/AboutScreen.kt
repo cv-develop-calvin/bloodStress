@@ -22,14 +22,24 @@ import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.HeroCard
 import org.bp.songbaobao.ui.components.PanelCard
 import org.bp.songbaobao.ui.components.SectionTitle
+import androidx.compose.ui.res.stringResource
+import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.components.ZodiacChip
 import org.bp.songbaobao.ui.theme.*
+import org.bp.songbaobao.util.LanguageManager
 
 /** 关于与版本：构建信息 + 更新日志 */
 @Composable
 fun AboutScreen(onLegal: () -> Unit = {}) {
     val changelog = remember {
         listOf(
+            "1.7.0" to (
+                "2026-09-26" to listOf(
+                    "新增中英双语切换：关于页-语言，可选跟随系统 / 中文 / English",
+                    "全部页面（血压、用药、化验、笔记、关于、合规）文案支持英文",
+                    "血压分级提示、化验单偏高/偏低判定、图表标签同步翻译"
+                )
+            ),
             "1.6.1" to (
                 "2026-09-26" to listOf(
                     "修复「购买」按钮跳转报错：原美团买药链接已失效（404），改用有效地址",
@@ -106,32 +116,61 @@ fun AboutScreen(onLegal: () -> Unit = {}) {
             .verticalScroll(rememberScrollState())
     ) {
         HeroCard {
-            ZodiacChip("关于 · ABOUT")
+            ZodiacChip(stringResource(R.string.about_chip))
             Spacer(Modifier.height(8.dp))
-            Text("宋宝宝的记录", style = MaterialTheme.typography.titleLarge,
+            Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold, color = GoldBright)
             Text(
-                "版本 ${org.bp.songbaobao.BuildConfig.VERSION_NAME}" +
-                    "（build ${org.bp.songbaobao.BuildConfig.VERSION_CODE}）",
+                stringResource(
+                    R.string.about_version,
+                    org.bp.songbaobao.BuildConfig.VERSION_NAME,
+                    org.bp.songbaobao.BuildConfig.VERSION_CODE
+                ),
                 style = MaterialTheme.typography.bodySmall, color = TextDim
             )
             Spacer(Modifier.height(4.dp))
-            AssistChip(onClick = {}, label = { Text("正式版") })
+            AssistChip(onClick = {}, label = { Text(stringResource(R.string.about_channel)) })
         }
+
+        Spacer(Modifier.height(12.dp))
+
+        // 语言切换
+        LanguageCard()
 
         Spacer(Modifier.height(12.dp))
 
         // 构建信息
         PanelCard {
             Column(modifier = Modifier.padding(12.dp)) {
-                SectionTitle("构建信息")
-                InfoRow("版本号", org.bp.songbaobao.BuildConfig.VERSION_NAME)
-                InfoRow("版本代码", "${org.bp.songbaobao.BuildConfig.VERSION_CODE}")
-                InfoRow("最低系统", "Android 8.0（API 26）")
-                InfoRow("目标系统", "Android 14（API 34）")
-                InfoRow("架构", "arm64-v8a")
-                InfoRow("数据库", "Room / SQLite（本地）")
-                InfoRow("字体", "Noto Sans SC")
+                SectionTitle(stringResource(R.string.about_build_info))
+                InfoRow(
+                    stringResource(R.string.about_version_name),
+                    org.bp.songbaobao.BuildConfig.VERSION_NAME
+                )
+                InfoRow(
+                    stringResource(R.string.about_version_code),
+                    "${org.bp.songbaobao.BuildConfig.VERSION_CODE}"
+                )
+                InfoRow(
+                    stringResource(R.string.about_min_system),
+                    stringResource(R.string.about_value_min_system)
+                )
+                InfoRow(
+                    stringResource(R.string.about_target_system),
+                    stringResource(R.string.about_value_target_system)
+                )
+                InfoRow(
+                    stringResource(R.string.about_arch),
+                    stringResource(R.string.about_value_arch)
+                )
+                InfoRow(
+                    stringResource(R.string.about_database),
+                    stringResource(R.string.about_value_database)
+                )
+                InfoRow(
+                    stringResource(R.string.about_font),
+                    stringResource(R.string.about_value_font)
+                )
             }
         }
 
@@ -140,17 +179,27 @@ fun AboutScreen(onLegal: () -> Unit = {}) {
         // 技术栈
         PanelCard {
             Column(modifier = Modifier.padding(12.dp)) {
-                SectionTitle("技术栈")
-                InfoRow("语言", "Kotlin")
-                InfoRow("界面", "Jetpack Compose + Material 3")
-                InfoRow("架构", "MVVM（ViewModel + Repository）")
-                InfoRow("数据库", "Room")
-                InfoRow("依赖注入", "Hilt")
-                InfoRow("异步", "Coroutines + Flow")
-                InfoRow("导航", "Navigation Compose")
-                InfoRow("图表", "MPAndroidChart")
-                InfoRow("OCR", "Google ML Kit（中文）")
-                InfoRow("图片", "Coil")
+                SectionTitle(stringResource(R.string.about_tech_stack))
+                InfoRow(stringResource(R.string.about_tech_lang),
+                    stringResource(R.string.about_value_lang))
+                InfoRow(stringResource(R.string.about_tech_ui),
+                    stringResource(R.string.about_value_ui))
+                InfoRow(stringResource(R.string.about_tech_arch),
+                    stringResource(R.string.about_value_arch_mvvm))
+                InfoRow(stringResource(R.string.about_database),
+                    stringResource(R.string.about_value_db))
+                InfoRow(stringResource(R.string.about_tech_di),
+                    stringResource(R.string.about_value_di))
+                InfoRow(stringResource(R.string.about_tech_async),
+                    stringResource(R.string.about_value_async))
+                InfoRow(stringResource(R.string.about_tech_nav),
+                    stringResource(R.string.about_value_nav))
+                InfoRow(stringResource(R.string.about_tech_chart),
+                    stringResource(R.string.about_value_chart))
+                InfoRow(stringResource(R.string.about_tech_ocr),
+                    stringResource(R.string.about_value_ocr))
+                InfoRow(stringResource(R.string.about_tech_image),
+                    stringResource(R.string.about_value_image))
             }
         }
 
@@ -169,7 +218,7 @@ fun AboutScreen(onLegal: () -> Unit = {}) {
         // 更新日志
         PanelCard {
             Column(modifier = Modifier.padding(12.dp)) {
-                SectionTitle("更新日志")
+                SectionTitle(stringResource(R.string.about_changelog))
                 changelog.forEach { (version, pair) ->
                     val (date, items) = pair
                     var expanded by remember {
@@ -194,7 +243,7 @@ fun AboutScreen(onLegal: () -> Unit = {}) {
                             }
                         }
                         TextButton(onClick = { expanded = !expanded }) {
-                            Text(if (expanded) "收起" else "展开", color = Gold,
+                            Text(if (expanded) stringResource(R.string.about_collapse) else stringResource(R.string.about_expand), color = Gold,
                                 style = MaterialTheme.typography.labelSmall)
                         }
                     }
@@ -206,20 +255,20 @@ fun AboutScreen(onLegal: () -> Unit = {}) {
         // 合规文档入口：隐私政策、用户协议、个人信息与权限清单、第三方与开源许可
         PanelCard {
             Column(modifier = Modifier.padding(12.dp)) {
-                SectionTitle("隐私与合规")
+                SectionTitle(stringResource(R.string.about_privacy_compliance))
                 TextButton(onClick = onLegal) {
-                    Text("查看隐私政策 / 用户协议 / 合规清单", color = Gold)
+                    Text(stringResource(R.string.about_view_legal), color = Gold)
                 }
                 val acceptedAt = org.bp.songbaobao.util.PrivacyConsent
                     .acceptedAt(androidx.compose.ui.platform.LocalContext.current)
                 Text(
-                    if (acceptedAt != null) "你已于 $acceptedAt 同意隐私政策" else "尚未同意隐私政策",
+                    if (acceptedAt != null) stringResource(R.string.about_consent_agreed, acceptedAt) else stringResource(R.string.about_consent_not),
                     style = MaterialTheme.typography.labelSmall,
                     color = TextDim
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "不同意也可随时查看本文档。如需撤回同意，请在系统设置中清除应用数据。",
+                    stringResource(R.string.about_consent_note),
                     style = MaterialTheme.typography.labelSmall,
                     color = TextDim
                 )
@@ -234,21 +283,21 @@ fun AboutScreen(onLegal: () -> Unit = {}) {
         if (crash != null) {
             PanelCard {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    SectionTitle("上次崩溃日志")
+                    SectionTitle(stringResource(R.string.about_last_crash))
                     Text(
-                        "应用上次运行时异常退出。点击下方按钮把日志发出来即可定位原因。",
+                        stringResource(R.string.about_crash_desc),
                         style = MaterialTheme.typography.bodySmall, color = TextDim
                     )
                     Spacer(Modifier.height(8.dp))
                     Row {
                         Button(onClick = {
                             context.startActivity(CrashHandler.shareIntent(context, crash!!))
-                        }) { Text("分享日志") }
+                        }) { Text(stringResource(R.string.about_share_log)) }
                         Spacer(Modifier.width(8.dp))
                         TextButton(onClick = {
                             CrashHandler.clear(context)
                             crash = null
-                        }) { Text("清除", color = Gold) }
+                        }) { Text(stringResource(R.string.about_clear), color = Gold) }
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -262,13 +311,85 @@ fun AboutScreen(onLegal: () -> Unit = {}) {
         }
 
         Text(
-            "数据全部保存在手机本地，卸载应用会一并删除，请定期导出备份。",
+            stringResource(R.string.about_data_warning),
             style = MaterialTheme.typography.labelSmall,
             color = TextDim
         )
 
         Spacer(Modifier.height(24.dp))
     }
+    }
+}
+
+/**
+ * 从 Context 递归解包出 Activity。
+ * Compose 的 LocalContext 通常是 ContextThemeWrapper 等包装类，
+ * 直接 as? Activity 会失败，导致 recreate 调不到、语言切换看起来「没生效」。
+ */
+private fun findActivity(context: android.content.Context): android.app.Activity? {
+    var ctx: android.content.Context? = context
+    while (ctx != null) {
+        if (ctx is android.app.Activity) return ctx
+        ctx = (ctx as? android.content.ContextWrapper)?.baseContext
+    }
+    return null
+}
+
+/**
+ * 语言切换卡片。
+ *
+ * 三态：跟随系统 / 中文 / English。
+ * 选中后写入偏好并重建 Activity —— 语言是在 attachBaseContext 注入的，
+ * 只有重建才能重新走一遍资源解析，让整个界面立即换成新语言。
+ */
+@Composable
+private fun LanguageCard() {
+    val context = LocalContext.current
+    val options = listOf(
+        LanguageManager.FOLLOW_SYSTEM to R.string.lang_follow_system,
+        LanguageManager.ZH to R.string.lang_chinese,
+        LanguageManager.EN to R.string.lang_english
+    )
+    var selected by remember { mutableStateOf(LanguageManager.getSavedLanguage(context)) }
+
+    PanelCard {
+        Column(modifier = Modifier.padding(12.dp)) {
+            SectionTitle(stringResource(R.string.lang_title))
+            Spacer(Modifier.height(6.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                options.forEach { (code, res) ->
+                    FilterChip(
+                        selected = selected == code,
+                        onClick = {
+                            if (selected == code) return@FilterChip
+                            selected = code
+                            LanguageManager.setLanguage(context, code)
+                            // 语言在 attachBaseContext 注入，只有重建 Activity
+                            // 才会重新走资源解析，因此这里必须触发重建。
+                            // LocalContext 通常是 ContextWrapper，需递归解包找 Activity。
+                            val activity = findActivity(context)
+                            if (activity != null) {
+                                activity.recreate()
+                            } else {
+                                context.startActivity(
+                                    android.content.Intent(
+                                        context,
+                                        org.bp.songbaobao.MainActivity::class.java
+                                    ).addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                )
+                            }
+                        },
+                        label = { Text(stringResource(res)) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(R.string.lang_restart_hint),
+                style = MaterialTheme.typography.labelSmall,
+                color = TextDim
+            )
+        }
     }
 }
 
@@ -283,9 +404,9 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
 
     PanelCard {
         Column(modifier = Modifier.padding(12.dp)) {
-            SectionTitle("系统更新")
+            SectionTitle(stringResource(R.string.about_update))
             Text(
-                "从 GitHub 检查最新版本，下载后直接安装升级（数据不会丢失）。",
+                stringResource(R.string.about_update_desc),
                 style = MaterialTheme.typography.bodySmall, color = TextDim
             )
 
@@ -299,9 +420,9 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                     enabled = !u.checking && !u.downloading
                 ) {
                     when {
-                        u.checking -> Text("检查中…")
-                        u.downloadedApk != null -> Text("立即安装")
-                        else -> Text("检查更新")
+                        u.checking -> Text(stringResource(R.string.update_checking))
+                        u.downloadedApk != null -> Text(stringResource(R.string.update_install_now))
+                        else -> Text(stringResource(R.string.update_check_now))
                     }
                 }
 
@@ -311,12 +432,12 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                     OutlinedButton(
                         onClick = { vm.downloadUpdate(context) },
                         enabled = !u.downloading
-                    ) { Text(if (u.downloading) "下载中…" else "下载", color = Gold) }
+                    ) { Text(if (u.downloading) stringResource(R.string.update_downloading) else stringResource(R.string.update_download), color = Gold) }
                 }
 
                 Spacer(Modifier.weight(1f))
                 Text(
-                    "当前 v${vm.currentVersionName}",
+                    stringResource(R.string.about_current_version, vm.currentVersionName),
                     style = MaterialTheme.typography.labelSmall, color = TextDim
                 )
             }
@@ -335,7 +456,7 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "已下载 ${(p * 100).toInt()}%",
+                        stringResource(R.string.update_downloaded_pct, (p * 100).toInt()),
                         style = MaterialTheme.typography.labelSmall, color = TextDim
                     )
                 }
@@ -352,7 +473,7 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                 ) {
                     Column {
                         Text(
-                            "发现新版本 v${info.versionName}（build ${info.versionCode}）",
+                            stringResource(R.string.update_found, info.versionName, info.versionCode),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             color = GoldBright
@@ -360,10 +481,10 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                         Spacer(Modifier.height(3.dp))
                         Text(
                             buildString {
-                                if (info.publishedAt.isNotBlank()) append("发布时间 ${info.publishedAt}")
+                                if (info.publishedAt.isNotBlank()) append(stringResource(R.string.update_published, info.publishedAt))
                                 if (info.apkSize > 0) {
                                     if (isNotEmpty()) append(" · ")
-                                    append("体积 ${info.sizeText()}")
+                                    append(stringResource(R.string.update_size, info.sizeText()))
                                 }
                             },
                             style = MaterialTheme.typography.labelSmall, color = TextDim
@@ -391,13 +512,13 @@ private fun UpdateCard(vm: AboutViewModel = hiltViewModel()) {
                 if (u.downloadedApk != null) {
                     Spacer(Modifier.height(6.dp))
                     TextButton(onClick = { vm.openInstallSettings(context) }) {
-                        Text("安装被拦截？点此开启安装权限", color = Gold)
+                        Text(stringResource(R.string.update_install_blocked), color = Gold)
                     }
                 }
             }
 
             TextButton(onClick = { vm.dismissUpdate() }) {
-                Text("清除更新提示", color = TextDim)
+                Text(stringResource(R.string.update_clear_hint), color = TextDim)
             }
         }
     }
@@ -432,10 +553,9 @@ private fun BackupCard(vm: AboutViewModel = hiltViewModel()) {
 
     PanelCard {
         Column(modifier = Modifier.padding(12.dp)) {
-            SectionTitle("数据备份")
+            SectionTitle(stringResource(R.string.about_backup))
             Text(
-                "把全部记录导出成一个 JSON 文件保存到手机或网盘；" +
-                        "换机或重装后可从该文件恢复。",
+                stringResource(R.string.backup_desc),
                 style = MaterialTheme.typography.bodySmall, color = TextDim
             )
 
@@ -445,14 +565,14 @@ private fun BackupCard(vm: AboutViewModel = hiltViewModel()) {
                 Button(
                     onClick = { exportLauncher.launch(vm.defaultFileName) },
                     enabled = !state.busy
-                ) { Text("导出备份") }
+                ) { Text(stringResource(R.string.backup_export)) }
                 Spacer(Modifier.width(8.dp))
                 OutlinedButton(
                     onClick = {
                         importLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
                     },
                     enabled = !state.busy
-                ) { Text("从备份恢复", color = Gold) }
+                ) { Text(stringResource(R.string.backup_import), color = Gold) }
             }
 
             if (state.busy) {
@@ -464,7 +584,7 @@ private fun BackupCard(vm: AboutViewModel = hiltViewModel()) {
                         color = Gold
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("处理中…", style = MaterialTheme.typography.bodySmall, color = TextDim)
+                    Text(stringResource(R.string.common_processing), style = MaterialTheme.typography.bodySmall, color = TextDim)
                 }
             }
 
@@ -487,16 +607,16 @@ private fun BackupCard(vm: AboutViewModel = hiltViewModel()) {
     if (showImportDialog) {
         AlertDialog(
             onDismissRequest = { showImportDialog = false; pendingImportUri = null },
-            title = { Text("选择导入方式") },
+            title = { Text(stringResource(R.string.import_title)) },
             text = {
                 Column {
                     Text(
-                        "合并：保留手机里现有记录，备份中的内容作为新记录追加。",
+                        stringResource(R.string.import_merge_desc),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "覆盖：先清空手机里的全部记录，再写入备份内容（不可撤销）。",
+                        stringResource(R.string.import_replace_desc),
                         style = MaterialTheme.typography.bodySmall, color = DangerRed
                     )
                 }
@@ -506,14 +626,14 @@ private fun BackupCard(vm: AboutViewModel = hiltViewModel()) {
                     pendingImportUri?.let { vm.import(context, it, ImportMode.MERGE) }
                     showImportDialog = false
                     pendingImportUri = null
-                }) { Text("合并导入", color = SuccessGreen) }
+                }) { Text(stringResource(R.string.import_merge), color = SuccessGreen) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     pendingImportUri?.let { vm.import(context, it, ImportMode.REPLACE) }
                     showImportDialog = false
                     pendingImportUri = null
-                }) { Text("覆盖导入", color = DangerRed) }
+                }) { Text(stringResource(R.string.import_replace), color = DangerRed) }
             }
         )
     }

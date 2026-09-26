@@ -9,9 +9,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.AppTextField
 import org.bp.songbaobao.ui.components.GoldButton
@@ -46,9 +49,22 @@ fun MedFormScreen(
         return
     }
 
-    val freqs = listOf("每日 1 次", "每日 2 次", "每日 3 次", "隔日 1 次", "每周 1 次", "按需服用")
+    // 频次用资源 id 表示，显示文本随语言切换
+    val freqIds = listOf(
+        R.string.freq_daily_1,
+        R.string.freq_daily_2,
+        R.string.freq_daily_3,
+        R.string.freq_every_other,
+        R.string.freq_weekly,
+        R.string.freq_as_needed
+    )
 
     AppBackground {
+    // 以下必须在 Composable 作用域内取（stringResource 只能在 @Composable 中调用）
+    val asNeededText = stringResource(R.string.freq_as_needed)
+    val freqs = freqIds.map { it to stringResource(it) }
+    // med.freq 存的是文案原文；若当前语言下找不到匹配项就保留原值
+    val currentFreqText = freqs.firstOrNull { it.second == med.freq }?.second ?: med.freq
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -56,33 +72,41 @@ fun MedFormScreen(
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            if (medId == null) "添加药品" else "编辑药品",
+            stringResource(
+                if (medId == null) R.string.title_add_med else R.string.title_edit_med
+            ),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold, color = GoldBright
         )
         Spacer(Modifier.height(12.dp))
 
         AppTextField(value = med.name, onValueChange = { med = med.copy(name = it) },
-            label = "药品名称", placeholder = "如：氨氯地平")
+            label = stringResource(R.string.med_field_name),
+            placeholder = stringResource(R.string.med_field_name_hint))
         Spacer(Modifier.height(10.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             AppTextField(value = med.dosage, onValueChange = { med = med.copy(dosage = it) },
-                label = "剂量", modifier = Modifier.weight(1f))
+                label = stringResource(R.string.med_field_dosage),
+                modifier = Modifier.weight(1f))
             AppTextField(value = med.unit, onValueChange = { med = med.copy(unit = it) },
-                label = "单位", modifier = Modifier.weight(1f))
+                label = stringResource(R.string.med_field_unit),
+                modifier = Modifier.weight(1f))
         }
         Spacer(Modifier.height(10.dp))
 
         // 频次
-        Text("服药频次", style = MaterialTheme.typography.labelMedium, color = TextDim)
+        Text(
+            stringResource(R.string.med_field_freq),
+            style = MaterialTheme.typography.labelMedium, color = TextDim
+        )
         Spacer(Modifier.height(6.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            freqs.forEach { f ->
+            freqs.forEach { (_, text) ->
                 FilterChip(
-                    selected = med.freq == f,
-                    onClick = { med = med.copy(freq = f) },
-                    label = { Text(f, style = MaterialTheme.typography.labelSmall) },
+                    selected = currentFreqText == text,
+                    onClick = { med = med.copy(freq = text) },
+                    label = { Text(text, style = MaterialTheme.typography.labelSmall) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = Gold.copy(alpha = 0.25f),
                         selectedLabelColor = GoldBright,
@@ -95,14 +119,17 @@ fun MedFormScreen(
         Spacer(Modifier.height(12.dp))
 
         // 服药时间（可增减）
-        if (med.freq != "按需服用") {
+        if (med.freq != asNeededText) {
             PanelCard {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("服药时间", style = MaterialTheme.typography.labelMedium,
-                            color = TextDim, modifier = Modifier.weight(1f))
+                        Text(
+                            stringResource(R.string.med_field_times),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = TextDim, modifier = Modifier.weight(1f)
+                        )
                         TextButton(onClick = { times = times + "08:00" }) {
-                            Text("＋ 添加", color = Gold)
+                            Text(stringResource(R.string.med_add_time), color = Gold)
                         }
                     }
                     Spacer(Modifier.height(6.dp))
@@ -116,7 +143,7 @@ fun MedFormScreen(
                                 onValueChange = { v ->
                                     times = times.toMutableList().also { it[i] = v }
                                 },
-                                label = "时间 $i",
+                                label = stringResource(R.string.med_time_index, i),
                                 modifier = Modifier.weight(1f)
                             )
                             if (times.size > 1) {
@@ -126,8 +153,10 @@ fun MedFormScreen(
                             }
                         }
                     }
-                    Text("格式 HH:mm，如 08:00",
-                        style = MaterialTheme.typography.labelSmall, color = TextDim)
+                    Text(
+                        stringResource(R.string.med_time_format_hint),
+                        style = MaterialTheme.typography.labelSmall, color = TextDim
+                    )
                 }
             }
             Spacer(Modifier.height(12.dp))
@@ -135,18 +164,24 @@ fun MedFormScreen(
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             AppTextField(value = med.startDate, onValueChange = { med = med.copy(startDate = it) },
-                label = "开始日期", modifier = Modifier.weight(1f))
+                label = stringResource(R.string.med_field_start),
+                modifier = Modifier.weight(1f))
             AppTextField(value = med.endDate, onValueChange = { med = med.copy(endDate = it) },
-                label = "结束日期（可空）", modifier = Modifier.weight(1f))
+                label = stringResource(R.string.med_field_end),
+                modifier = Modifier.weight(1f))
         }
         Spacer(Modifier.height(10.dp))
 
         AppTextField(value = med.note, onValueChange = { med = med.copy(note = it) },
-            label = "备注（可空）", placeholder = "如：饭后服用")
+            label = stringResource(R.string.med_field_note),
+            placeholder = stringResource(R.string.med_field_note_hint))
         Spacer(Modifier.height(10.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("启用提醒", color = TextMain, modifier = Modifier.weight(1f))
+            Text(
+                stringResource(R.string.med_remind_enabled),
+                color = TextMain, modifier = Modifier.weight(1f)
+            )
             Switch(checked = med.active, onCheckedChange = { med = med.copy(active = it) },
                 colors = SwitchDefaults.colors(checkedThumbColor = Gold, checkedTrackColor = GoldDeep))
         }
@@ -158,22 +193,25 @@ fun MedFormScreen(
 
         Spacer(Modifier.height(20.dp))
 
+        val context = LocalContext.current
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             GoldButton(
                 onClick = {
                     val normalized = times.map { it.trim() }.filter { it.isNotBlank() }.distinct().sorted()
-                    error = validate(med, normalized)
+                    error = validate(context, med, normalized)
                     if (error == null) {
                         vm.save(med.copy(times = normalized.joinToString(",")), onBack)
                     }
                 },
                 modifier = Modifier.weight(1f)
-            ) { Text("保存", fontWeight = FontWeight.Bold) }
+            ) {
+                Text(stringResource(R.string.action_save), fontWeight = FontWeight.Bold)
+            }
             OutlinedButton(
                 onClick = onBack,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDim)
-            ) { Text("取消") }
+            ) { Text(stringResource(R.string.action_cancel)) }
         }
 
         Spacer(Modifier.height(24.dp))
@@ -181,13 +219,23 @@ fun MedFormScreen(
     }
 }
 
-private fun validate(med: org.bp.songbaobao.data.local.entity.Medication, times: List<String>): String? {
-    if (med.name.isBlank()) return "请填写药品名称"
-    if (med.freq != "按需服用" && times.isEmpty()) return "请至少设置一个服药时间"
-    times.forEach {
-        if (!Regex("\\d{2}:\\d{2}").matches(it)) return "时间格式不正确：$it（应为 HH:mm）"
+private fun validate(
+    context: android.content.Context,
+    med: org.bp.songbaobao.data.local.entity.Medication,
+    times: List<String>
+): String? {
+    if (med.name.isBlank()) return context.getString(R.string.med_err_name_required)
+    if (med.freq != context.getString(R.string.freq_as_needed) && times.isEmpty()) {
+        return context.getString(R.string.med_err_time_required)
     }
-    if (med.endDate.isNotBlank() && med.endDate < med.startDate) return "结束日期不能早于开始日期"
+    times.forEach {
+        if (!Regex("\\d{2}:\\d{2}").matches(it)) {
+            return context.getString(R.string.med_err_time_format, it)
+        }
+    }
+    if (med.endDate.isNotBlank() && med.endDate < med.startDate) {
+        return context.getString(R.string.med_err_end_before_start)
+    }
     return null
 }
 

@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SongBaoBao Health</string>
+
+    <!-- Notifications -->
+    <string name="notif_channel_name">Medication reminder</string>
+    <string name="notif_channel_desc">Reminds you when it is time to take a dose</string>
+    <string name="notif_title">Time to take 💊</string>
+    <string name="notif_default_name">Medication</string>
+    <string name="notif_body">%1$s · %2$s is due</string>
+
+    <!-- Crash log -->
+    <string name="crash_time">Time: %1$s</string>
+    <string name="crash_device">Device: %1$s %2$s</string>
+    <string name="crash_os">OS: Android %1$s (API %2$d)</string>
+    <string name="crash_version">App version: %1$s (%2$d)</string>
+    <string name="crash_share_subject">SongBaoBao crash log</string>
+    <string name="crash_share_title">Share crash log</string>
+
+    <!-- Update and backup messages -->
+    <string name="msg_already_latest">Up to date (v%1$s)</string>
+    <string name="msg_check_failed">Check failed: %1$s</string>
+    <string name="msg_no_apk_link">This release has no downloadable APK</string>
+    <string name="msg_download_failed">Download failed: %1$s</string>
+    <string name="msg_download_done">Download complete — tap to install</string>
+    <string name="msg_install_failed">Install failed: %1$s</string>
+    <string name="msg_installing">Installing…</string>
+    <string name="msg_export_failed">Export failed: %1$s</string>
+    <string name="msg_import_failed">Import failed: %1$s</string>
+    <string name="msg_export_done">Exported %1$d records</string>
+    <string name="msg_import_done">Imported %1$d records</string>
+    <string name="msg_need_install_permission">Allow "install unknown apps" to install</string>
+    <string name="msg_pick_file">Choose a backup file</string>
+    <string name="msg_check_start">Entering checkForUpdate, preparing request</string>
+    <string name="msg_not_app_build">Latest release is not an app build (%1$s)</string>
+    <string name="msg_bad_build_number">Cannot parse build number (%1$s)</string>
+    <string name="msg_timeout">Request timed out</string>
+    <string name="msg_download_http">Download failed: HTTP %1$d</string>
+    <string name="msg_net_unavailable">No network. Check your connection and retry.</string>
+    <string name="msg_net_timeout">Request timed out. Check your connection and retry.</string>
+    <string name="msg_net_failed">Connection failed. Check your connection and retry.</string>
+    <string name="msg_exporting">Exporting…</string>
+    <string name="msg_importing">Importing…</string>
+    <string name="msg_latest_version">Up to date (v%1$s)</string>
+    <string name="msg_check_failed_reason">Update check failed: %1$s</string>
+    <string name="msg_download_done_hint">Download complete — tap the button below to install</string>
+    <string name="msg_installer_failed">Cannot open installer: %1$s</string>
+    <string name="msg_write_failed">Cannot write to the chosen location</string>
+    <string name="msg_export_ok">Export complete</string>
+    <string name="msg_read_failed">Cannot read the chosen file</string>
+    <string name="msg_not_backup_file">This is not a backup exported by this app</string>
+    <string name="msg_backup_too_new">Backup version (v%1$d) is newer than supported (v%2$d). Please update the app first.</string>
+    <string name="msg_import_ok_merge">Import complete (merged)</string>
+    <string name="msg_import_ok_replace">Import complete (replaced)</string>
+    <string name="msg_backup_summary">BP %1$d · meds %2$d · doses %3$d · blood tests %4$d · notes %5$d · photos %6$d</string>
+
+    <!-- Language -->
+    <string name="lang_title">Language</string>
+    <string name="lang_follow_system">Follow system</string>
+    <string name="lang_chinese">中文</string>
+    <string name="lang_english">English</string>
+    <string name="lang_restart_hint">Takes effect immediately</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_bp">BP</string>
+    <string name="nav_med">Meds</string>
+    <string name="nav_lab">Blood</string>
+    <string name="nav_notes">Notes</string>
+    <string name="nav_about">Version</string>
+
+    <!-- Screen titles -->
+    <string name="title_add_bp">Add BP</string>
+    <string name="title_edit_bp">Edit BP</string>
+    <string name="title_all_records">All records</string>
+    <string name="title_add_med">Add medication</string>
+    <string name="title_edit_med">Edit medication</string>
+    <string name="title_add_lab">Add blood test</string>
+    <string name="title_edit_lab">Edit blood test</string>
+    <string name="title_scan">Scan report</string>
+    <string name="title_add_note">New note</string>
+    <string name="title_edit_note">Edit note</string>
+    <string name="title_note_detail">Note</string>
+    <string name="title_legal">Privacy &amp; Terms</string>
+    <string name="back">Back</string>
+
+    <!-- Common actions -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_buy">Buy</string>
+    <string name="action_confirm">OK</string>
+    <string name="action_copy">Copy name</string>
+    <string name="action_retry">Retry</string>
+
+    <!-- Blood pressure -->
+    <string name="bp_chip">PEGASUS</string>
+    <string name="bp_app_subtitle">SAINT · HEALTH RECORD</string>
+    <string name="bp_no_data">No data</string>
+    <string name="bp_add_first">Add first record</string>
+    <string name="bp_latest">Latest · %1$s %2$s</string>
+    <string name="bp_pulse">Pulse %1$d</string>
+    <string name="bp_avg_sys">Avg systolic</string>
+    <string name="bp_avg_dia">Avg diastolic</string>
+    <string name="bp_avg_pulse">Avg pulse</string>
+    <string name="bp_range_max_min">Max %1$s · Min %2$s</string>
+    <string name="bp_count_records">%1$d records</string>
+    <string name="bp_adherence_7d">Adherence (7d)</string>
+    <string name="bp_time_to_take">Time to take</string>
+    <string name="bp_trend_title">Blood pressure trend</string>
+    <string name="bp_series_sys">Systolic</string>
+    <string name="bp_series_dia">Diastolic</string>
+    <string name="bp_series_pulse">Pulse</string>
+    <string name="bp_trend_empty_hint">Tap ＋ to add a record</string>
+    <string name="bp_recent_title">Recent</string>
+    <string name="bp_view_all">View all →</string>
+    <string name="bp_no_records">No records yet</string>
+    <string name="bp_range_7d">7 days</string>
+    <string name="bp_range_30d">30 days</string>
+    <string name="bp_range_90d">90 days</string>
+    <string name="bp_range_all">All</string>
+
+    <string name="bp_form_title_add">Add blood pressure</string>
+    <string name="bp_form_title_edit">Edit blood pressure</string>
+    <string name="bp_form_current">This reading</string>
+    <string name="bp_form_date">Date</string>
+    <string name="bp_form_time">Time</string>
+    <string name="bp_form_sys">Systolic (mmHg)</string>
+    <string name="bp_form_dia">Diastolic (mmHg)</string>
+    <string name="bp_form_pulse">Pulse (bpm, optional)</string>
+    <string name="bp_form_note">Note (optional)</string>
+    <string name="bp_form_note_hint">e.g. morning, after medication, after exercise</string>
+    <string name="bp_err_date">Please choose a date</string>
+    <string name="bp_err_sys">Systolic must be 60-300</string>
+    <string name="bp_err_dia">Diastolic must be 30-200</string>
+    <string name="bp_err_dia_lt_sys">Diastolic must be lower than systolic</string>
+    <string name="bp_err_pulse">Pulse must be 30-250</string>
+
+    <!-- Blood test -->
+    <string name="lab_scan_title">📷 Scan the report to read values</string>
+    <string name="lab_scan_tip">Lay it flat, use even light, point the camera straight</string>
+    <string name="lab_open_camera">Open camera</string>
+    <string name="lab_from_gallery">Choose from gallery</string>
+    <string name="lab_supported">Supported: %1$s</string>
+    <string name="lab_empty_title">No blood test records</string>
+    <string name="lab_empty_hint">Expand the panel above to scan, or tap ＋ to enter manually</string>
+    <string name="lab_latest">Latest report · %1$s</string>
+    <string name="lab_trend_title">Trends</string>
+    <string name="lab_range_7d">7d</string>
+    <string name="lab_range_30d">30d</string>
+    <string name="lab_range_90d">90d</string>
+    <string name="lab_no_series">No data for this marker</string>
+    <string name="lab_abnormal_count">%1$d abnormal</string>
+    <string name="lab_all_normal">All normal</string>
+    <string name="lab_source_photo">Scanned</string>
+    <string name="lab_form_title_add">Add blood test</string>
+    <string name="lab_form_title_edit">Edit blood test</string>
+    <string name="lab_ocr_prefill">%1$d values read from the photo (highlighted). Check, then save.</string>
+    <string name="lab_form_date">Report date</string>
+    <string name="lab_form_time">Time</string>
+    <string name="lab_form_hospital">Hospital / lab (optional)</string>
+    <string name="lab_form_hospital_hint">e.g. City Children\'s Hospital</string>
+    <string name="lab_form_note">Note (optional)</string>
+    <string name="lab_form_note_hint">e.g. recheck on day 2 of fever</string>
+    <string name="lab_err_need_one">Enter at least one marker</string>
+    <string name="lab_err_date">Please enter the report date</string>
+
+    <!-- Scan -->
+    <string name="scan_back">‹ Back</string>
+    <string name="scan_title">Scan the report to read values</string>
+    <string name="scan_tip">Tip: lay the report flat on a table, use even light, point straight, avoid glare and shadows; capture only the item / result block for best accuracy.</string>
+    <string name="scan_open_camera">📸 Camera</string>
+    <string name="scan_from_gallery">🖼️ Gallery</string>
+    <string name="scan_photo_desc">Lab report photo</string>
+    <string name="scan_idle_hint">Take or choose a photo of the report</string>
+    <string name="scan_loading">Recognizing…</string>
+    <string name="scan_error">Recognition failed: %1$s</string>
+    <string name="scan_error_hint">You can enter values manually, or retake a clearer photo.</string>
+    <string name="scan_none">No usable values found</string>
+    <string name="scan_found">%1$d values found</string>
+    <string name="scan_confirm">Confirm and fill form →</string>
+    <string name="scan_raw_text">Raw text (for checking)</string>
+    <string name="scan_no_text">(no text)</string>
+
+    <!-- Note detail -->
+    <string name="note_not_found">Note not found</string>
+    <string name="note_photos_count">📷 Photos (%1$d)</string>
+    <string name="note_delete_photo">Delete this photo?</string>
+
+    <!-- Notes -->
+    <string name="note_chip">MEMO</string>
+    <string name="note_count_notes">notes</string>
+    <string name="note_count_photos">photos</string>
+    <string name="note_since">Since %1$s</string>
+    <string name="note_search_hint">Search title, text or tags</string>
+    <string name="note_filter_all">All</string>
+    <string name="note_photo_wall">Photo wall</string>
+    <string name="note_no_match">No matching notes</string>
+    <string name="note_empty_title">No notes yet</string>
+    <string name="note_empty_hint">Record daily life, moods and milestones, with photos</string>
+    <string name="note_untitled">Untitled</string>
+    <string name="note_photo_count">📷 %1$d photos</string>
+    <string name="note_view_detail">Details →</string>
+    <string name="note_form_title_add">New note</string>
+    <string name="note_form_title_edit">Edit note</string>
+    <string name="note_form_date">Date</string>
+    <string name="note_form_time">Time</string>
+    <string name="note_form_title">Title</string>
+    <string name="note_form_title_hint">e.g. first roll over</string>
+    <string name="note_form_content">Note</string>
+    <string name="note_char_count">%1$d chars · max 5000</string>
+    <string name="note_form_mood">Mood</string>
+    <string name="note_form_tags">Tags</string>
+    <string name="note_form_tags_hint">Comma separated, e.g. growth,first,checkup</string>
+    <string name="note_photos_max">Photos (max 9)</string>
+    <string name="note_take_photo">📸 Camera</string>
+    <string name="note_gallery">🖼️ Gallery</string>
+    <string name="note_selected_count">%1$d selected</string>
+    <string name="note_existing_photos">Existing photos (tap to mark for deletion)</string>
+    <string name="note_err_need_content">Enter a title or some text</string>
+    <string name="note_err_too_long">Text too long (max 5000 chars)</string>
+
+    <!-- Medication -->
+    <string name="med_checkin">Taken</string>
+    <string name="med_header">MEDICATION</string>
+    <string name="med_adherence_7d">Adherence (7 days)</string>
+    <string name="med_taken_of">%1$d / %2$d taken</string>
+    <string name="med_time_to_take">⏰ Time to take</string>
+    <string name="med_list_title">Medications (%1$d)</string>
+    <string name="med_empty_title">No medications yet</string>
+    <string name="med_empty_hint">Tap ＋ to add one</string>
+    <string name="med_field_name">Name</string>
+    <string name="med_field_name_hint">e.g. Amlodipine</string>
+    <string name="med_field_dosage">Dose</string>
+    <string name="med_field_unit">Unit</string>
+    <string name="med_field_freq">Frequency</string>
+    <string name="med_field_times">Schedule</string>
+    <string name="med_field_start">Start date</string>
+    <string name="med_field_end">End date (optional)</string>
+    <string name="med_field_note">Note (optional)</string>
+    <string name="med_field_note_hint">e.g. after meals</string>
+    <string name="med_add_time">＋ Add</string>
+    <string name="med_time_format_hint">Format HH:mm, e.g. 08:00</string>
+    <string name="med_remind_enabled">Enable reminder</string>
+    <string name="med_logs_title">Dose history</string>
+    <string name="med_removed">Deleted medication</string>
+    <string name="med_delete_confirm">Delete \"%1$s\" and its dose history?</string>
+
+    <string name="freq_daily_1">Once a day</string>
+    <string name="freq_daily_2">Twice a day</string>
+    <string name="freq_daily_3">3 times a day</string>
+    <string name="freq_every_other">Every other day</string>
+    <string name="freq_weekly">Once a week</string>
+    <string name="freq_as_needed">As needed</string>
+
+    <string name="med_err_name_required">Please enter a medication name</string>
+    <string name="med_err_time_required">Set at least one dose time</string>
+    <string name="med_err_time_format">Invalid time: %1$s (use HH:mm)</string>
+    <string name="med_err_end_before_start">End date cannot precede start date</string>
+
+    <!-- Purchase -->
+    <string name="buy_title">Buy \"%1$s\"</string>
+    <string name="buy_search_hint">Searching for \"%1$s\" — choose a store:</string>
+    <string name="buy_fallback_hint">If a store fails to open, copy the name and search in your shopping app.</string>
+    <string name="buy_copied">Copied \"%1$s\" — paste it in a shopping app</string>
+    <string name="buy_copy_failed">Copy failed. Please note the name: %1$s</string>
+    <string name="buy_open_failed">Could not open %1$s. Name copied for manual search.</string>
+    <string name="buy_name_required">Please enter a medication name first</string>
+    <string name="buy_no_channel">No store available. Please search for \"%1$s\" manually.</string>
+
+    <string name="channel_meituan">Meituan Pharmacy</string>
+    <string name="channel_meituan_desc">30-minute delivery, good for urgent needs</string>
+    <string name="channel_jd">JD Health</string>
+    <string name="channel_jd_desc">Wide selection, good for stocking up</string>
+    <string name="channel_taobao">Taobao</string>
+    <string name="channel_taobao_desc">Often better prices</string>
+    <string name="channel_alihealth">Ali Health</string>
+    <string name="channel_alihealth_desc">Ali Health Pharmacy</string>
+
+    <!-- Legal documents: each entry is one string; first line is the title, the rest are paragraphs (separated by \n) -->
+    <string name="legal_tab_privacy">Privacy Policy</string>
+    <string name="legal_tab_terms">Terms of Use</string>
+    <string name="legal_tab_compliance">Compliance</string>
+    <string name="legal_title">Privacy &amp; Terms</string>
+    <string name="legal_updated">Last updated: 2026-09-25 (policy version v%1$d)</string>
+
+    <string name="legal_privacy_1">1. What we collect\nThis is a local-first health journal. Blood pressure, medication, blood test, note and photo data you enter stay in a local database on your device and are never uploaded automatically.\nHealth data is sensitive personal information under the Personal Information Protection Law. We use it only for recording, reminders, trends and the export you trigger yourself — never for advertising, profiling or unrelated purposes.</string>
+    <string name="legal_privacy_2">2. Network usage\nThe app accesses the network only in these three cases, all triggered by you:\n1. Update check: requests the latest version from GitHub (api.github.com), carrying no personal data;\n2. Download: fetches the APK installer from GitHub;\n3. Purchase: opens a pharmacy search page, passing only the medication name.\nOtherwise the app never connects in the background, and there is no implicit usage reporting.</string>
+    <string name="legal_privacy_3">3. Crash logs\nOn a crash, the stack trace is written to a local file in the app\'s private directory (crash/last_crash.txt), containing time, device model, OS version, app version and the exception stack.\nIt is never uploaded automatically. It leaves the device only when you tap "Share log" on the Version page, and you can read it before sending.</string>
+    <string name="legal_privacy_4">4. Permissions\nNotifications: to deliver medication reminders on time;\nExact alarms: to fire reminders at the scheduled time;\nBoot completed: to re-register reminders after a reboot, without collecting data;\nInternet: only for update check, APK download and pharmacy links;\nInstall packages: to install a new version you downloaded;\nMedia images: only to read a photo you picked for lab scanning or notes.\nPermissions are requested at the point of use. You can revoke any of them in system settings; the related feature stops working, the rest still do.</string>
+    <string name="legal_privacy_5">5. Storage and security\nData lives in a local database (SQLite/Room) and the app\'s private directory, which other apps cannot read directly.\nImportant: uninstalling erases all local data. Please export a JSON backup regularly to cloud storage or a computer, so you can restore after switching or reinstalling.</string>
+    <string name="legal_privacy_6">6. Your rights\nYou may view, edit and delete your records at any time;\nyou may export everything via Backup;\nyou may delete individual records or clear all data;\nyou may withdraw consent to this policy (after which the app stops collecting and exits).</string>
+    <string name="legal_privacy_7">7. Minors\nThe app is intended for adults and their care recipients. Where a guardian enters health data for someone in their care, that data is handled the same way and also stays local.</string>
+    <string name="legal_privacy_8">8. Policy updates\nIf we make material changes, we will update this document in the app and ask for your consent again.\nContinued use means you accept the updated policy.</string>
+
+    <string name="legal_terms_1">1. Service\nThe app provides blood pressure recording and trends, medication reminders and check-in, blood test records with photo recognition, notes, backup and restore, and in-app updates.</string>
+    <string name="legal_terms_2">2. Important disclaimer\nThis app is a recording tool, not a medical device, and provides no diagnosis, treatment advice or prescription.\nBlood pressure categories, reference ranges and hints shown come from public sources, are for reference only, and cannot replace a licensed physician\'s judgement.\nAny medication change must follow your doctor\'s advice; consequences of self-judgement are borne by you.\nIf you feel unwell, seek medical care promptly — do not act on this app\'s statistics alone.</string>
+    <string name="legal_terms_3">3. Data responsibility\nYour data is stored on your device; you are responsible for its safety and backups.\nWe recommend exporting regularly. We cannot restore data lost through device loss, damage, uninstall or system cleanup.</string>
+    <string name="legal_terms_4">4. Accounts and payment\nThis version has no account system: no registration, no login, no fees.</string>
+    <string name="legal_terms_5">5. Intellectual property\nThe app\'s design, copy and code belong to the developer.\nThird-party open-source components follow their own licenses; see the Compliance tab.</string>
+    <string name="legal_terms_6">6. Changes and termination\nWe may change or pause features for product, compliance or technical reasons and will try to notify you in the app.\nIf you use the app in violation of law or these terms, we may terminate the service.</string>
+    <string name="legal_terms_7">7. Disputes\nThese terms are governed by the laws of the People\'s Republic of China. Disputes should be settled amicably; failing that, they go to the competent court where the developer is located.</string>
+
+    <string name="legal_section_info">Personal information collected</string>
+    <string name="legal_info_note">Of the above, health data is sensitive personal information, processed locally and never uploaded.</string>
+    <string-array name="legal_info_headers">
+        <item>Type</item>
+        <item>Purpose</item>
+        <item>Uploaded?</item>
+    </string-array>
+    <string-array name="legal_info_rows">
+        <item>Blood pressure|Recording and trends|Local only</item>
+        <item>Medication &amp; check-in|Reminders and adherence|Local only</item>
+        <item>Blood test values|Recording and trends|Local only</item>
+        <item>Note text and photos|Journal|Local only</item>
+        <item>Crash log|Diagnosing crashes|Local only, sent when you share</item>
+        <item>Policy consent state|Recording consent|Local only</item>
+    </string-array>
+
+    <string name="legal_section_perm">Permissions</string>
+    <string-array name="legal_perm_headers">
+        <item>Permission</item>
+        <item>Purpose</item>
+    </string-array>
+    <string-array name="legal_perm_rows">
+        <item>POST_NOTIFICATIONS|Medication reminder</item>
+        <item>SCHEDULE_EXACT_ALARM|Fire reminder on time</item>
+        <item>VIBRATE|Reminder vibration</item>
+        <item>RECEIVE_BOOT_COMPLETED|Restore reminders after reboot</item>
+        <item>INTERNET|Update check, APK download, pharmacy links</item>
+        <item>ACCESS_NETWORK_STATE|Check network availability</item>
+        <item>REQUEST_INSTALL_PACKAGES|Install downloaded update</item>
+        <item>READ_MEDIA_IMAGES|Scan lab report, add note photos</item>
+    </string-array>
+
+    <string name="legal_section_sdk">Third-party SDKs</string>
+    <string name="legal_sdk_note">The app includes no advertising, push analytics or behaviour tracking SDKs.</string>
+    <string-array name="legal_sdk_headers">
+        <item>SDK</item>
+        <item>Purpose</item>
+        <item>Data</item>
+    </string-array>
+    <string-array name="legal_sdk_rows">
+        <item>Google ML Kit text recognition (Chinese)|Scan lab reports|On-device, not uploaded</item>
+        <item>Coil|Image loading|None</item>
+        <item>MPAndroidChart|Trend charts|None</item>
+        <item>AndroidX Room|Local database|None</item>
+        <item>AndroidX / Compose|UI and navigation|None</item>
+        <item>Hilt|Dependency injection|None</item>
+    </string-array>
+
+    <string name="legal_section_license">Open-source licenses</string>
+    <string-array name="legal_licenses">
+        <item>AndroidX components (Apache License 2.0)</item>
+        <item>Jetpack Compose (Apache License 2.0)</item>
+        <item>Kotlin stdlib and coroutines (Apache License 2.0)</item>
+        <item>Hilt / Dagger (Apache License 2.0)</item>
+        <item>Coil (Apache License 2.0)</item>
+        <item>MPAndroidChart (Apache License 2.0)</item>
+        <item>Google ML Kit (Google Terms of Service)</item>
+        <item>Material Design icons (Apache License 2.0)</item>
+    </string-array>
+
+    <!-- Privacy consent -->
+    <string name="privacy_dialog_title">Privacy Policy</string>
+    <string name="privacy_dialog_intro">Thanks for using SongBaoBao Health. Please read and accept the Privacy Policy and Terms of Use before you start recording.</string>
+    <string name="privacy_dialog_points">Key points:</string>
+    <string name="privacy_point_1">Blood pressure, medication, blood test and note data stay on your device and are never uploaded;</string>
+    <string name="privacy_point_2">Network is used only for update checks, APK download and pharmacy links;</string>
+    <string name="privacy_point_3">Crash logs are local and only sent when you choose to share;</string>
+    <string name="privacy_point_4">This app is a recording tool, not medical advice or diagnosis.</string>
+    <string name="privacy_agree">Accept &amp; continue</string>
+    <string name="privacy_view_full">Read full policy</string>
+    <string name="privacy_disagree">Decline &amp; exit</string>
+
+    <!-- About -->
+    <string name="about_chip">ABOUT</string>
+    <string name="about_version">Version %1$s (build %2$d)</string>
+    <string name="about_channel">Release</string>
+    <string name="about_build_info">Build</string>
+    <string name="about_version_name">Version</string>
+    <string name="about_version_code">Version code</string>
+    <string name="about_min_system">Minimum OS</string>
+    <string name="about_target_system">Target OS</string>
+    <string name="about_arch">Architecture</string>
+    <string name="about_database">Database</string>
+    <string name="about_font">Font</string>
+    <string name="about_value_min_system">Android 8.0 (API 26)</string>
+    <string name="about_value_target_system">Android 14 (API 34)</string>
+    <string name="about_value_arch">arm64-v8a</string>
+    <string name="about_value_database">Room / SQLite (local)</string>
+    <string name="about_value_font">Noto Sans SC</string>
+    <string name="about_tech_stack">Tech stack</string>
+    <string name="about_tech_lang">Language</string>
+    <string name="about_tech_ui">UI</string>
+    <string name="about_tech_arch">Architecture</string>
+    <string name="about_tech_di">DI</string>
+    <string name="about_tech_async">Async</string>
+    <string name="about_tech_nav">Navigation</string>
+    <string name="about_tech_chart">Charts</string>
+    <string name="about_tech_ocr">OCR</string>
+    <string name="about_tech_image">Images</string>
+    <string name="about_value_lang">Kotlin</string>
+    <string name="about_value_ui">Jetpack Compose + Material 3</string>
+    <string name="about_value_arch_mvvm">MVVM (ViewModel + Repository)</string>
+    <string name="about_value_db">Room</string>
+    <string name="about_value_di">Hilt</string>
+    <string name="about_value_async">Coroutines + Flow</string>
+    <string name="about_value_nav">Navigation Compose</string>
+    <string name="about_value_chart">MPAndroidChart</string>
+    <string name="about_value_ocr">Google ML Kit (Chinese)</string>
+    <string name="about_value_image">Coil</string>
+    <string name="about_update">Update</string>
+    <string name="about_update_desc">Check GitHub for the latest version, then download and install it. Your data is kept.</string>
+    <string name="about_check_update">Check for update</string>
+    <string name="about_checking">Checking…</string>
+    <string name="about_install_now">Install now</string>
+    <string name="about_download">Download</string>
+    <string name="about_downloading">Downloading…</string>
+    <string name="about_current_version">Current v%1$s</string>
+    <string name="about_downloaded_percent">%1$d%% downloaded</string>
+    <string name="about_found_new">New version v%1$s (build %2$d)</string>
+    <string name="about_published_at">Released %1$s</string>
+    <string name="about_size">Size %1$s</string>
+    <string name="about_install_blocked">Install blocked? Enable install permission</string>
+    <string name="about_clear_update">Dismiss</string>
+    <string name="about_backup">Backup</string>
+    <string name="about_backup_desc">Export everything to a JSON file on your phone or cloud drive; restore it after switching or reinstalling.</string>
+    <string name="about_export">Export</string>
+    <string name="about_import">Restore</string>
+    <string name="about_processing">Working…</string>
+    <string name="about_import_mode_title">Import mode</string>
+    <string name="about_import_merge_desc">Merge: keep current records and add the backup as new entries.</string>
+    <string name="about_import_replace_desc">Replace: erase all current records, then load the backup (cannot be undone).</string>
+    <string name="about_import_merge">Merge</string>
+    <string name="about_import_replace">Replace</string>
+    <string name="about_changelog">Changelog</string>
+    <string name="about_expand">Expand</string>
+    <string name="about_collapse">Collapse</string>
+    <string name="about_last_crash">Last crash log</string>
+    <string name="about_crash_desc">The app exited unexpectedly last time. Share the log to help locate the cause.</string>
+    <string name="about_share_log">Share log</string>
+    <string name="about_clear">Clear</string>
+    <string name="about_data_warning">All data is stored locally and is erased on uninstall. Please export a backup regularly.</string>
+    <string name="about_legal_section">Privacy &amp; compliance</string>
+    <string name="about_legal_entry">Privacy Policy / Terms / Compliance</string>
+    <string name="about_accepted_at">You accepted the Privacy Policy on %1$s</string>
+    <string name="about_not_accepted">Privacy Policy not yet accepted</string>
+    <string name="about_revoke_hint">You can read these documents anytime. To withdraw consent, clear app data in system settings.</string>
+
+    <!-- ===== i18n completion ===== -->
+    <string name="bp_records_count">%1$d records</string>
+    <string name="filter_from">From</string>
+    <string name="filter_to">To</string>
+    <string name="list_empty_filter">No matching records</string>
+    <string name="bp_delete_confirm">Delete the record for %1$s?</string>
+    <string name="confirm_delete_title">Confirm deletion</string>
+
+    <string name="med_period">From %1$s · to %2$s</string>
+    <string name="med_period_start">From %1$s</string>
+    <string name="med_time_index">Time %1$d</string>
+
+    <string name="bp_level_optimal">Optimal</string>
+    <string name="bp_level_normal">Normal</string>
+    <string name="bp_level_elevated">Elevated</string>
+    <string name="bp_level_stage1">Stage 1 hypertension</string>
+    <string name="bp_level_stage2">Stage 2 hypertension</string>
+    <string name="bp_level_crisis">Hypertensive crisis</string>
+    <string name="bp_advice_optimal">Blood pressure is optimal, keep it up.</string>
+    <string name="bp_advice_normal">Blood pressure is normal. Keep a regular routine.</string>
+    <string name="bp_advice_elevated">Slightly high. Reduce salt, exercise, and rest well.</string>
+    <string name="bp_advice_stage1">Consult a doctor and adjust your lifestyle.</string>
+    <string name="bp_advice_stage2">See a doctor soon and use medication as prescribed.</string>
+    <string name="bp_advice_crisis">Seek medical care immediately.</string>
+
+    <string name="judge_low">Low</string>
+    <string name="judge_high">High</string>
+    <string name="judge_normal">Normal</string>
+    <string name="judge_dash">—</string>
+    <string name="ocr_fail">Recognition failed</string>
+
+    <string name="chart_systolic">Systolic</string>
+    <string name="chart_diastolic">Diastolic</string>
+    <string name="chart_pulse">Pulse</string>
+    <string name="chart_metric">Metric</string>
+    <string name="chart_ref_upper">Upper limit</string>
+    <string name="chart_ref_lower">Lower limit</string>
+    <string name="chart_no_data">No data</string>
+    <string name="chart_ref_sys">Systolic %1$d</string>
+    <string name="chart_ref_dia">Diastolic %1$d</string>
+
+    <string name="cbc_wbc">White blood cells (WBC)</string>
+    <string name="cbc_rbc">Red blood cells (RBC)</string>
+    <string name="cbc_hgb">Hemoglobin (HGB)</string>
+    <string name="cbc_hct">Hematocrit (HCT)</string>
+    <string name="cbc_mcv">Mean corpuscular volume (MCV)</string>
+    <string name="cbc_mch">Mean corpuscular hemoglobin (MCH)</string>
+    <string name="cbc_mchc">MCH concentration (MCHC)</string>
+    <string name="cbc_plt">Platelets (PLT)</string>
+    <string name="cbc_lym">Lymphocyte %</string>
+    <string name="cbc_neut">Neutrophil %</string>
+    <string name="cbc_mono">Monocyte %</string>
+    <string name="cbc_eos">Eosinophil %</string>
+    <string name="cbc_crp">C-reactive protein (CRP)</string>
+
+    <string name="med_generic">Medication</string>
+
+    <string name="about_privacy_compliance">Privacy &amp; Compliance</string>
+    <string name="about_view_legal">View Privacy / Terms / Compliance</string>
+    <string name="about_consent_agreed">You agreed to the Privacy Policy on %1$s</string>
+    <string name="about_consent_not">Privacy Policy not yet agreed</string>
+    <string name="about_consent_note">You may view this document anytime without agreeing. To withdraw consent, clear app data in system settings.</string>
+    <string name="update_checking">Checking…</string>
+    <string name="update_install_now">Install now</string>
+    <string name="update_check_now">Check for update</string>
+    <string name="update_downloading">Downloading…</string>
+    <string name="update_download">Download</string>
+    <string name="update_downloaded_pct">Downloaded %1$d%%</string>
+    <string name="update_found">New version v%1$s (build %2$d) found</string>
+    <string name="update_published">Published %1$s</string>
+    <string name="update_install_blocked">Install blocked? Tap to grant install permission</string>
+    <string name="update_clear_hint">Clear update notice</string>
+    <string name="backup_desc">Export all records to a JSON file on your phone or cloud; restore from it when switching devices or reinstalling.</string>
+    <string name="backup_export">Export backup</string>
+    <string name="backup_import">Restore from backup</string>
+    <string name="common_processing">Processing…</string>
+    <string name="import_title">Choose import mode</string>
+    <string name="import_merge_desc">Merge: keep existing records, append backup contents as new records.</string>
+    <string name="import_replace_desc">Replace: clear all current records first, then write backup contents (irreversible).</string>
+    <string name="import_merge">Merge import</string>
+    <string name="import_replace">Replace import</string>
+    <string name="update_size">Size %1$s</string>
+</resources>

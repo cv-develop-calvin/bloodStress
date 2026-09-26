@@ -1,5 +1,7 @@
 package org.bp.songbaobao.reminder
 
+import org.bp.songbaobao.R
+
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -24,7 +26,7 @@ class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val medId = intent.getLongExtra("medId", -1L)
         val slot = intent.getStringExtra("slot") ?: return
-        val name = intent.getStringExtra("name") ?: "药品"
+        val name = intent.getStringExtra("name") ?: context.getString(R.string.med_generic)
         val dosage = intent.getStringExtra("dosage") ?: ""
 
         val pendingResult = goAsync()

@@ -8,9 +8,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.components.classifyBp
 import org.bp.songbaobao.ui.components.AppTextField
 import org.bp.songbaobao.ui.components.GoldButton
@@ -53,7 +56,9 @@ fun BpFormScreen(
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            if (recordId == null) "添加血压记录" else "编辑血压记录",
+            stringResource(
+                if (recordId == null) R.string.bp_form_title_add else R.string.bp_form_title_edit
+            ),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = GoldBright
@@ -63,19 +68,23 @@ fun BpFormScreen(
         // 实时分级预览
         PanelCard {
             Column(Modifier.padding(12.dp)) {
-                Text("本次测量", style = MaterialTheme.typography.labelMedium, color = TextDim)
+                Text(
+                    stringResource(R.string.bp_form_current),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = TextDim
+                )
                 Spacer(Modifier.height(4.dp))
                 Row {
                     AssistChip(
                         onClick = {},
-                        label = { Text(level.name) },
+                        label = { Text(stringResource(level.nameRes)) },
                         colors = AssistChipDefaults.assistChipColors(
                             containerColor = level.color.copy(alpha = 0.25f),
                             labelColor = level.color
                         )
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(level.advice, style = MaterialTheme.typography.bodySmall,
+                    Text(stringResource(level.adviceRes), style = MaterialTheme.typography.bodySmall,
                         color = TextDim, modifier = Modifier.weight(1f))
                 }
             }
@@ -87,13 +96,13 @@ fun BpFormScreen(
             AppTextField(
                 value = record.date,
                 onValueChange = { record = record.copy(date = it) },
-                label = "测量日期",
+                label = stringResource(R.string.bp_form_date),
                 modifier = Modifier.weight(1f)
             )
             AppTextField(
                 value = record.time,
                 onValueChange = { record = record.copy(time = it) },
-                label = "测量时间",
+                label = stringResource(R.string.bp_form_time),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -102,13 +111,13 @@ fun BpFormScreen(
             AppTextField(
                 value = record.systolic.toString(),
                 onValueChange = { record = record.copy(systolic = it.toIntOrNull() ?: 0) },
-                label = "收缩压(mmHg)",
+                label = stringResource(R.string.bp_form_sys),
                 modifier = Modifier.weight(1f)
             )
             AppTextField(
                 value = record.diastolic.toString(),
                 onValueChange = { record = record.copy(diastolic = it.toIntOrNull() ?: 0) },
-                label = "舒张压(mmHg)",
+                label = stringResource(R.string.bp_form_dia),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -116,14 +125,14 @@ fun BpFormScreen(
         AppTextField(
             value = record.pulse?.toString() ?: "",
             onValueChange = { record = record.copy(pulse = it.toIntOrNull()) },
-            label = "心率(次/分，选填)"
+            label = stringResource(R.string.bp_form_pulse)
         )
         Spacer(Modifier.height(10.dp))
         AppTextField(
             value = record.note,
             onValueChange = { record = record.copy(note = it) },
-            label = "备注（选填）",
-            placeholder = "如：晨起、服药后、运动后"
+            label = stringResource(R.string.bp_form_note),
+            placeholder = stringResource(R.string.bp_form_note_hint)
         )
 
         if (error != null) {
@@ -133,31 +142,41 @@ fun BpFormScreen(
 
         Spacer(Modifier.height(20.dp))
 
+        val context = LocalContext.current
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             GoldButton(
                 onClick = {
-                    error = validate(record)
+                    error = validate(context, record)
                     if (error == null) vm.save(record, onBack)
                 },
                 modifier = Modifier.weight(1f)
-            ) { Text("保存", fontWeight = FontWeight.Bold) }
+            ) {
+                Text(
+                    stringResource(R.string.action_save),
+                    fontWeight = FontWeight.Bold
+                )
+            }
             OutlinedButton(
                 onClick = onBack,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDim)
-            ) { Text("取消") }
+            ) { Text(stringResource(R.string.action_cancel)) }
         }
 
         Spacer(Modifier.height(24.dp))
     }
 }
 
-private fun validate(r: org.bp.songbaobao.data.local.entity.BpRecord): String? {
-    if (r.date.isBlank()) return "请选择测量日期"
-    if (r.systolic !in 60..300) return "收缩压应在 60-300 之间"
-    if (r.diastolic !in 30..200) return "舒张压应在 30-200 之间"
-    if (r.diastolic >= r.systolic) return "舒张压应小于收缩压"
-    if (r.pulse != null && r.pulse!! !in 30..250) return "心率应在 30-250 之间"
+/** 校验：接收 context 以便按当前语言返回提示 */
+private fun validate(
+    context: android.content.Context,
+    r: org.bp.songbaobao.data.local.entity.BpRecord
+): String? {
+    if (r.date.isBlank()) return context.getString(R.string.bp_err_date)
+    if (r.systolic !in 60..300) return context.getString(R.string.bp_err_sys)
+    if (r.diastolic !in 30..200) return context.getString(R.string.bp_err_dia)
+    if (r.diastolic >= r.systolic) return context.getString(R.string.bp_err_dia_lt_sys)
+    if (r.pulse != null && r.pulse!! !in 30..250) return context.getString(R.string.bp_err_pulse)
     return null
 }
 

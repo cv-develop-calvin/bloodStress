@@ -14,10 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import org.bp.songbaobao.R
 import org.bp.songbaobao.data.local.entity.Note
 import org.bp.songbaobao.data.local.entity.NotePhoto
 import org.bp.songbaobao.ui.components.AppBackground
@@ -82,7 +85,9 @@ fun NoteFormScreen(
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            if (noteId == null) "写留言" else "编辑留言",
+            stringResource(
+                if (noteId == null) R.string.note_form_title_add else R.string.note_form_title_edit
+            ),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold, color = GoldBright
         )
@@ -90,29 +95,37 @@ fun NoteFormScreen(
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             AppTextField(value = note.date, onValueChange = { note = note.copy(date = it) },
-                label = "日期", modifier = Modifier.weight(1f))
+                label = stringResource(R.string.note_form_date),
+                modifier = Modifier.weight(1f))
             AppTextField(value = note.time, onValueChange = { note = note.copy(time = it) },
-                label = "时间", modifier = Modifier.weight(1f))
+                label = stringResource(R.string.note_form_time),
+                modifier = Modifier.weight(1f))
         }
         Spacer(Modifier.height(10.dp))
 
         AppTextField(value = note.title, onValueChange = { note = note.copy(title = it) },
-            label = "标题", placeholder = "如：第一次翻身")
+            label = stringResource(R.string.note_form_title),
+            placeholder = stringResource(R.string.note_form_title_hint))
         Spacer(Modifier.height(10.dp))
 
         AppTextField(
             value = note.content,
             onValueChange = { note = note.copy(content = it) },
-            label = "留言内容",
+            label = stringResource(R.string.note_form_content),
             singleLine = false,
             modifier = Modifier.heightIn(min = 140.dp)
         )
-        Text("${note.content.length} 字 · 最多 5000 字",
-            style = MaterialTheme.typography.labelSmall, color = TextDim)
+        Text(
+            stringResource(R.string.note_char_count, note.content.length),
+            style = MaterialTheme.typography.labelSmall, color = TextDim
+        )
         Spacer(Modifier.height(12.dp))
 
         // 心情
-        Text("心情", style = MaterialTheme.typography.labelMedium, color = TextDim)
+        Text(
+            stringResource(R.string.note_form_mood),
+            style = MaterialTheme.typography.labelMedium, color = TextDim
+        )
         Spacer(Modifier.height(6.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             moods.forEach { m ->
@@ -132,13 +145,17 @@ fun NoteFormScreen(
         Spacer(Modifier.height(12.dp))
 
         AppTextField(value = note.tags, onValueChange = { note = note.copy(tags = it) },
-            label = "标签", placeholder = "用逗号分隔，如：成长,第一次,体检")
+            label = stringResource(R.string.note_form_tags),
+            placeholder = stringResource(R.string.note_form_tags_hint))
         Spacer(Modifier.height(12.dp))
 
         // 照片
         PanelCard {
             Column(modifier = Modifier.padding(12.dp)) {
-                Text("照片（最多 9 张）", style = MaterialTheme.typography.labelMedium, color = TextDim)
+                Text(
+                    stringResource(R.string.note_photos_max),
+                    style = MaterialTheme.typography.labelMedium, color = TextDim
+                )
                 Spacer(Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     GoldButton(
@@ -150,7 +167,7 @@ fun NoteFormScreen(
                             }
                         },
                         modifier = Modifier.weight(1f)
-                    ) { Text("📸 拍照") }
+                    ) { Text(stringResource(R.string.note_take_photo)) }
                     OutlinedButton(
                         onClick = {
                             pickMultiple.launch(
@@ -159,9 +176,12 @@ fun NoteFormScreen(
                         },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDim)
-                    ) { Text("🖼️ 相册") }
+                    ) { Text(stringResource(R.string.note_gallery)) }
                 }
-                Text("已选 ${pickedUris.size} 张", style = MaterialTheme.typography.labelSmall, color = TextDim)
+                Text(
+                    stringResource(R.string.note_selected_count, pickedUris.size),
+                    style = MaterialTheme.typography.labelSmall, color = TextDim
+                )
 
                 if (pickedUris.isNotEmpty()) {
                     Spacer(Modifier.height(8.dp))
@@ -189,7 +209,10 @@ fun NoteFormScreen(
                 // 已有照片（编辑时）
                 if (existingPhotos.isNotEmpty()) {
                     Spacer(Modifier.height(12.dp))
-                    Text("已有照片（点击标记删除）", style = MaterialTheme.typography.labelSmall, color = TextDim)
+                    Text(
+                        stringResource(R.string.note_existing_photos),
+                        style = MaterialTheme.typography.labelSmall, color = TextDim
+                    )
                     Spacer(Modifier.height(6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         existingPhotos.forEach { p ->
@@ -230,15 +253,16 @@ fun NoteFormScreen(
 
         Spacer(Modifier.height(20.dp))
 
+        val context = LocalContext.current
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             GoldButton(
                 onClick = {
                     if (note.title.isBlank() && note.content.isBlank() && pickedUris.isEmpty()) {
-                        error = "请至少填写标题或留言内容"
+                        error = context.getString(R.string.note_err_need_content)
                         return@GoldButton
                     }
                     if (note.content.length > 5000) {
-                        error = "留言内容过长（最多 5000 字）"
+                        error = context.getString(R.string.note_err_too_long)
                         return@GoldButton
                     }
                     // 标记删除的已有照片
@@ -251,12 +275,14 @@ fun NoteFormScreen(
                     vm.save(final, pickedUris, onBack)
                 },
                 modifier = Modifier.weight(1f)
-            ) { Text("保存", fontWeight = FontWeight.Bold) }
+            ) {
+                Text(stringResource(R.string.action_save), fontWeight = FontWeight.Bold)
+            }
             OutlinedButton(
                 onClick = onBack,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDim)
-            ) { Text("取消") }
+            ) { Text(stringResource(R.string.action_cancel)) }
         }
 
         Spacer(Modifier.height(24.dp))

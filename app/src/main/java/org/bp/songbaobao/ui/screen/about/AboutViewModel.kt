@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.bp.songbaobao.R
 import org.bp.songbaobao.backup.BackupRepository
 import org.bp.songbaobao.backup.ImportMode
 import org.bp.songbaobao.data.repository.UpdateCheck
@@ -43,8 +44,14 @@ data class AboutUiState(
 @HiltViewModel
 class AboutViewModel @Inject constructor(
     private val backup: BackupRepository,
-    private val version: VersionRepository
+    private val version: VersionRepository,
+    // 注入 Application 以便按当前语言取提示文案
+    // （用 Application 而非 Activity，避免持有视图导致泄漏）
+    private val app: android.app.Application
 ) : ViewModel() {
+
+    private fun msg(resId: Int, vararg args: Any): String =
+        app.getString(resId, *args)
 
     private val _state = MutableStateFlow(AboutUiState())
     val state: StateFlow<AboutUiState> = _state.asStateFlow()
@@ -61,7 +68,7 @@ class AboutViewModel @Inject constructor(
     // ---------------- 备份 ----------------
 
     fun export(context: Context, target: Uri) {
-        _state.value = AboutUiState(busy = true, message = "正在导出…")
+        _state.value = AboutUiState(busy = true, message = msg(R.string.msg_exporting))
         viewModelScope.launch {
             val r = backup.export(context, target)
             _state.value = AboutUiState(busy = false, message = r.message, detail = r.counts)
@@ -69,7 +76,7 @@ class AboutViewModel @Inject constructor(
     }
 
     fun import(context: Context, source: Uri, mode: ImportMode) {
-        _state.value = AboutUiState(busy = true, message = "正在导入…")
+        _state.value = AboutUiState(busy = true, message = msg(R.string.msg_importing))
         viewModelScope.launch {
             val r = backup.import(context, source, mode)
             _state.value = AboutUiState(busy = false, message = r.message, detail = r.counts)
@@ -96,9 +103,13 @@ class AboutViewModel @Inject constructor(
             when (r) {
                 is UpdateCheck.Available -> _update.value = UpdateUiState(available = r.update)
                 is UpdateCheck.UpToDate ->
-                    _update.value = UpdateUiState(message = "已是最新版本 v${r.currentVersion}")
+                    _update.value = UpdateUiState(
+                        message = msg(R.string.msg_latest_version, r.currentVersion)
+                    )
                 is UpdateCheck.Failed ->
-                    _update.value = UpdateUiState(message = "检查更新失败：${r.reason}")
+                    _update.value = UpdateUiState(
+                        message = msg(R.string.msg_check_failed_reason, r.reason)
+                    )
             }
         }
     }
@@ -117,19 +128,19 @@ class AboutViewModel @Inject constructor(
                     downloading = false,
                     progress = 1f,
                     downloadedApk = apk,
-                    message = "下载完成，点击下方按钮安装"
+                    message = msg(R.string.msg_download_done_hint)
                 )
             } catch (t: Throwable) {
                 val reason = when (t) {
-                    is java.net.UnknownHostException -> "无法连接网络，请检查手机网络"
-                    is java.net.SocketTimeoutException -> "连接超时，请检查网络后重试"
-                    is java.net.ConnectException -> "网络连接失败，请检查网络后重试"
+                    is java.net.UnknownHostException -> msg(R.string.msg_net_unavailable)
+                    is java.net.SocketTimeoutException -> msg(R.string.msg_net_timeout)
+                    is java.net.ConnectException -> msg(R.string.msg_net_failed)
                     else -> t.message ?: t.javaClass.simpleName
                 }
                 _update.value = _update.value.copy(
                     downloading = false,
                     progress = null,
-                    message = "下载失败：$reason"
+                    message = msg(R.string.msg_download_failed, reason)
                 )
             }
         }
@@ -142,7 +153,10 @@ class AboutViewModel @Inject constructor(
             version.installApk(context, apk)
         } catch (t: Throwable) {
             _update.value = _update.value.copy(
-                message = "无法唤起安装器：${t.message ?: "请允许本应用安装未知应用"}"
+                message = msg(
+                    R.string.msg_installer_failed,
+                    t.message ?: msg(R.string.msg_need_install_permission)
+                )
             )
             version.openInstallPermissionSettings(context)
         }

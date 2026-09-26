@@ -14,16 +14,15 @@ import org.bp.songbaobao.R
 object NotificationHelper {
 
     const val CHANNEL_ID = "med_reminder"
-    const val CHANNEL_NAME = "用药提醒"
 
     fun createChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                CHANNEL_NAME,
+                context.getString(R.string.notif_channel_name),
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "到点提醒服药"
+                description = context.getString(R.string.notif_channel_desc)
                 enableVibration(true)
                 vibrationPattern = longArrayOf(300, 150, 300)
                 // 使用手机默认铃声
@@ -55,7 +54,7 @@ object NotificationHelper {
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_reminder)
-            .setContentTitle("该吃药了 💊")
+            .setContentTitle(context.getString(R.string.notif_title))
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setPriority(NotificationCompat.PRIORITY_HIGH)

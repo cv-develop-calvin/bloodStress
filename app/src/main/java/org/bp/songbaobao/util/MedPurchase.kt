@@ -22,11 +22,11 @@ import android.widget.Toast
  */
 object MedPurchase {
 
-    /** 一个可选的购买渠道 */
+    /** 一个可选的购买渠道（名称与描述用字符串资源 id，随语言切换） */
     data class Channel(
         val id: String,
-        val name: String,
-        val desc: String,
+        @androidx.annotation.StringRes val nameRes: Int,
+        @androidx.annotation.StringRes val descRes: Int,
         /** 生成该渠道的搜索地址 */
         val url: (keyword: String) -> String
     )
@@ -38,26 +38,26 @@ object MedPurchase {
     val channels: List<Channel> = listOf(
         Channel(
             id = "meituan",
-            name = "美团买药",
-            desc = "30 分钟送药，适合急用",
+            nameRes = org.bp.songbaobao.R.string.channel_meituan,
+            descRes = org.bp.songbaobao.R.string.channel_meituan_desc,
             url = { kw -> "https://maiyao.meituan.com/search?keyword=${enc(kw)}" }
         ),
         Channel(
             id = "jd",
-            name = "京东健康",
-            desc = "药品种类全，适合囤货",
+            nameRes = org.bp.songbaobao.R.string.channel_jd,
+            descRes = org.bp.songbaobao.R.string.channel_jd_desc,
             url = { kw -> "https://search.jd.com/Search?keyword=${enc(kw)}&enc=utf-8" }
         ),
         Channel(
             id = "taobao",
-            name = "淘宝",
-            desc = "价格常有优势",
+            nameRes = org.bp.songbaobao.R.string.channel_taobao,
+            descRes = org.bp.songbaobao.R.string.channel_taobao_desc,
             url = { kw -> "https://s.taobao.com/search?q=${enc(kw)}" }
         ),
         Channel(
             id = "alihealth",
-            name = "阿里健康",
-            desc = "阿里健康大药房",
+            nameRes = org.bp.songbaobao.R.string.channel_alihealth,
+            descRes = org.bp.songbaobao.R.string.channel_alihealth_desc,
             url = { kw -> "https://www.alihealth.cn/" }
         )
     )
@@ -78,7 +78,7 @@ object MedPurchase {
      */
     fun buy(context: Context, name: String, dosage: String = ""): Boolean {
         if (name.isBlank()) {
-            toast(context, "请先填写药品名称")
+            toastRes(context, org.bp.songbaobao.R.string.buy_name_required)
             return false
         }
         return open(context, defaultChannel, keywordOf(name, dosage))
@@ -87,7 +87,7 @@ object MedPurchase {
     /** 按指定渠道发起跳转 */
     fun buyWith(context: Context, channel: Channel, name: String, dosage: String = ""): Boolean {
         if (name.isBlank()) {
-            toast(context, "请先填写药品名称")
+            toastRes(context, org.bp.songbaobao.R.string.buy_name_required)
             return false
         }
         return open(context, channel, keywordOf(name, dosage))
@@ -130,23 +130,43 @@ object MedPurchase {
         return try {
             val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
                 ?: return false
-            cm.setPrimaryClip(ClipData.newPlainText("药品名称", keyword))
-            toast(context, "已复制「$keyword」，可粘贴到购药 App 搜索")
+            cm.setPrimaryClip(ClipData.newPlainText("medication_name", keyword))
+            toastRes(context, org.bp.songbaobao.R.string.buy_copied, keyword)
             true
         } catch (t: Throwable) {
             android.util.Log.w("MedPurchase", "复制到剪贴板失败", t)
-            toast(context, "复制失败，请手动记录药名：$keyword")
+            toastRes(context, org.bp.songbaobao.R.string.buy_copy_failed, keyword)
             false
         }
     }
 
-    /** Toast 必须在主线程弹出，这里统一兜底切换线程 */
+    /**
+     * Toast 必须在主线程弹出，这里统一兜底切换线程。
+     * 注意：必须用 attachBaseContext 注入后的 Context 取字符串，
+     * 否则语言切换后 Toast 仍会是旧语言（applicationContext 不带配置）。
+     */
     private fun toast(context: Context, msg: String) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            Toast.makeText(context.applicationContext, msg, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
         } else {
             Handler(Looper.getMainLooper()).post {
-                Toast.makeText(context.applicationContext, msg, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    /** 带占位符的资源 Toast */
+    private fun toastRes(
+        context: Context,
+        @androidx.annotation.StringRes resId: Int,
+        vararg args: Any
+    ) {
+        val msg = context.getString(resId, *args)
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+        } else {
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import org.bp.songbaobao.data.local.entity.LabReport
 import org.bp.songbaobao.data.repository.LabPoint
 import org.bp.songbaobao.data.repository.LabRepository
+import org.bp.songbaobao.R
 import org.bp.songbaobao.domain.CbcItems
 import org.bp.songbaobao.domain.OcrParser
 import org.bp.songbaobao.util.nowStamp
@@ -96,7 +97,7 @@ class LabViewModel @Inject constructor(
                 _ocrState.value = OcrState.Done(text, values)
                 recognizer.close()
             }.onFailure { e ->
-                _ocrState.value = OcrState.Error(e.message ?: "识别失败")
+                _ocrState.value = OcrState.Error(e.message ?: appContext.getString(R.string.ocr_fail))
             }
         }
     }

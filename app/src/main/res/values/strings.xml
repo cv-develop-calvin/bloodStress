@@ -1,4 +1,533 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">宋宝宝的记录</string>
+
+    <!-- 通知与提醒 -->
+    <string name="notif_channel_name">用药提醒</string>
+    <string name="notif_channel_desc">到点提醒服药</string>
+    <string name="notif_title">该吃药了 💊</string>
+    <string name="notif_default_name">药品</string>
+    <string name="notif_body">%1$s · %2$s 该吃药了</string>
+
+    <!-- 崩溃日志 -->
+    <string name="crash_time">时间: %1$s</string>
+    <string name="crash_device">设备: %1$s %2$s</string>
+    <string name="crash_os">系统: Android %1$s (API %2$d)</string>
+    <string name="crash_version">应用版本: %1$s (%2$d)</string>
+    <string name="crash_share_subject">宋宝宝的记录 崩溃日志</string>
+    <string name="crash_share_title">分享崩溃日志</string>
+
+    <!-- 更新与备份提示 -->
+    <string name="msg_already_latest">已是最新（v%1$s）</string>
+    <string name="msg_check_failed">检查失败：%1$s</string>
+    <string name="msg_no_apk_link">该版本没有可下载的 APK</string>
+    <string name="msg_download_failed">下载失败：%1$s</string>
+    <string name="msg_download_done">下载完成，点击安装</string>
+    <string name="msg_install_failed">安装失败：%1$s</string>
+    <string name="msg_installing">正在安装…</string>
+    <string name="msg_export_failed">导出失败：%1$s</string>
+    <string name="msg_import_failed">导入失败：%1$s</string>
+    <string name="msg_export_done">已导出 %1$d 条记录</string>
+    <string name="msg_import_done">已导入 %1$d 条记录</string>
+    <string name="msg_need_install_permission">需要「允许安装未知应用」权限才能安装</string>
+    <string name="msg_pick_file">请选择备份文件</string>
+    <string name="msg_check_start">进入 checkForUpdate，准备请求</string>
+    <string name="msg_not_app_build">最新发布不是应用构建（%1$s）</string>
+    <string name="msg_bad_build_number">无法解析构建号（%1$s）</string>
+    <string name="msg_timeout">请求超时</string>
+    <string name="msg_download_http">下载失败：HTTP %1$d</string>
+    <string name="msg_net_unavailable">无法连接网络，请检查手机网络后重试</string>
+    <string name="msg_net_timeout">网络请求超时，请检查手机网络后重试</string>
+    <string name="msg_net_failed">网络连接失败，请检查手机网络后重试</string>
+    <string name="msg_exporting">正在导出…</string>
+    <string name="msg_importing">正在导入…</string>
+    <string name="msg_latest_version">已是最新版本 v%1$s</string>
+    <string name="msg_check_failed_reason">检查更新失败：%1$s</string>
+    <string name="msg_download_done_hint">下载完成，点击下方按钮安装</string>
+    <string name="msg_installer_failed">无法唤起安装器：%1$s</string>
+    <string name="msg_write_failed">无法写入所选位置</string>
+    <string name="msg_export_ok">导出成功</string>
+    <string name="msg_read_failed">无法读取所选文件</string>
+    <string name="msg_not_backup_file">这不是本应用导出的备份文件</string>
+    <string name="msg_backup_too_new">备份版本(v%1$d)高于当前应用支持(v%2$d)，请先升级应用</string>
+    <string name="msg_import_ok_merge">导入成功（合并）</string>
+    <string name="msg_import_ok_replace">导入成功（覆盖）</string>
+    <string name="msg_backup_summary">血压 %1$d · 药品 %2$d · 服药 %3$d · 血常规 %4$d · 留言 %5$d · 照片 %6$d</string>
+
+    <!-- 语言 -->
+    <string name="lang_title">语言</string>
+    <string name="lang_follow_system">跟随系统</string>
+    <string name="lang_chinese">中文</string>
+    <string name="lang_english">English</string>
+    <string name="lang_restart_hint">切换后立即生效</string>
+
+    <!-- 底部导航 -->
+    <string name="nav_bp">血压</string>
+    <string name="nav_med">用药</string>
+    <string name="nav_lab">血常规</string>
+    <string name="nav_notes">笔记本</string>
+    <string name="nav_about">版本</string>
+
+    <!-- 页面标题 -->
+    <string name="title_add_bp">添加血压</string>
+    <string name="title_edit_bp">编辑血压</string>
+    <string name="title_all_records">全部记录</string>
+    <string name="title_add_med">添加药品</string>
+    <string name="title_edit_med">编辑药品</string>
+    <string name="title_add_lab">添加血常规</string>
+    <string name="title_edit_lab">编辑血常规</string>
+    <string name="title_scan">拍照识别</string>
+    <string name="title_add_note">写留言</string>
+    <string name="title_edit_note">编辑留言</string>
+    <string name="title_note_detail">留言详情</string>
+    <string name="title_legal">隐私与协议</string>
+    <string name="back">返回</string>
+
+    <!-- 通用动作 -->
+    <string name="action_save">保存</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_edit">编辑</string>
+    <string name="action_delete">删除</string>
+    <string name="action_buy">购买</string>
+    <string name="action_confirm">确定</string>
+    <string name="action_copy">复制药名</string>
+    <string name="action_retry">重试</string>
+
+    <!-- 血压 -->
+    <string name="bp_chip">天马座 · PEGASUS</string>
+    <string name="bp_app_subtitle">SAINT · 健康档案</string>
+    <string name="bp_no_data">暂无数据</string>
+    <string name="bp_add_first">添加第一条记录</string>
+    <string name="bp_latest">最新测量 · %1$s %2$s</string>
+    <string name="bp_pulse">心率 %1$d</string>
+    <string name="bp_avg_sys">平均收缩压</string>
+    <string name="bp_avg_dia">平均舒张压</string>
+    <string name="bp_avg_pulse">平均心率</string>
+    <string name="bp_range_max_min">最高 %1$s · 最低 %2$s</string>
+    <string name="bp_count_records">记录 %1$d 条</string>
+    <string name="bp_adherence_7d">近 7 天服药</string>
+    <string name="bp_time_to_take">该吃药了</string>
+    <string name="bp_trend_title">血压趋势曲线</string>
+    <string name="bp_series_sys">收缩压</string>
+    <string name="bp_series_dia">舒张压</string>
+    <string name="bp_series_pulse">心率</string>
+    <string name="bp_trend_empty_hint">点击右下角＋添加记录</string>
+    <string name="bp_recent_title">最近记录</string>
+    <string name="bp_view_all">查看全部 →</string>
+    <string name="bp_no_records">还没有记录</string>
+    <string name="bp_range_7d">7 天</string>
+    <string name="bp_range_30d">30 天</string>
+    <string name="bp_range_90d">90 天</string>
+    <string name="bp_range_all">全部</string>
+
+    <string name="bp_form_title_add">添加血压记录</string>
+    <string name="bp_form_title_edit">编辑血压记录</string>
+    <string name="bp_form_current">本次测量</string>
+    <string name="bp_form_date">测量日期</string>
+    <string name="bp_form_time">测量时间</string>
+    <string name="bp_form_sys">收缩压(mmHg)</string>
+    <string name="bp_form_dia">舒张压(mmHg)</string>
+    <string name="bp_form_pulse">心率(次/分，选填)</string>
+    <string name="bp_form_note">备注（选填）</string>
+    <string name="bp_form_note_hint">如：晨起、服药后、运动后</string>
+    <string name="bp_err_date">请选择测量日期</string>
+    <string name="bp_err_sys">收缩压应在 60-300 之间</string>
+    <string name="bp_err_dia">舒张压应在 30-200 之间</string>
+    <string name="bp_err_dia_lt_sys">舒张压应小于收缩压</string>
+    <string name="bp_err_pulse">心率应在 30-250 之间</string>
+
+    <!-- 血常规 -->
+    <string name="lab_scan_title">📷 拍化验单，自动读指标</string>
+    <string name="lab_scan_tip">平铺桌面、光线均匀、镜头正对</string>
+    <string name="lab_open_camera">打开相机拍照</string>
+    <string name="lab_from_gallery">从相册选择</string>
+    <string name="lab_supported">支持：%1$s</string>
+    <string name="lab_empty_title">还没有血常规记录</string>
+    <string name="lab_empty_hint">展开上方面板拍一张，或点击＋手动录入</string>
+    <string name="lab_latest">最新报告 · %1$s</string>
+    <string name="lab_trend_title">指标趋势</string>
+    <string name="lab_range_7d">7天</string>
+    <string name="lab_range_30d">30天</string>
+    <string name="lab_range_90d">90天</string>
+    <string name="lab_no_series">该指标暂无数据</string>
+    <string name="lab_abnormal_count">%1$d 项异常</string>
+    <string name="lab_all_normal">全部正常</string>
+    <string name="lab_source_photo">拍照识别</string>
+    <string name="lab_form_title_add">添加血常规</string>
+    <string name="lab_form_title_edit">编辑血常规</string>
+    <string name="lab_ocr_prefill">已从照片识别到 %1$d 项（金色高亮），请核对后保存</string>
+    <string name="lab_form_date">报告日期</string>
+    <string name="lab_form_time">时间</string>
+    <string name="lab_form_hospital">医院 / 机构（可空）</string>
+    <string name="lab_form_hospital_hint">如：市儿童医院</string>
+    <string name="lab_form_note">备注（可空）</string>
+    <string name="lab_form_note_hint">如：发热第 2 天复查</string>
+    <string name="lab_err_need_one">请至少填写一项血常规指标</string>
+    <string name="lab_err_date">请填写报告日期</string>
+
+    <!-- 拍照识别 -->
+    <string name="scan_back">‹ 返回</string>
+    <string name="scan_title">拍化验单，自动读指标</string>
+    <string name="scan_tip">建议：把化验单平铺在桌面，光线均匀、镜头正对、避免反光和阴影；只拍包含「项目 / 结果」的那一块，识别率最高。</string>
+    <string name="scan_open_camera">📸 打开相机</string>
+    <string name="scan_from_gallery">🖼️ 从相册选择</string>
+    <string name="scan_photo_desc">化验单照片</string>
+    <string name="scan_idle_hint">请选择或拍摄一张化验单照片</string>
+    <string name="scan_loading">识别中…</string>
+    <string name="scan_error">识别失败：%1$s</string>
+    <string name="scan_error_hint">可手动录入，或重拍更清晰的照片。</string>
+    <string name="scan_none">没有识别到可用指标</string>
+    <string name="scan_found">识别到 %1$d 项指标</string>
+    <string name="scan_confirm">确认并填入表单 →</string>
+    <string name="scan_raw_text">识别原文（可核对）</string>
+    <string name="scan_no_text">（无文字）</string>
+
+    <!-- 留言详情 -->
+    <string name="note_not_found">留言不存在</string>
+    <string name="note_photos_count">📷 照片（%1$d）</string>
+    <string name="note_delete_photo">删除这张照片？</string>
+
+    <!-- 笔记本 -->
+    <string name="note_chip">笔记本 · MEMO</string>
+    <string name="note_count_notes">条留言</string>
+    <string name="note_count_photos">张照片</string>
+    <string name="note_since">从 %1$s 开始记录</string>
+    <string name="note_search_hint">搜索标题、留言或标签</string>
+    <string name="note_filter_all">全部</string>
+    <string name="note_photo_wall">照片墙</string>
+    <string name="note_no_match">没有匹配的留言</string>
+    <string name="note_empty_title">还没有留言</string>
+    <string name="note_empty_hint">记录宝宝的日常、心情和成长瞬间，还可以附上照片</string>
+    <string name="note_untitled">无标题</string>
+    <string name="note_photo_count">📷 %1$d 张照片</string>
+    <string name="note_view_detail">查看详情 →</string>
+    <string name="note_form_title_add">写留言</string>
+    <string name="note_form_title_edit">编辑留言</string>
+    <string name="note_form_date">日期</string>
+    <string name="note_form_time">时间</string>
+    <string name="note_form_title">标题</string>
+    <string name="note_form_title_hint">如：第一次翻身</string>
+    <string name="note_form_content">留言内容</string>
+    <string name="note_char_count">%1$d 字 · 最多 5000 字</string>
+    <string name="note_form_mood">心情</string>
+    <string name="note_form_tags">标签</string>
+    <string name="note_form_tags_hint">用逗号分隔，如：成长,第一次,体检</string>
+    <string name="note_photos_max">照片（最多 9 张）</string>
+    <string name="note_take_photo">📸 拍照</string>
+    <string name="note_gallery">🖼️ 相册</string>
+    <string name="note_selected_count">已选 %1$d 张</string>
+    <string name="note_existing_photos">已有照片（点击标记删除）</string>
+    <string name="note_err_need_content">请至少填写标题或留言内容</string>
+    <string name="note_err_too_long">留言内容过长（最多 5000 字）</string>
+
+    <!-- 用药 -->
+    <string name="med_checkin">打卡</string>
+    <string name="med_header">用药管理 · MEDICATION</string>
+    <string name="med_adherence_7d">近 7 天依从性</string>
+    <string name="med_taken_of">打卡 %1$d / %2$d 次</string>
+    <string name="med_time_to_take">⏰ 该吃药了</string>
+    <string name="med_list_title">药品（%1$d）</string>
+    <string name="med_empty_title">还没有添加药品</string>
+    <string name="med_empty_hint">点击右下角＋添加</string>
+    <string name="med_field_name">药品名称</string>
+    <string name="med_field_name_hint">如：氨氯地平</string>
+    <string name="med_field_dosage">剂量</string>
+    <string name="med_field_unit">单位</string>
+    <string name="med_field_freq">服药频次</string>
+    <string name="med_field_times">服药时间</string>
+    <string name="med_field_start">开始日期</string>
+    <string name="med_field_end">结束日期（可空）</string>
+    <string name="med_field_note">备注（可空）</string>
+    <string name="med_field_note_hint">如：饭后服用</string>
+    <string name="med_add_time">＋ 添加</string>
+    <string name="med_time_format_hint">格式 HH:mm，如 08:00</string>
+    <string name="med_remind_enabled">启用提醒</string>
+    <string name="med_logs_title">服药记录</string>
+    <string name="med_removed">已删除药品</string>
+    <string name="med_delete_confirm">删除「%1$s」及其服药记录？</string>
+
+    <string name="freq_daily_1">每日 1 次</string>
+    <string name="freq_daily_2">每日 2 次</string>
+    <string name="freq_daily_3">每日 3 次</string>
+    <string name="freq_every_other">隔日 1 次</string>
+    <string name="freq_weekly">每周 1 次</string>
+    <string name="freq_as_needed">按需服用</string>
+
+    <string name="med_err_name_required">请填写药品名称</string>
+    <string name="med_err_time_required">请至少设置一个服药时间</string>
+    <string name="med_err_time_format">时间格式不正确：%1$s（应为 HH:mm）</string>
+    <string name="med_err_end_before_start">结束日期不能早于开始日期</string>
+
+    <!-- 购药 -->
+    <string name="buy_title">购买「%1$s」</string>
+    <string name="buy_search_hint">将按「%1$s」搜索，请选择购药渠道：</string>
+    <string name="buy_fallback_hint">若渠道打不开或链接失效，可复制药名后自行在购药 App 中搜索。</string>
+    <string name="buy_copied">已复制「%1$s」，可粘贴到购药 App 搜索</string>
+    <string name="buy_copy_failed">复制失败，请手动记录药名：%1$s</string>
+    <string name="buy_open_failed">无法打开%1$s，已复制药名，可粘贴到该 App 搜索</string>
+    <string name="buy_name_required">请先填写药品名称</string>
+    <string name="buy_no_channel">未找到可用的购买渠道，请手动搜索「%1$s」</string>
+
+    <string name="channel_meituan">美团买药</string>
+    <string name="channel_meituan_desc">30 分钟送药，适合急用</string>
+    <string name="channel_jd">京东健康</string>
+    <string name="channel_jd_desc">药品种类全，适合囤货</string>
+    <string name="channel_taobao">淘宝</string>
+    <string name="channel_taobao_desc">价格常有优势</string>
+    <string name="channel_alihealth">阿里健康</string>
+    <string name="channel_alihealth_desc">阿里健康大药房</string>
+
+    <!-- 合规文档：每个条目为一个整串，第一行是标题，后续行是段落（用 \n 分隔） -->
+    <string name="legal_tab_privacy">隐私政策</string>
+    <string name="legal_tab_terms">用户协议</string>
+    <string name="legal_tab_compliance">合规清单</string>
+    <string name="legal_title">隐私与协议</string>
+    <string name="legal_updated">本文档最后更新：2026-09-25（政策版本 v%1$d）</string>
+
+    <string name="legal_privacy_1">一、我们收集哪些信息\n本应用是一款本地优先的健康记录工具。你录入的血压、用药、血常规、笔记与照片，默认全部保存在手机本地数据库中，不会自动上传到任何服务器。\n需要特别说明：健康医疗数据属于《个人信息保护法》所称的敏感个人信息。我们仅在为你提供记录、提醒、趋势统计与你主动发起的导出功能时使用这些数据，不会用于广告、画像或任何无关用途。</string>
+    <string name="legal_privacy_2">二、网络访问的用途\n应用仅在以下三种由你主动触发的场景访问网络：\n1. 检查更新：请求 GitHub（api.github.com）获取最新版本号，不携带任何个人数据；\n2. 下载安装：从 GitHub 下载 APK 安装包；\n3. 药品购买：跳转购药平台搜索页，跳转时仅传递药品名称用于搜索。\n除此之外，应用不会在后台静默联网，也不存在任何隐式的用户行为上报。</string>
+    <string name="legal_privacy_3">三、崩溃日志\n应用发生闪退时，会把崩溃堆栈写入手机本地文件（应用私有目录 crash/last_crash.txt），内容包含时间、设备型号、系统版本、应用版本与异常堆栈。\n该日志不会自动上传。只有你在「版本」页主动点击「分享日志」时才会发出，发出前你可以看到完整内容。</string>
+    <string name="legal_privacy_4">四、系统权限说明\n通知权限：用于到点推送服药提醒；\n精确闹钟：用于在设定的服药时间准时触发提醒；\n开机启动：用于手机重启后重新注册提醒，不会因此收集数据；\n网络访问：仅用于上述检查更新、下载安装包与药品购买跳转；\n安装未知应用：用于安装你主动下载的新版本；\n相册读取：仅在识别化验单、为笔记添加照片时由你选择图片后使用。\n所有权限都在用到时才申请，你可以随时在系统设置中关闭，关闭后相应功能不可用，但不影响其余功能。</string>
+    <string name="legal_privacy_5">五、数据存储与安全\n数据保存在手机本地数据库（SQLite/Room）与应用私有目录中，其他应用无法直接读取。\n重要提醒：卸载应用会一并删除全部本地数据。请定期使用「数据备份」导出 JSON 文件，保存到网盘或电脑，以便换机、重装或误删后恢复。</string>
+    <string name="legal_privacy_6">六、你的权利\n你可以随时查看、修改、删除自己录入的记录；\n可以通过「数据备份」导出全部数据；\n可以删除某条记录或清空全部数据；\n可以撤回对隐私政策的同意（撤回后应用将停止收集并退出）。</string>
+    <string name="legal_privacy_7">七、未成年人信息\n本应用面向一般成年人及其照护对象使用。若由监护人为被照护人录入健康数据，相关数据的处理方式与本政策一致，同样仅保存在本地。</string>
+    <string name="legal_privacy_8">八、政策更新\n本政策如有实质性修改，我们会在应用内更新文档并重新征得你的同意。\n继续使用即表示你接受更新后的政策。</string>
+
+    <string name="legal_terms_1">一、服务内容\n本应用为你提供血压记录与趋势、用药提醒与打卡、血常规记录与拍照识别、笔记留言、数据备份与恢复，以及应用内版本升级等工具功能。</string>
+    <string name="legal_terms_2">二、重要免责声明\n本应用是健康记录工具，不是医疗器械，不提供诊断、治疗建议或医嘱。\n应用中展示的血压分级、指标参考范围与提示均来自公开资料，仅供参考，不能替代执业医师的判断。\n任何用药、停药、剂量调整都必须遵医嘱。因自行判断造成的后果由用户自行承担。\n如出现身体不适，请及时就医，不要依据本应用的统计结果自行处理。</string>
+    <string name="legal_terms_3">三、数据责任\n你的数据保存在本机，你对自己数据的安全与备份负责。\n我们建议你定期导出备份。因设备丢失、损坏、卸载应用或系统清理导致的数据丢失，我们无法代为恢复。</string>
+    <string name="legal_terms_4">四、账号与付费\n当前版本不提供账号体系，无需注册登录，也不收取任何费用。</string>
+    <string name="legal_terms_5">五、知识产权\n本应用的界面设计、文案与代码归开发者所有。\n应用内使用的第三方开源组件遵循各自的开源许可证，详见「合规清单」页。</string>
+    <string name="legal_terms_6">六、服务变更与终止\n我们可能出于功能调整、合规要求或技术原因变更、暂停部分功能，并将尽力在应用内告知。\n若你违反法律法规或本协议使用本应用，我们有权终止向您提供服务。</string>
+    <string name="legal_terms_7">七、争议解决\n本协议适用中华人民共和国法律。因本协议产生的争议应友好协商解决；协商不成的，提交开发者所在地有管辖权的人民法院处理。</string>
+
+    <string name="legal_section_info">个人信息收集清单</string>
+    <string name="legal_info_note">上述信息中，健康医疗数据属于敏感个人信息，仅在本地处理，不会上传。</string>
+    <string-array name="legal_info_headers">
+        <item>信息类型</item>
+        <item>用途</item>
+        <item>是否上传</item>
+    </string-array>
+    <string-array name="legal_info_rows">
+        <item>血压记录|记录与趋势统计|仅本地</item>
+        <item>用药与服药打卡|提醒与依从性统计|仅本地</item>
+        <item>血常规指标|记录与趋势|仅本地</item>
+        <item>笔记文字与照片|留言记录|仅本地</item>
+        <item>崩溃日志|定位闪退原因|仅本地，手动分享才发出</item>
+        <item>隐私政策同意状态|记录同意事实|仅本地</item>
+    </string-array>
+
+    <string name="legal_section_perm">系统权限清单</string>
+    <string-array name="legal_perm_headers">
+        <item>权限</item>
+        <item>用途</item>
+    </string-array>
+    <string-array name="legal_perm_rows">
+        <item>POST_NOTIFICATIONS|服药提醒通知</item>
+        <item>SCHEDULE_EXACT_ALARM|到点准时提醒</item>
+        <item>VIBRATE|提醒震动</item>
+        <item>RECEIVE_BOOT_COMPLETED|重启后恢复提醒</item>
+        <item>INTERNET|检查更新、下载安装包、购药跳转</item>
+        <item>ACCESS_NETWORK_STATE|判断网络可用性</item>
+        <item>REQUEST_INSTALL_PACKAGES|安装下载的新版本</item>
+        <item>READ_MEDIA_IMAGES|识别化验单、添加笔记照片</item>
+    </string-array>
+
+    <string name="legal_section_sdk">第三方 SDK 清单</string>
+    <string name="legal_sdk_note">本应用未接入任何广告、推送统计或用户行为分析 SDK。</string>
+    <string-array name="legal_sdk_headers">
+        <item>SDK</item>
+        <item>用途</item>
+        <item>数据</item>
+    </string-array>
+    <string-array name="legal_sdk_rows">
+        <item>Google ML Kit 文字识别（中文）|化验单拍照识别|设备端处理，不上传</item>
+        <item>Coil|图片加载|不收集</item>
+        <item>MPAndroidChart|趋势图表|不收集</item>
+        <item>AndroidX Room|本地数据库|不收集</item>
+        <item>AndroidX / Compose|界面与导航|不收集</item>
+        <item>Hilt|依赖注入|不收集</item>
+    </string-array>
+
+    <string name="legal_section_license">开源许可声明</string>
+    <string-array name="legal_licenses">
+        <item>AndroidX 系列组件（Apache License 2.0）</item>
+        <item>Jetpack Compose（Apache License 2.0）</item>
+        <item>Kotlin 标准库与协程（Apache License 2.0）</item>
+        <item>Hilt / Dagger（Apache License 2.0）</item>
+        <item>Coil（Apache License 2.0）</item>
+        <item>MPAndroidChart（Apache License 2.0）</item>
+        <item>Google ML Kit（Google 服务条款）</item>
+        <item>Material Design 图标（Apache License 2.0）</item>
+    </string-array>
+
+    <!-- 隐私同意 -->
+    <string name="privacy_dialog_title">隐私政策</string>
+    <string name="privacy_dialog_intro">感谢使用「宋宝宝的记录」。在开始记录之前，请你阅读并同意《隐私政策》与《用户协议》。</string>
+    <string name="privacy_dialog_points">要点说明：</string>
+    <string name="privacy_point_1">血压、用药、血常规等健康数据全部保存在手机本地，不会上传服务器；</string>
+    <string name="privacy_point_2">仅在检查更新、下载安装包、药品购买跳转时会访问网络；</string>
+    <string name="privacy_point_3">闪退日志只写本地，需你主动分享才会发出；</string>
+    <string name="privacy_point_4">本应用是记录工具，不构成任何医疗诊断或治疗建议。</string>
+    <string name="privacy_agree">同意并继续</string>
+    <string name="privacy_view_full">查看完整政策</string>
+    <string name="privacy_disagree">不同意并退出</string>
+
+    <!-- 关于页 -->
+    <string name="about_chip">关于 · ABOUT</string>
+    <string name="about_version">版本 %1$s（build %2$d）</string>
+    <string name="about_channel">正式版</string>
+    <string name="about_build_info">构建信息</string>
+    <string name="about_version_name">版本号</string>
+    <string name="about_version_code">版本代码</string>
+    <string name="about_min_system">最低系统</string>
+    <string name="about_target_system">目标系统</string>
+    <string name="about_arch">架构</string>
+    <string name="about_database">数据库</string>
+    <string name="about_font">字体</string>
+    <string name="about_value_min_system">Android 8.0（API 26）</string>
+    <string name="about_value_target_system">Android 14（API 34）</string>
+    <string name="about_value_arch">arm64-v8a</string>
+    <string name="about_value_database">Room / SQLite（本地）</string>
+    <string name="about_value_font">Noto Sans SC</string>
+    <string name="about_tech_stack">技术栈</string>
+    <string name="about_tech_lang">语言</string>
+    <string name="about_tech_ui">界面</string>
+    <string name="about_tech_arch">架构</string>
+    <string name="about_tech_di">依赖注入</string>
+    <string name="about_tech_async">异步</string>
+    <string name="about_tech_nav">导航</string>
+    <string name="about_tech_chart">图表</string>
+    <string name="about_tech_ocr">OCR</string>
+    <string name="about_tech_image">图片</string>
+    <string name="about_value_lang">Kotlin</string>
+    <string name="about_value_ui">Jetpack Compose + Material 3</string>
+    <string name="about_value_arch_mvvm">MVVM（ViewModel + Repository）</string>
+    <string name="about_value_db">Room</string>
+    <string name="about_value_di">Hilt</string>
+    <string name="about_value_async">Coroutines + Flow</string>
+    <string name="about_value_nav">Navigation Compose</string>
+    <string name="about_value_chart">MPAndroidChart</string>
+    <string name="about_value_ocr">Google ML Kit（中文）</string>
+    <string name="about_value_image">Coil</string>
+    <string name="about_update">系统更新</string>
+    <string name="about_update_desc">从 GitHub 检查最新版本，下载后直接安装升级（数据不会丢失）。</string>
+    <string name="about_check_update">检查更新</string>
+    <string name="about_checking">检查中…</string>
+    <string name="about_install_now">立即安装</string>
+    <string name="about_download">下载</string>
+    <string name="about_downloading">下载中…</string>
+    <string name="about_current_version">当前 v%1$s</string>
+    <string name="about_downloaded_percent">已下载 %1$d%%</string>
+    <string name="about_found_new">发现新版本 v%1$s（build %2$d）</string>
+    <string name="about_published_at">发布时间 %1$s</string>
+    <string name="about_size">体积 %1$s</string>
+    <string name="about_install_blocked">安装被拦截？点此开启安装权限</string>
+    <string name="about_clear_update">清除更新提示</string>
+    <string name="about_backup">数据备份</string>
+    <string name="about_backup_desc">把全部记录导出成一个 JSON 文件保存到手机或网盘；换机或重装后可从该文件恢复。</string>
+    <string name="about_export">导出备份</string>
+    <string name="about_import">从备份恢复</string>
+    <string name="about_processing">处理中…</string>
+    <string name="about_import_mode_title">选择导入方式</string>
+    <string name="about_import_merge_desc">合并：保留手机里现有记录，备份中的内容作为新记录追加。</string>
+    <string name="about_import_replace_desc">覆盖：先清空手机里的全部记录，再写入备份内容（不可撤销）。</string>
+    <string name="about_import_merge">合并导入</string>
+    <string name="about_import_replace">覆盖导入</string>
+    <string name="about_changelog">更新日志</string>
+    <string name="about_expand">展开</string>
+    <string name="about_collapse">收起</string>
+    <string name="about_last_crash">上次崩溃日志</string>
+    <string name="about_crash_desc">应用上次运行时异常退出。点击下方按钮把日志发出来即可定位原因。</string>
+    <string name="about_share_log">分享日志</string>
+    <string name="about_clear">清除</string>
+    <string name="about_data_warning">数据全部保存在手机本地，卸载应用会一并删除，请定期导出备份。</string>
+    <string name="about_legal_section">隐私与合规</string>
+    <string name="about_legal_entry">查看隐私政策 / 用户协议 / 合规清单</string>
+    <string name="about_accepted_at">你已于 %1$s 同意隐私政策</string>
+    <string name="about_not_accepted">尚未同意隐私政策</string>
+    <string name="about_revoke_hint">不同意也可随时查看本文档。如需撤回同意，请在系统设置中清除应用数据。</string>
+
+    <!-- ===== 国际化补全 ===== -->
+    <string name="bp_records_count">%1$d 条</string>
+    <string name="filter_from">开始</string>
+    <string name="filter_to">结束</string>
+    <string name="list_empty_filter">没有符合条件的记录</string>
+    <string name="bp_delete_confirm">确定删除 %1$s 的记录？</string>
+    <string name="confirm_delete_title">确认删除</string>
+
+    <string name="med_period">起 %1$s · 止 %2$s</string>
+    <string name="med_period_start">起 %1$s</string>
+    <string name="med_time_index">时间 %1$d</string>
+
+    <string name="bp_level_optimal">理想血压</string>
+    <string name="bp_level_normal">正常血压</string>
+    <string name="bp_level_elevated">正常高值</string>
+    <string name="bp_level_stage1">高血压 1 级</string>
+    <string name="bp_level_stage2">高血压 2 级</string>
+    <string name="bp_level_crisis">高血压急症</string>
+    <string name="bp_advice_optimal">血压理想，继续保持</string>
+    <string name="bp_advice_normal">血压正常，保持规律作息</string>
+    <string name="bp_advice_elevated">偏高，注意限盐、运动与作息</string>
+    <string name="bp_advice_stage1">建议咨询医生，调整生活方式</string>
+    <string name="bp_advice_stage2">建议尽快就医，规范用药</string>
+    <string name="bp_advice_crisis">请立即就医</string>
+
+    <string name="judge_low">偏低</string>
+    <string name="judge_high">偏高</string>
+    <string name="judge_normal">正常</string>
+    <string name="judge_dash">—</string>
+    <string name="ocr_fail">识别失败</string>
+
+    <string name="chart_systolic">收缩压</string>
+    <string name="chart_diastolic">舒张压</string>
+    <string name="chart_pulse">心率</string>
+    <string name="chart_metric">指标</string>
+    <string name="chart_ref_upper">参考上限</string>
+    <string name="chart_ref_lower">参考下限</string>
+    <string name="chart_no_data">暂无数据</string>
+    <string name="chart_ref_sys">收缩压 %1$d</string>
+    <string name="chart_ref_dia">舒张压 %1$d</string>
+
+    <string name="cbc_wbc">白细胞</string>
+    <string name="cbc_rbc">红细胞</string>
+    <string name="cbc_hgb">血红蛋白</string>
+    <string name="cbc_hct">红细胞压积</string>
+    <string name="cbc_mcv">平均红细胞体积</string>
+    <string name="cbc_mch">平均血红蛋白量</string>
+    <string name="cbc_mchc">平均血红蛋白浓度</string>
+    <string name="cbc_plt">血小板</string>
+    <string name="cbc_lym">淋巴细胞百分比</string>
+    <string name="cbc_neut">中性粒细胞百分比</string>
+    <string name="cbc_mono">单核细胞百分比</string>
+    <string name="cbc_eos">嗜酸细胞百分比</string>
+    <string name="cbc_crp">C 反应蛋白</string>
+
+    <string name="med_generic">药品</string>
+
+    <string name="about_privacy_compliance">隐私与合规</string>
+    <string name="about_view_legal">查看隐私政策 / 用户协议 / 合规清单</string>
+    <string name="about_consent_agreed">你已于 %1$s 同意隐私政策</string>
+    <string name="about_consent_not">尚未同意隐私政策</string>
+    <string name="about_consent_note">不同意也可随时查看本文档。如需撤回同意，请在系统设置中清除应用数据。</string>
+    <string name="update_checking">检查中…</string>
+    <string name="update_install_now">立即安装</string>
+    <string name="update_check_now">检查更新</string>
+    <string name="update_downloading">下载中…</string>
+    <string name="update_download">下载</string>
+    <string name="update_downloaded_pct">已下载 %1$d%%</string>
+    <string name="update_found">发现新版本 v%1$s（build %2$d）</string>
+    <string name="update_published">发布时间 %1$s</string>
+    <string name="update_install_blocked">安装被拦截？点此开启安装权限</string>
+    <string name="update_clear_hint">清除更新提示</string>
+    <string name="backup_desc">把全部记录导出成一个 JSON 文件保存到手机或网盘；换机或重装后可从该文件恢复。</string>
+    <string name="backup_export">导出备份</string>
+    <string name="backup_import">从备份恢复</string>
+    <string name="common_processing">处理中…</string>
+    <string name="import_title">选择导入方式</string>
+    <string name="import_merge_desc">合并：保留手机里现有记录，备份中的内容作为新记录追加。</string>
+    <string name="import_replace_desc">覆盖：先清空手机里的全部记录，再写入备份内容（不可撤销）。</string>
+    <string name="import_merge">合并导入</string>
+    <string name="import_replace">覆盖导入</string>
+    <string name="update_size">体积 %1$s</string>
 </resources>

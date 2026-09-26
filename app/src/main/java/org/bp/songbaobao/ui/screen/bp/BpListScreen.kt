@@ -10,8 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.components.AppBackground
 import org.bp.songbaobao.ui.components.classifyBp
 import org.bp.songbaobao.ui.components.AppTextField
@@ -52,13 +54,13 @@ fun BpListScreen(
                     Text("‹", style = MaterialTheme.typography.headlineMedium, color = Gold)
                 }
                 Text(
-                    "全部血压记录",
+                    stringResource(R.string.title_all_records),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = GoldBright,
                     modifier = Modifier.weight(1f)
                 )
-                Text("${records.size} 条", style = MaterialTheme.typography.labelMedium, color = TextDim)
+                Text(stringResource(R.string.bp_records_count, records.size), style = MaterialTheme.typography.labelMedium, color = TextDim)
             }
 
             Spacer(Modifier.height(12.dp))
@@ -67,18 +69,18 @@ fun BpListScreen(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 AppTextField(
                     value = from, onValueChange = { from = it },
-                    label = "开始", modifier = Modifier.weight(1f)
+                    label = stringResource(R.string.filter_from), modifier = Modifier.weight(1f)
                 )
                 AppTextField(
                     value = to, onValueChange = { to = it },
-                    label = "结束", modifier = Modifier.weight(1f)
+                    label = stringResource(R.string.filter_to), modifier = Modifier.weight(1f)
                 )
             }
 
             Spacer(Modifier.height(12.dp))
 
             if (records.isEmpty()) {
-                EmptyHint("没有符合条件的记录")
+                EmptyHint(stringResource(R.string.list_empty_filter))
             } else {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(records, key = { it.id }) { r ->
@@ -101,14 +103,14 @@ fun BpListScreen(
                                         )
                                         AssistChip(
                                             onClick = {},
-                                            label = { Text(lv.name, style = MaterialTheme.typography.labelSmall) },
+                                            label = { Text(stringResource(lv.nameRes), style = MaterialTheme.typography.labelSmall) },
                                             colors = AssistChipDefaults.assistChipColors(
                                                 containerColor = lv.color.copy(alpha = 0.25f),
                                                 labelColor = lv.color
                                             )
                                         )
                                         if (r.pulse != null) {
-                                            Text("心率 ${r.pulse}", style = MaterialTheme.typography.labelSmall, color = TextDim)
+                                            Text(stringResource(R.string.bp_pulse, r.pulse), style = MaterialTheme.typography.labelSmall, color = TextDim)
                                         }
                                     }
                                     if (r.note.isNotBlank()) {
@@ -117,15 +119,15 @@ fun BpListScreen(
                                 }
                                 Column(horizontalAlignment = Alignment.End) {
                                     TextButton(onClick = { onEdit(r.id) }) {
-                                        Text("编辑", color = Gold)
+                                        Text(stringResource(R.string.action_edit), color = Gold)
                                     }
                                     var confirm by remember { mutableStateOf(false) }
                                     TextButton(onClick = { confirm = true }) {
-                                        Text("删除", color = DangerRed)
+                                        Text(stringResource(R.string.action_delete), color = DangerRed)
                                     }
                                     if (confirm) {
                                         ConfirmDelete(
-                                            text = "确定删除 ${r.date} 的记录？",
+                                            text = stringResource(R.string.bp_delete_confirm, r.date),
                                             onDismiss = { confirm = false },
                                             onConfirm = { vm.delete(r.id) { confirm = false } }
                                         )
@@ -150,13 +152,13 @@ fun ConfirmDelete(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("确认删除", color = GoldBright) },
+        title = { Text(stringResource(R.string.confirm_delete_title), color = GoldBright) },
         text = { Text(text, color = TextMain) },
         confirmButton = {
-            TextButton(onClick = onConfirm) { Text("删除", color = DangerRed) }
+            TextButton(onClick = onConfirm) { Text(stringResource(R.string.action_delete), color = DangerRed) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消", color = TextDim) }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel), color = TextDim) }
         },
         containerColor = NavySoft,
         titleContentColor = GoldBright,

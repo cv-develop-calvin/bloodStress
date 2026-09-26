@@ -1,35 +1,43 @@
 package org.bp.songbaobao.ui.navigation
 
-/** 底部导航与路由定义 */
+import androidx.annotation.StringRes
+import org.bp.songbaobao.R
+
+/**
+ * 底部导航与路由定义。
+ *
+ * 标签改用字符串资源 id（labelRes）而非硬编码文本，
+ * 这样切换语言时底栏能跟着变；label 保留为回退文案。
+ */
 sealed class Screen(
     val route: String,
-    val label: String,
+    @StringRes val labelRes: Int,
     val icon: String,
     val showInBar: Boolean = true
 ) {
-    object Bp : Screen("bp", "血压", "♈")
-    object Med : Screen("med", "用药", "💊")
-    object Lab : Screen("lab", "血常规", "🩸")
-    object Notes : Screen("notes", "笔记本", "📖")
-    object About : Screen("about", "版本", "⚙️")
+    object Bp : Screen("bp", R.string.nav_bp, "♈")
+    object Med : Screen("med", R.string.nav_med, "💊")
+    object Lab : Screen("lab", R.string.nav_lab, "🩸")
+    object Notes : Screen("notes", R.string.nav_notes, "📖")
+    object About : Screen("about", R.string.nav_about, "⚙️")
 
     // 二级页面（不显示在底栏）
-    object BpAdd : Screen("bp/add", "添加血压", "", false)
-    object BpEdit : Screen("bp/edit/{id}", "编辑血压", "", false)
-    object BpList : Screen("bp/list", "全部记录", "", false)
-    object MedAdd : Screen("med/add", "添加药品", "", false)
-    object MedEdit : Screen("med/edit/{id}", "编辑药品", "", false)
-    object LabAdd : Screen("lab/add", "添加血常规", "", false)
-    object LabEdit : Screen("lab/edit/{id}", "编辑血常规", "", false)
-    object LabScan : Screen("lab/scan", "拍照识别", "", false)
-    object NoteAdd : Screen("note/add", "写留言", "", false)
-    object NoteEdit : Screen("note/edit/{id}", "编辑留言", "", false)
+    object BpAdd : Screen("bp/add", R.string.title_add_bp, "", false)
+    object BpEdit : Screen("bp/edit/{id}", R.string.title_edit_bp, "", false)
+    object BpList : Screen("bp/list", R.string.title_all_records, "", false)
+    object MedAdd : Screen("med/add", R.string.title_add_med, "", false)
+    object MedEdit : Screen("med/edit/{id}", R.string.title_edit_med, "", false)
+    object LabAdd : Screen("lab/add", R.string.title_add_lab, "", false)
+    object LabEdit : Screen("lab/edit/{id}", R.string.title_edit_lab, "", false)
+    object LabScan : Screen("lab/scan", R.string.title_scan, "", false)
+    object NoteAdd : Screen("note/add", R.string.title_add_note, "", false)
+    object NoteEdit : Screen("note/edit/{id}", R.string.title_edit_note, "", false)
     // 用 note/detail/{id} 而非 note/{id}：后者会与 note/edit/{id} 前缀冲突，
     // 导航时可能把 "edit" 当作 id 解析而抛异常。
-    object NoteDetail : Screen("note/detail/{id}", "留言详情", "", false)
+    object NoteDetail : Screen("note/detail/{id}", R.string.title_note_detail, "", false)
 
     // 合规文档（应用商店上架必需，从关于页进入）
-    object Legal : Screen("legal", "隐私与协议", "", false)
+    object Legal : Screen("legal", R.string.title_legal, "", false)
 
     companion object {
         // 必须用 get() 而非 val 初始化：

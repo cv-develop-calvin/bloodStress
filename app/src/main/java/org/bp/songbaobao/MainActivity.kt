@@ -1,6 +1,7 @@
 package org.bp.songbaobao
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -20,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -32,6 +34,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
+import org.bp.songbaobao.R
 import org.bp.songbaobao.reminder.NotificationHelper
 import org.bp.songbaobao.ui.components.AppBottomBar
 import org.bp.songbaobao.ui.navigation.Screen
@@ -53,10 +56,28 @@ import org.bp.songbaobao.ui.screen.note.NoteDetailScreen
 import org.bp.songbaobao.ui.screen.note.NoteEditScreen
 import org.bp.songbaobao.ui.screen.note.NoteListScreen
 import org.bp.songbaobao.ui.theme.SongBaoBaoTheme
+import org.bp.songbaobao.util.LanguageManager
 import org.bp.songbaobao.util.PrivacyConsent
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    /**
+     * 注入应用内语言。
+     *
+     * 必须在 attachBaseContext 而非 onCreate 里处理：
+     * 这里是创建 Activity Context 的最早时机，之后所有资源查找
+     * （包括 Compose 的 stringResource）都会带上目标 Locale。
+     */
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LanguageManager.wrap(newBase))
+    }
+
+    override fun recreate() {
+        // 切换语言后系统会重建 Activity，此处无需额外处理，
+        // 保留覆写点便于将来加日志或过渡动画。
+        super.recreate()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,7 +154,7 @@ private fun PrivacyConsentDialog(
         containerColor = org.bp.songbaobao.ui.theme.NavySoft,
         title = {
             Text(
-                "隐私政策",
+                stringResource(R.string.privacy_dialog_title),
                 fontWeight = FontWeight.Bold,
                 color = org.bp.songbaobao.ui.theme.GoldBright
             )
@@ -141,25 +162,25 @@ private fun PrivacyConsentDialog(
         text = {
             Column {
                 Text(
-                    "感谢使用「宋宝宝的记录」。在开始记录之前，请你阅读并同意《隐私政策》与《用户协议》。",
+                    stringResource(R.string.privacy_dialog_intro),
                     style = MaterialTheme.typography.bodySmall,
                     color = org.bp.songbaobao.ui.theme.TextMain
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "要点说明：",
+                    stringResource(R.string.privacy_dialog_points),
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold,
                     color = org.bp.songbaobao.ui.theme.GoldBright
                 )
                 listOf(
-                    "血压、用药、血常规等健康数据全部保存在手机本地，不会上传服务器；",
-                    "仅在检查更新、下载安装包、药品购买跳转时会访问网络；",
-                    "闪退日志只写本地，需你主动分享才会发出；",
-                    "本应用是记录工具，不构成任何医疗诊断或治疗建议。"
-                ).forEach {
+                    R.string.privacy_point_1,
+                    R.string.privacy_point_2,
+                    R.string.privacy_point_3,
+                    R.string.privacy_point_4
+                ).forEach { res ->
                     Text(
-                        "· $it",
+                        "· ${stringResource(res)}",
                         style = MaterialTheme.typography.labelSmall,
                         color = org.bp.songbaobao.ui.theme.TextDim,
                         modifier = Modifier.padding(vertical = 1.dp)
@@ -169,16 +190,25 @@ private fun PrivacyConsentDialog(
         },
         confirmButton = {
             TextButton(onClick = onAgree) {
-                Text("同意并继续", color = org.bp.songbaobao.ui.theme.SuccessGreen)
+                Text(
+                    stringResource(R.string.privacy_agree),
+                    color = org.bp.songbaobao.ui.theme.SuccessGreen
+                )
             }
         },
         dismissButton = {
             Row {
                 TextButton(onClick = onViewPolicy) {
-                    Text("查看完整政策", color = org.bp.songbaobao.ui.theme.Gold)
+                    Text(
+                        stringResource(R.string.privacy_view_full),
+                        color = org.bp.songbaobao.ui.theme.Gold
+                    )
                 }
                 TextButton(onClick = onDisagree) {
-                    Text("不同意并退出", color = org.bp.songbaobao.ui.theme.DangerRed)
+                    Text(
+                        stringResource(R.string.privacy_disagree),
+                        color = org.bp.songbaobao.ui.theme.DangerRed
+                    )
                 }
             }
         }

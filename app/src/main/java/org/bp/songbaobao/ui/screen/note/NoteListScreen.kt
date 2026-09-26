@@ -10,11 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.components.*
 import org.bp.songbaobao.ui.theme.*
 import org.bp.songbaobao.util.parseTags
@@ -48,22 +50,24 @@ fun NoteListScreen(
             item {
                 Spacer(Modifier.height(12.dp))
                 HeroCard {
-                    ZodiacChip("笔记本 · MEMO")
+                    ZodiacChip(stringResource(R.string.note_chip))
                     Spacer(Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text("${state.stats.notes}", style = MaterialTheme.typography.displaySmall,
                             fontWeight = FontWeight.Bold, color = GoldBright)
                         Spacer(Modifier.width(4.dp))
-                        Text("条留言", color = TextDim)
+                        Text(stringResource(R.string.note_count_notes), color = TextDim)
                         Spacer(Modifier.width(12.dp))
                         Text("${state.stats.photos}", style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold, color = GoldBright)
                         Spacer(Modifier.width(4.dp))
-                        Text("张照片", color = TextDim)
+                        Text(stringResource(R.string.note_count_photos), color = TextDim)
                     }
                     if (state.stats.since.isNotBlank()) {
-                        Text("从 ${state.stats.since} 开始记录",
-                            style = MaterialTheme.typography.labelSmall, color = TextDim)
+                        Text(
+                            stringResource(R.string.note_since, state.stats.since),
+                            style = MaterialTheme.typography.labelSmall, color = TextDim
+                        )
                     }
                 }
                 Spacer(Modifier.height(12.dp))
@@ -74,7 +78,7 @@ fun NoteListScreen(
                 AppTextField(
                     value = keyword,
                     onValueChange = vm::setKeyword,
-                    label = "搜索标题、留言或标签"
+                    label = stringResource(R.string.note_search_hint)
                 )
                 Spacer(Modifier.height(8.dp))
             }
@@ -90,7 +94,12 @@ fun NoteListScreen(
                             FilterChip(
                                 selected = false,
                                 onClick = vm::clearFilter,
-                                label = { Text("全部", style = MaterialTheme.typography.labelSmall) }
+                                label = {
+                                    Text(
+                                        stringResource(R.string.note_filter_all),
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
                             )
                         }
                         tags.take(6).forEach { (name, count) ->
@@ -116,7 +125,7 @@ fun NoteListScreen(
                 item {
                     PanelCard {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            SectionTitle("照片墙")
+                            SectionTitle(stringResource(R.string.note_photo_wall))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -147,8 +156,12 @@ fun NoteListScreen(
             if (state.notes.isEmpty()) {
                 item {
                     EmptyHint(
-                        if (keyword.isNotBlank() || tag.isNotBlank()) "没有匹配的留言" else "还没有留言",
-                        "记录宝宝的日常、心情和成长瞬间，还可以附上照片"
+                        if (keyword.isNotBlank() || tag.isNotBlank()) {
+                            stringResource(R.string.note_no_match)
+                        } else {
+                            stringResource(R.string.note_empty_title)
+                        },
+                        stringResource(R.string.note_empty_hint)
                     )
                 }
             } else {
@@ -163,7 +176,7 @@ fun NoteListScreen(
                                     Spacer(Modifier.width(6.dp))
                                 }
                                 Text(
-                                    n.title.ifBlank { "无标题" },
+                                    n.title.ifBlank { stringResource(R.string.note_untitled) },
                                     fontWeight = FontWeight.Bold,
                                     color = GoldBright,
                                     maxLines = 1,
@@ -212,14 +225,16 @@ fun NoteListScreen(
                                         }
                                     }
                                     Spacer(Modifier.width(8.dp))
-                                    Text("📷 ${n.photoCount} 张照片",
-                                        style = MaterialTheme.typography.bodySmall, color = TextDim)
+                                    Text(
+                                        stringResource(R.string.note_photo_count, n.photoCount),
+                                        style = MaterialTheme.typography.bodySmall, color = TextDim
+                                    )
                                 }
                             }
 
                             Spacer(Modifier.height(4.dp))
                             TextButton(onClick = { onOpen(n.id) }) {
-                                Text("查看详情 →", color = Gold)
+                                Text(stringResource(R.string.note_view_detail), color = Gold)
                             }
                         }
                     }

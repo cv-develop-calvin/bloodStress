@@ -10,9 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.bp.songbaobao.R
 import org.bp.songbaobao.domain.CbcItems
 import org.bp.songbaobao.ui.components.CbcJudge
 import org.bp.songbaobao.ui.components.*
@@ -51,29 +53,43 @@ fun LabScreen(
                 Column(modifier = Modifier.padding(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("📷 拍化验单，自动读指标",
-                                fontWeight = FontWeight.Bold, color = GoldBright)
-                            Text("平铺桌面、光线均匀、镜头正对",
-                                style = MaterialTheme.typography.labelSmall, color = TextDim)
+                            Text(
+                                stringResource(R.string.lab_scan_title),
+                                fontWeight = FontWeight.Bold, color = GoldBright
+                            )
+                            Text(
+                                stringResource(R.string.lab_scan_tip),
+                                style = MaterialTheme.typography.labelSmall, color = TextDim
+                            )
                         }
                         TextButton(onClick = { showScan = !showScan }) {
-                            Text(if (showScan) "收起" else "展开", color = Gold)
+                            Text(
+                                stringResource(
+                                    if (showScan) R.string.about_collapse else R.string.about_expand
+                                ),
+                                color = Gold
+                            )
                         }
                     }
                     if (showScan) {
                         Spacer(Modifier.height(8.dp))
                         GoldButton(onClick = onScan, modifier = Modifier.fillMaxWidth()) {
-                            Text("打开相机拍照")
+                            Text(stringResource(R.string.lab_open_camera))
                         }
                         Spacer(Modifier.height(6.dp))
                         OutlinedButton(
                             onClick = onScan,
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = TextDim)
-                        ) { Text("从相册选择") }
+                        ) { Text(stringResource(R.string.lab_from_gallery)) }
                         Spacer(Modifier.height(6.dp))
+                        val supported = StringBuilder()
+                        for (item in CbcItems.items()) {
+                            if (supported.isNotEmpty()) supported.append("、")
+                            supported.append(stringResource(item.labelRes))
+                        }
                         Text(
-                            "支持：" + CbcItems.items().joinToString("、") { it.label },
+                            stringResource(R.string.lab_supported, supported.toString()),
                             style = MaterialTheme.typography.labelSmall, color = TextDim
                         )
                     }
@@ -83,14 +99,17 @@ fun LabScreen(
             Spacer(Modifier.height(12.dp))
 
             if (state.reports.isEmpty()) {
-                EmptyHint("还没有血常规记录", "展开上方面板拍一张，或点击＋手动录入")
+                EmptyHint(
+                    stringResource(R.string.lab_empty_title),
+                    stringResource(R.string.lab_empty_hint)
+                )
             }
 
             // 最新报告
             state.latest?.let { r ->
                 PanelCard {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        SectionTitle("最新报告 · ${r.date}") {
+                        SectionTitle(stringResource(R.string.lab_latest, r.date)) {
                             if (r.hospital.isNotBlank()) {
                                 Text(r.hospital, style = MaterialTheme.typography.labelSmall, color = TextDim)
                             }
@@ -110,7 +129,7 @@ fun LabScreen(
                                             modifier = Modifier
                                                 .padding(vertical = 4.dp)
                                         ) {
-                                            Text(item.label, style = MaterialTheme.typography.labelSmall, color = TextDim)
+                                            Text(stringResource(item.labelRes), style = MaterialTheme.typography.labelSmall, color = TextDim)
                                             Row(verticalAlignment = Alignment.Bottom) {
                                                 Text(
                                                     v?.let { fmt(it) } ?: "—",
@@ -121,7 +140,7 @@ fun LabScreen(
                                                 Text(item.unit, style = MaterialTheme.typography.labelSmall, color = TextDim)
                                             }
                                             Text(
-                                                "${judge.name} · ${fmt(item.low)}–${fmt(item.high)}",
+                                                "${stringResource(judge.nameRes)} · ${fmt(item.low)}–${fmt(item.high)}",
                                                 style = MaterialTheme.typography.labelSmall,
                                                 color = judge.color
                                             )
@@ -142,7 +161,7 @@ fun LabScreen(
             if (state.reports.isNotEmpty()) {
                 PanelCard {
                     Column(modifier = Modifier.padding(12.dp)) {
-                        SectionTitle("指标趋势")
+                        SectionTitle(stringResource(R.string.lab_trend_title))
 
                         // 指标选择
                         Row(
@@ -155,7 +174,7 @@ fun LabScreen(
                                 FilterChip(
                                     selected = state.seriesItem == item.key,
                                     onClick = { vm.setSeriesItem(item.key) },
-                                    label = { Text(item.label, style = MaterialTheme.typography.labelSmall) },
+                                    label = { Text(stringResource(item.labelRes), style = MaterialTheme.typography.labelSmall) },
                                     colors = FilterChipDefaults.filterChipColors(
                                         selectedContainerColor = Gold.copy(alpha = 0.25f),
                                         selectedLabelColor = GoldBright,
@@ -170,7 +189,12 @@ fun LabScreen(
 
                         // 时间范围
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            listOf(7 to "7天", 30 to "30天", 90 to "90天", null to "全部").forEach { (v, label) ->
+                            listOf(
+                                7 to stringResource(R.string.lab_range_7d),
+                                30 to stringResource(R.string.lab_range_30d),
+                                90 to stringResource(R.string.lab_range_90d),
+                                null to stringResource(R.string.bp_range_all)
+                            ).forEach { (v, label) ->
                                 FilterChip(
                                     selected = state.days == v,
                                     onClick = { vm.setDays(v) },
@@ -189,7 +213,7 @@ fun LabScreen(
 
                         val item = vm.item(state.seriesItem)
                         if (state.series.isEmpty()) {
-                            EmptyHint("该指标暂无数据")
+                            EmptyHint(stringResource(R.string.lab_no_series))
                         } else {
                             Box(modifier = Modifier.fillMaxWidth().height(220.dp)) {
                                 LabLineChart(
@@ -216,16 +240,28 @@ fun LabScreen(
                                 Text(
                                     buildString {
                                         if (r.hospital.isNotBlank()) append("${r.hospital} · ")
-                                        append(if (abnormal > 0) "$abnormal 项异常" else "全部正常")
+                                        append(
+                                            if (abnormal > 0) {
+                                                stringResource(
+                                                    R.string.lab_abnormal_count, abnormal
+                                                )
+                                            } else {
+                                                stringResource(R.string.lab_all_normal)
+                                            }
+                                        )
                                     },
                                     style = MaterialTheme.typography.bodySmall,
                                     color = if (abnormal > 0) WarnAmber else SuccessGreen
                                 )
                             }
                             if (r.source == "photo") {
-                                AssistChip(onClick = {}, label = { Text("拍照识别") })
+                                AssistChip(onClick = {}, label = {
+                                    Text(stringResource(R.string.lab_source_photo))
+                                })
                             }
-                            TextButton(onClick = { onEdit(r.id) }) { Text("编辑", color = Gold) }
+                            TextButton(onClick = { onEdit(r.id) }) {
+                                Text(stringResource(R.string.action_edit), color = Gold)
+                            }
                         }
                     }
                 }

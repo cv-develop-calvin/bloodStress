@@ -13,6 +13,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
+import org.bp.songbaobao.R
 
 /**
  * 血压趋势图（MPAndroidChart 通过 AndroidView 包装）。
@@ -39,7 +40,7 @@ fun BpLineChart(
                 setDrawGridBackground(false)
                 setBackgroundColor(GColor.TRANSPARENT)
                 legend.isEnabled = false
-                setNoDataText("暂无数据")
+                setNoDataText(ctx.getString(R.string.chart_no_data))
 
                 // X 轴
                 xAxis.apply {
@@ -63,7 +64,7 @@ fun BpLineChart(
                     isGranularityEnabled = true
                     removeAllLimitLines()
                     // 参考线：收缩压 140 / 舒张压 90
-                    addLimitLine(LimitLine(140f, "收缩压140").apply {
+                    addLimitLine(LimitLine(140f, ctx.getString(R.string.chart_ref_sys, 140)).apply {
                         lineColor = GColor.parseColor("#8CFFDD7A")
                         lineWidth = 1f
                         enableDashedLine(6f, 4f, 0f)
@@ -71,7 +72,7 @@ fun BpLineChart(
                         textSize = 8f
                         labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
                     })
-                    addLimitLine(LimitLine(90f, "舒张压90").apply {
+                    addLimitLine(LimitLine(90f, ctx.getString(R.string.chart_ref_dia, 90)).apply {
                         lineColor = GColor.parseColor("#8C7FE3C0")
                         lineWidth = 1f
                         enableDashedLine(6f, 4f, 0f)
@@ -98,13 +99,13 @@ fun BpLineChart(
             val dataSets = mutableListOf<com.github.mikephil.charting.interfaces.datasets.ILineDataSet>()
 
             if (showSys) dataSets.add(
-                buildSet(systolic, "收缩压", GColor.parseColor("#FFDD7A"), fill = true)
+                buildSet(systolic, chart.context.getString(R.string.chart_systolic), GColor.parseColor("#FFDD7A"), fill = true)
             )
             if (showDia) dataSets.add(
-                buildSet(diastolic, "舒张压", GColor.parseColor("#7FE3C0"), fill = true)
+                buildSet(diastolic, chart.context.getString(R.string.chart_diastolic), GColor.parseColor("#7FE3C0"), fill = true)
             )
             if (showPulse) dataSets.add(
-                buildSet(pulse, "心率", GColor.parseColor("#A99CFF"), fill = false, dash = true)
+                buildSet(pulse, chart.context.getString(R.string.chart_pulse), GColor.parseColor("#A99CFF"), fill = false, dash = true)
                     .apply { axisDependency = YAxis.AxisDependency.RIGHT }
             )
 
@@ -175,7 +176,7 @@ fun LabLineChart(
                 setDrawGridBackground(false)
                 setBackgroundColor(GColor.TRANSPARENT)
                 legend.isEnabled = false
-                setNoDataText("暂无数据")
+                setNoDataText(ctx.getString(R.string.chart_no_data))
                 xAxis.apply {
                     position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
                     setDrawGridLines(false)
@@ -189,14 +190,14 @@ fun LabLineChart(
                     textSize = 9f
                     gridColor = GColor.parseColor("#1AE8C25A")
                     removeAllLimitLines()
-                    addLimitLine(LimitLine(high, "参考上限").apply {
+                    addLimitLine(LimitLine(high, ctx.getString(R.string.chart_ref_upper)).apply {
                         lineColor = GColor.parseColor("#8C7FE3C0")
                         lineWidth = 1f
                         enableDashedLine(6f, 4f, 0f)
                         textColor = GColor.parseColor("#8C7FE3C0")
                         textSize = 8f
                     })
-                    addLimitLine(LimitLine(low, "参考下限").apply {
+                    addLimitLine(LimitLine(low, ctx.getString(R.string.chart_ref_lower)).apply {
                         lineColor = GColor.parseColor("#8C7FE3C0")
                         lineWidth = 1f
                         enableDashedLine(6f, 4f, 0f)
@@ -210,7 +211,7 @@ fun LabLineChart(
         update = { chart ->
             chart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
             val entries = values.mapIndexed { i, v -> Entry(i.toFloat(), v) }
-            val ds = LineDataSet(entries, "指标").apply {
+            val ds = LineDataSet(entries, chart.context.getString(R.string.chart_metric)).apply {
                 color = GColor.parseColor("#FFDD7A")
                 setCircleColor(GColor.parseColor("#FFDD7A"))
                 lineWidth = 2.2f
