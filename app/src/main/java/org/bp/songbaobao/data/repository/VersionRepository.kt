@@ -80,6 +80,20 @@ class VersionRepository @Inject constructor(private val app: Application) {
         packageName = BuildConfig.APPLICATION_ID
     )
 
+    /**
+     * 查找已下载到缓存、且大小匹配的完整 APK（用于重新进入页面时复用，避免重复下载）。
+     * 无匹配时返回 null。
+     */
+    fun cachedApk(context: Context, update: UpdateInfo): File? {
+        val dir = File(context.cacheDir, APK_DIR)
+        val target = File(dir, update.apkName.ifBlank { "update.apk" })
+        return if (target.exists() && target.length() == update.apkSize && update.apkSize > 0) {
+            target
+        } else {
+            null
+        }
+    }
+
     // ---------------- 检查更新 ----------------
 
     suspend fun checkForUpdate(): UpdateCheck = withContext(Dispatchers.IO) {
@@ -191,9 +205,18 @@ class VersionRepository @Inject constructor(private val app: Application) {
         onProgress: (downloaded: Long, total: Long) -> Unit
     ): File = withContext(Dispatchers.IO) {
         val dir = File(context.cacheDir, APK_DIR).apply { mkdirs() }
-        // 下载前清掉旧包，避免堆积占用空间
-        dir.listFiles()?.forEach { it.delete() }
         val target = File(dir, update.apkName.ifBlank { "update.apk" })
+
+        // 已存在且大小匹配的完整包：直接复用，避免重复下载（解决“自动重新下载”）
+        if (target.exists() && target.length() == update.apkSize && update.apkSize > 0) {
+            onProgress(target.length(), target.length())
+            return@withContext target
+        }
+
+        // 清理与本次版本无关 / 大小不符的旧包，避免堆积
+        dir.listFiles()
+            ?.filter { it != target && (it.name != update.apkName || update.apkSize <= 0) }
+            ?.forEach { runCatching { it.delete() } }
 
         // 整体限时：GitHub Releases 的下载地址会 302 跳到 objects.githubusercontent.com 的
         // CDN，个别机型/网络下可能卡在跳转或慢速连接上，用独立线程 + Future 限时兜底。
@@ -204,7 +227,7 @@ class VersionRepository @Inject constructor(private val app: Application) {
 
     /**
      * 失败重试：最多 [DOWNLOAD_MAX_RETRY] 次，退避后重试。
-     * 半截文件会被清掉，保证每次都从头下载完整包。
+     * 借助断点续传，重试时从已下载字节处继续，而不是从头重下（解决“很慢”）。
      */
     private fun downloadWithRetry(
         update: UpdateInfo,
@@ -217,8 +240,7 @@ class VersionRepository @Inject constructor(private val app: Application) {
                 return downloadOnce(update, target, onProgress)
             } catch (t: Throwable) {
                 lastError = t
-                // 清掉半截文件，下次重试从头开始
-                runCatching { if (target.exists()) target.delete() }
+                // 半截文件保留（用于续传）；仅当整包已损坏且无法续传时才在下次覆盖
                 if (attempt < DOWNLOAD_MAX_RETRY - 1) {
                     // 退避：指数增长，给网络/CDN 一点恢复时间
                     Thread.sleep(800L * (attempt + 1))
@@ -229,12 +251,14 @@ class VersionRepository @Inject constructor(private val app: Application) {
     }
 
     /**
-     * 单次下载：手动跟随重定向。
+     * 单次下载：手动跟随重定向 + 断点续传（HTTP Range）。
      *
      * GitHub Releases 的 [UpdateInfo.apkUrl]（browser_download_url）会返回 302 跳到
      * objects.githubusercontent.com 的 CDN。部分 Android 的 HttpURLConnection 在跨主机
      * 302 下不会自动跟随，于是直接拿到 302 当作错误。这里把 instanceFollowRedirects 关掉，
      * 自己读 Location 头逐级跳转，确保最终落到真正的 APK 上。
+     *
+     * 若本地已有部分下载（断点续传），则从已下载字节处接着下载，避免每次都从头开始。
      */
     private fun downloadOnce(
         update: UpdateInfo,
@@ -243,6 +267,9 @@ class VersionRepository @Inject constructor(private val app: Application) {
     ): File {
         var url = update.apkUrl
         var conn: HttpURLConnection? = null
+        // 已有字节（断点续传起点）；若大小未知则用写入模式从头开始
+        val existing = if (target.exists() && update.apkSize > 0) target.length() else 0L
+        val append = existing > 0
         try {
             repeat(MAX_REDIRECTS) { _ ->
                 conn?.disconnect()
@@ -254,6 +281,8 @@ class VersionRepository @Inject constructor(private val app: Application) {
                     instanceFollowRedirects = false
                     setRequestProperty("User-Agent", "SongBaoBao-Updater")
                     setRequestProperty("Accept", "*/*")
+                    // 断点续传：只请求缺失的部分；服务器不支持时回退整包下载
+                    if (append) setRequestProperty("Range", "bytes=$existing-")
                 }
                 conn!!.connect()
                 val code = conn!!.responseCode
@@ -265,23 +294,37 @@ class VersionRepository @Inject constructor(private val app: Application) {
                     url = location
                     return@repeat
                 }
-                if (code !in 200..299) {
+                if (code !in 200..299 && code != 206) {
                     error(app.getString(R.string.msg_download_http, code))
                 }
 
-                val total = conn!!.contentLengthLong.takeIf { it > 0 } ?: update.apkSize
+                // 206=部分内容（续传）；200=整包。先判断服务器是否支持 Range。
+                val supportRange = code == 206
+                // 总大小：优先用 header（206 时 content-range 含总长），否则用已知 apkSize
+                val total = if (supportRange) {
+                    val cr = conn!!.getHeaderField("Content-Range")
+                    cr?.substringAfterLast('/')?.toLongOrNull() ?: update.apkSize
+                } else {
+                    conn!!.contentLengthLong.takeIf { it > 0 } ?: update.apkSize
+                }
+                // 若服务器不支持 Range，丢弃已有半截文件，从头写
+                val startAt = if (supportRange) existing else 0L
+                // 续传起点进度先回调，避免进度条从 0 跳变
+                onProgress(startAt, total)
+
                 conn!!.inputStream.use { input ->
-                    target.outputStream().use { output ->
-                        val buf = ByteArray(64 * 1024)
-                        var done = 0L
-                        var lastReport = 0L
+                    (if (startAt > 0L) java.io.FileOutputStream(target, true)
+                     else target.outputStream()).use { output ->
+                        val buf = ByteArray(256 * 1024)
+                        var done = startAt
+                        var lastReport = done
                         while (true) {
                             val n = input.read(buf)
                             if (n <= 0) break
                             output.write(buf, 0, n)
                             done += n
-                            // 每 256KB 回调一次，避免频繁刷新 UI
-                            if (done - lastReport >= 256 * 1024) {
+                            // 每 512KB 回调一次，避免频繁刷新 UI
+                            if (done - lastReport >= 512 * 1024) {
                                 lastReport = done
                                 onProgress(done, total)
                             }
@@ -290,6 +333,10 @@ class VersionRepository @Inject constructor(private val app: Application) {
                         onProgress(done, total)
                         // 完整性校验：已知总大小时，下载量不足说明被中断
                         if (total > 0 && done < total) {
+                            if (!supportRange) {
+                                // 整包下载不完整且不能续传：删掉半截，下次重试从头
+                                runCatching { target.delete() }
+                            }
                             error(app.getString(R.string.msg_download_incomplete, done, total))
                         }
                     }
