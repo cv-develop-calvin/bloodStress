@@ -150,13 +150,15 @@ fun BpFormScreen(
                 value = dateText,
                 onValueChange = { dateText = it },
                 label = stringResource(R.string.bp_form_date),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                clearOnFocus = true
             )
             AppTextField(
                 value = timeText,
                 onValueChange = { timeText = it },
                 label = stringResource(R.string.bp_form_time),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                clearOnFocus = true
             )
         }
         Spacer(Modifier.height(10.dp))
@@ -165,27 +167,31 @@ fun BpFormScreen(
                 value = sysText,
                 onValueChange = { sysText = it.filter { c -> c.isDigit() }.take(3) },
                 label = stringResource(R.string.bp_form_sys),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                clearOnFocus = true
             )
             AppTextField(
                 value = diaText,
                 onValueChange = { diaText = it.filter { c -> c.isDigit() }.take(3) },
                 label = stringResource(R.string.bp_form_dia),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                clearOnFocus = true
             )
         }
         Spacer(Modifier.height(10.dp))
         AppTextField(
             value = pulseText,
             onValueChange = { pulseText = it.filter { c -> c.isDigit() }.take(3) },
-            label = stringResource(R.string.bp_form_pulse)
+            label = stringResource(R.string.bp_form_pulse),
+            clearOnFocus = true
         )
         Spacer(Modifier.height(10.dp))
         AppTextField(
             value = noteText,
             onValueChange = { noteText = it },
             label = stringResource(R.string.bp_form_note),
-            placeholder = stringResource(R.string.bp_form_note_hint)
+            placeholder = stringResource(R.string.bp_form_note_hint),
+            clearOnFocus = true
         )
 
         if (error != null) {

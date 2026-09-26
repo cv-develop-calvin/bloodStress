@@ -5,11 +5,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.foundation.focusable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -165,7 +170,9 @@ fun SectionTitle(text: String, action: (@Composable () -> Unit)? = null) {
     }
 }
 
-/** 通用文本输入 */
+/** 通用文本输入。
+ * @param clearOnFocus 为 true 时，首次聚焦（点击）该栏位会清空其内容，
+ *   方便直接重新输入（含默认 0 也会清空）。再次聚焦已清空则不重复触发。 */
 @Composable
 fun AppTextField(
     value: String,
@@ -175,14 +182,23 @@ fun AppTextField(
     placeholder: String? = null,
     singleLine: Boolean = true,
     isError: Boolean = false,
-    supportingText: String? = null
+    supportingText: String? = null,
+    clearOnFocus: Boolean = false
 ) {
+    var hadFocus by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
         placeholder = placeholder?.let { { Text(it, color = TextDim) } },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .onFocusChanged { state ->
+                if (state.isFocused && !hadFocus && clearOnFocus) {
+                    onValueChange("")
+                }
+                hadFocus = state.isFocused
+            },
         singleLine = singleLine,
         isError = isError,
         supportingText = supportingText?.let { { Text(it) } },

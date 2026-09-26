@@ -175,13 +175,15 @@ fun GlucoseFormScreen(
                 value = dateText,
                 onValueChange = { dateText = it },
                 label = stringResource(R.string.glucose_form_date),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                clearOnFocus = true
             )
             AppTextField(
                 value = timeText,
                 onValueChange = { timeText = it },
                 label = stringResource(R.string.glucose_form_time),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                clearOnFocus = true
             )
         }
         Spacer(Modifier.height(10.dp))
@@ -194,14 +196,16 @@ fun GlucoseFormScreen(
                 valueText = if (dots <= 1) filtered.take(6) else filtered.replaceFirst(".", "")
             },
             label = stringResource(R.string.glucose_form_value),
-            placeholder = stringResource(R.string.glucose_form_value_hint)
+            placeholder = stringResource(R.string.glucose_form_value_hint),
+            clearOnFocus = true
         )
         Spacer(Modifier.height(10.dp))
         AppTextField(
             value = noteText,
             onValueChange = { noteText = it },
             label = stringResource(R.string.glucose_form_note),
-            placeholder = stringResource(R.string.glucose_form_note_hint)
+            placeholder = stringResource(R.string.glucose_form_note_hint),
+            clearOnFocus = true
         )
 
         if (error != null) {
