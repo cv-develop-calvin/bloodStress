@@ -12,6 +12,7 @@ import org.bp.songbaobao.R
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.inject.Inject
@@ -62,6 +63,14 @@ class VersionRepository @Inject constructor(private val app: Application) {
         private const val API_LATEST = "https://api.github.com/repos/$REPO/releases/latest"
         private const val TAG_PREFIX = "build-"
         private const val APK_DIR = "updates"
+
+        // 下载相关常量
+        private const val MAX_REDIRECTS = 5
+        private const val DOWNLOAD_MAX_RETRY = 3
+        private const val DOWNLOAD_CONNECT_TIMEOUT_MS = 20_000
+        private const val DOWNLOAD_READ_TIMEOUT_MS = 60_000
+        // 整体限时（含重定向、CDN 抖动与重试），避免个别机型卡在 GitHub 跳转/CDN 上无限等待
+        private const val DOWNLOAD_TIMEOUT_MS = 5 * 60_000L
     }
 
     fun current(): VersionInfo = VersionInfo(
@@ -186,43 +195,111 @@ class VersionRepository @Inject constructor(private val app: Application) {
         dir.listFiles()?.forEach { it.delete() }
         val target = File(dir, update.apkName.ifBlank { "update.apk" })
 
-        val conn = (URL(update.apkUrl).openConnection() as HttpURLConnection).apply {
-            // 下载耗时较长，这里给宽松的读写超时；整体限时由调用方把控
-            connectTimeout = 20_000
-            readTimeout = 60_000
-            instanceFollowRedirects = true
-            setRequestProperty("Accept", "application/octet-stream")
-            setRequestProperty("User-Agent", "SongBaoBao-Updater")
+        // 整体限时：GitHub Releases 的下载地址会 302 跳到 objects.githubusercontent.com 的
+        // CDN，个别机型/网络下可能卡在跳转或慢速连接上，用独立线程 + Future 限时兜底。
+        runWithTimeout(DOWNLOAD_TIMEOUT_MS) {
+            downloadWithRetry(update, target, onProgress)
         }
-        try {
-            if (conn.responseCode !in 200..299) {
-                error(app.getString(R.string.msg_download_http, conn.responseCode))
-            }
-            val total = conn.contentLengthLong.takeIf { it > 0 } ?: update.apkSize
-            conn.inputStream.use { input ->
-                target.outputStream().use { output ->
-                    val buf = ByteArray(64 * 1024)
-                    var done = 0L
-                    var lastReport = 0L
-                    while (true) {
-                        val n = input.read(buf)
-                        if (n <= 0) break
-                        output.write(buf, 0, n)
-                        done += n
-                        // 每 256KB 回调一次，避免频繁刷新 UI
-                        if (done - lastReport >= 256 * 1024) {
-                            lastReport = done
-                            onProgress(done, total)
-                        }
-                    }
-                    output.flush()
-                    onProgress(done, total)
+    }
+
+    /**
+     * 失败重试：最多 [DOWNLOAD_MAX_RETRY] 次，退避后重试。
+     * 半截文件会被清掉，保证每次都从头下载完整包。
+     */
+    private fun downloadWithRetry(
+        update: UpdateInfo,
+        target: File,
+        onProgress: (downloaded: Long, total: Long) -> Unit
+    ): File {
+        var lastError: Throwable? = null
+        repeat(DOWNLOAD_MAX_RETRY) { attempt ->
+            try {
+                return downloadOnce(update, target, onProgress)
+            } catch (t: Throwable) {
+                lastError = t
+                // 清掉半截文件，下次重试从头开始
+                runCatching { if (target.exists()) target.delete() }
+                if (attempt < DOWNLOAD_MAX_RETRY - 1) {
+                    // 退避：指数增长，给网络/CDN 一点恢复时间
+                    Thread.sleep(800L * (attempt + 1))
                 }
             }
-        } finally {
-            conn.disconnect()
         }
-        target
+        throw lastError ?: IOException(app.getString(R.string.msg_download_failed, ""))
+    }
+
+    /**
+     * 单次下载：手动跟随重定向。
+     *
+     * GitHub Releases 的 [UpdateInfo.apkUrl]（browser_download_url）会返回 302 跳到
+     * objects.githubusercontent.com 的 CDN。部分 Android 的 HttpURLConnection 在跨主机
+     * 302 下不会自动跟随，于是直接拿到 302 当作错误。这里把 instanceFollowRedirects 关掉，
+     * 自己读 Location 头逐级跳转，确保最终落到真正的 APK 上。
+     */
+    private fun downloadOnce(
+        update: UpdateInfo,
+        target: File,
+        onProgress: (downloaded: Long, total: Long) -> Unit
+    ): File {
+        var url = update.apkUrl
+        var conn: HttpURLConnection? = null
+        try {
+            repeat(MAX_REDIRECTS) { _ ->
+                conn?.disconnect()
+                conn = (URL(url).openConnection() as HttpURLConnection).apply {
+                    requestMethod = "GET"
+                    connectTimeout = DOWNLOAD_CONNECT_TIMEOUT_MS
+                    readTimeout = DOWNLOAD_READ_TIMEOUT_MS
+                    // 关闭自动跟随，自己处理跨主机跳转
+                    instanceFollowRedirects = false
+                    setRequestProperty("User-Agent", "SongBaoBao-Updater")
+                    setRequestProperty("Accept", "*/*")
+                }
+                conn!!.connect()
+                val code = conn!!.responseCode
+                if (code in 300..399) {
+                    val location = conn!!.getHeaderField("Location")
+                    if (location.isNullOrBlank()) {
+                        error(app.getString(R.string.msg_download_http, code))
+                    }
+                    url = location
+                    return@repeat
+                }
+                if (code !in 200..299) {
+                    error(app.getString(R.string.msg_download_http, code))
+                }
+
+                val total = conn!!.contentLengthLong.takeIf { it > 0 } ?: update.apkSize
+                conn!!.inputStream.use { input ->
+                    target.outputStream().use { output ->
+                        val buf = ByteArray(64 * 1024)
+                        var done = 0L
+                        var lastReport = 0L
+                        while (true) {
+                            val n = input.read(buf)
+                            if (n <= 0) break
+                            output.write(buf, 0, n)
+                            done += n
+                            // 每 256KB 回调一次，避免频繁刷新 UI
+                            if (done - lastReport >= 256 * 1024) {
+                                lastReport = done
+                                onProgress(done, total)
+                            }
+                        }
+                        output.flush()
+                        onProgress(done, total)
+                        // 完整性校验：已知总大小时，下载量不足说明被中断
+                        if (total > 0 && done < total) {
+                            error(app.getString(R.string.msg_download_incomplete, done, total))
+                        }
+                    }
+                }
+                return target
+            }
+            error(app.getString(R.string.msg_download_redirect))
+        } finally {
+            conn?.disconnect()
+        }
     }
 
     // ---------------- 安装 ----------------

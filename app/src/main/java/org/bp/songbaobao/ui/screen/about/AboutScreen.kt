@@ -37,6 +37,11 @@ fun AboutScreen(
 ) {
     val changelog = remember {
         listOf(
+            "1.8.1" to (
+                "2026-09-26" to listOf(
+                    "修复应用内「检查更新」下载安装包失败：GitHub Releases 的 302 跳转改为手动跟随，并新增整体超时与失败重试"
+                )
+            ),
             "1.8.0" to (
                 "2026-09-26" to listOf(
                     "新增个性化设置：关于页-个性化设置，可自定义系统色系、应用背景图片与系统标题"
