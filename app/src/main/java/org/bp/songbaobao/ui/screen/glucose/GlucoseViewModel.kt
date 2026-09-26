@@ -25,6 +25,7 @@ import org.bp.songbaobao.data.local.entity.GlucoseRecord
 import org.bp.songbaobao.data.repository.GlucoseRepository
 import org.bp.songbaobao.domain.GlucoseOcrParser
 import org.bp.songbaobao.domain.GlucoseOcrResultHolder
+import org.bp.songbaobao.domain.OcrImagePreprocessor
 import org.bp.songbaobao.ui.components.GlucoseContext
 import org.bp.songbaobao.util.nowStamp
 import org.bp.songbaobao.util.nowTimeStr
@@ -108,7 +109,7 @@ class GlucoseViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val result = withContext(Dispatchers.IO) {
-                    val image = InputImage.fromFilePath(appContext, uri)
+                    val image = OcrImagePreprocessor.preprocess(appContext, uri)
                     val vision = Tasks.await(
                         TextRecognition
                             .getClient(ChineseTextRecognizerOptions.Builder().build())

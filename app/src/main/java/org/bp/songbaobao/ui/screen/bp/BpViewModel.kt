@@ -25,6 +25,7 @@ import org.bp.songbaobao.data.local.dao.BpStats
 import org.bp.songbaobao.data.local.entity.BpRecord
 import org.bp.songbaobao.data.repository.*
 import org.bp.songbaobao.domain.BpOcrParser
+import org.bp.songbaobao.domain.OcrImagePreprocessor
 import org.bp.songbaobao.util.nowStamp
 import org.bp.songbaobao.util.nowTimeStr
 import org.bp.songbaobao.util.todayStr
@@ -156,7 +157,7 @@ class BpViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val result = withContext(Dispatchers.IO) {
-                    val image = InputImage.fromFilePath(appContext, uri)
+                    val image = OcrImagePreprocessor.preprocess(appContext, uri)
                     val vision = Tasks.await(
                         TextRecognition
                             .getClient(ChineseTextRecognizerOptions.Builder().build())
