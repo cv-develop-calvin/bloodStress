@@ -304,7 +304,7 @@
     <string name="legal_terms_1">1. Service\nThe app provides blood pressure recording and trends, medication reminders and check-in, blood test records with photo recognition, notes, backup and restore, and in-app updates.</string>
     <string name="legal_terms_2">2. Important disclaimer\nThis app is a recording tool, not a medical device, and provides no diagnosis, treatment advice or prescription.\nBlood pressure categories, reference ranges and hints shown come from public sources, are for reference only, and cannot replace a licensed physician\'s judgement.\nAny medication change must follow your doctor\'s advice; consequences of self-judgement are borne by you.\nIf you feel unwell, seek medical care promptly — do not act on this app\'s statistics alone.</string>
     <string name="legal_terms_3">3. Data responsibility\nYour data is stored on your device; you are responsible for its safety and backups.\nWe recommend exporting regularly. We cannot restore data lost through device loss, damage, uninstall or system cleanup.</string>
-    <string name="legal_terms_4">4. Accounts and payment\nThis version has no account system: no registration, no login. The app offers an optional membership subscription to unlock premium features and support development. Payments are processed by a third-party platform (PayPal); prices are shown in the app. Cancellation and refunds follow PayPal and applicable law. Core recording features remain free forever.</string>
+    <string name="legal_terms_4">4. Accounts and payment\nThis version has no account system: no registration, no login. The app offers an optional one-time membership (lifetime, fixed fee ¥70 / ≈ $10) to unlock premium features and support development. Payment is processed once via a third-party platform (PayPal). Refunds follow PayPal and applicable law. Core recording features remain free forever.</string>
     <string name="legal_terms_5">5. Intellectual property\nThe app\'s design, copy and code belong to the developer.\nThird-party open-source components follow their own licenses; see the Compliance tab.</string>
     <string name="legal_terms_6">6. Changes and termination\nWe may change or pause features for product, compliance or technical reasons and will try to notify you in the app.\nIf you use the app in violation of law or these terms, we may terminate the service.</string>
     <string name="legal_terms_7">7. Disputes\nThese terms are governed by the laws of the People\'s Republic of China. Disputes should be settled amicably; failing that, they go to the competent court where the developer is located.</string>
@@ -648,6 +648,10 @@
     <string name="sub_plan_lifetime">Lifetime</string>
     <string name="sub_plan_lifetime_price">¥498</string>
     <string name="sub_plan_lifetime_period">one-time</string>
+    <string name="sub_plan_onetime">Membership (one-time)</string>
+    <string name="sub_plan_onetime_price">¥70</string>
+    <string name="sub_plan_onetime_period">Lifetime</string>
+    <string name="sub_plan_usd">≈ $10 (or ¥70)</string>
     <string name="sub_pay_paypal">Pay with PayPal</string>
     <string name="sub_paypal_hint">Opens the secure PayPal page. Completing payment activates your subscription.</string>
     <string name="sub_paid">I have paid</string>

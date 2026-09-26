@@ -45,16 +45,23 @@ private data class Plan(
     val titleRes: Int,
     val priceRes: Int,
     val periodRes: Int,
-    val recommended: Boolean,
-    /** 订阅时长（月）；-1 表示终身。 */
+    val usdRes: Int? = null,
+    val recommended: Boolean = false,
+    /** 订阅时长（月）；-1 表示终身/一次性永久。 */
     val months: Int
 )
 
+/** 固定一次性会员：¥70（约 $10），永久有效。 */
 private val PLANS = listOf(
-    Plan("monthly", R.string.sub_plan_monthly, R.string.sub_plan_monthly_price, R.string.sub_plan_monthly_period, false, 1),
-    Plan("quarterly", R.string.sub_plan_quarterly, R.string.sub_plan_quarterly_price, R.string.sub_plan_quarterly_period, true, 3),
-    Plan("yearly", R.string.sub_plan_yearly, R.string.sub_plan_yearly_price, R.string.sub_plan_yearly_period, false, 12),
-    Plan("lifetime", R.string.sub_plan_lifetime, R.string.sub_plan_lifetime_price, R.string.sub_plan_lifetime_period, false, -1)
+    Plan(
+        "onetime",
+        R.string.sub_plan_onetime,
+        R.string.sub_plan_onetime_price,
+        R.string.sub_plan_onetime_period,
+        usdRes = R.string.sub_plan_usd,
+        recommended = true,
+        months = -1
+    )
 )
 
 @Composable
@@ -64,7 +71,7 @@ fun SubscriptionScreen() {
     val planId by UserPrefs.subscriptionPlan.collectAsState()
     val expiry by UserPrefs.subscriptionExpiry.collectAsState()
 
-    var selectedId by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedId by rememberSaveable { mutableStateOf(PLANS.first().id) }
 
     val selectedPlan = PLANS.firstOrNull { it.id == selectedId }
     val currentPlan = PLANS.firstOrNull { it.id == planId }
@@ -298,6 +305,14 @@ private fun PlanCard(plan: Plan, selected: Boolean, onClick: () -> Unit) {
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(stringResource(plan.periodRes), fontSize = 12.sp, color = TextDim)
+                }
+                if (plan.usdRes != null) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        stringResource(plan.usdRes!!),
+                        fontSize = 12.sp,
+                        color = TextDim
+                    )
                 }
             }
             Box(

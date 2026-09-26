@@ -304,7 +304,7 @@
     <string name="legal_terms_1">一、服务内容\n本应用为你提供血压记录与趋势、用药提醒与打卡、血常规记录与拍照识别、笔记留言、数据备份与恢复，以及应用内版本升级等工具功能。</string>
     <string name="legal_terms_2">二、重要免责声明\n本应用是健康记录工具，不是医疗器械，不提供诊断、治疗建议或医嘱。\n应用中展示的血压分级、指标参考范围与提示均来自公开资料，仅供参考，不能替代执业医师的判断。\n任何用药、停药、剂量调整都必须遵医嘱。因自行判断造成的后果由用户自行承担。\n如出现身体不适，请及时就医，不要依据本应用的统计结果自行处理。</string>
     <string name="legal_terms_3">三、数据责任\n你的数据保存在本机，你对自己数据的安全与备份负责。\n我们建议你定期导出备份。因设备丢失、损坏、卸载应用或系统清理导致的数据丢失，我们无法代为恢复。</string>
-    <string name="legal_terms_4">四、账号与付费\n当前版本不提供账号体系，无需注册登录。应用提供可选的会员订阅（用于解锁高级功能与支持开发），订阅款项通过第三方支付平台（PayPal）收取，价格以应用内页面显示为准；退订与退款遵循 PayPal 及相关法律法规。基础记录功能永久免费。</string>
+    <string name="legal_terms_4">四、账号与付费\n当前版本不提供账号体系，无需注册登录。应用提供可选的「一次性会员」（永久有效，固定费用 ¥70 / 约 $10，用于解锁高级功能与支持开发），款项通过第三方支付平台（PayPal）一次性收取；退款遵循 PayPal 及相关法律法规。基础记录功能永久免费。</string>
     <string name="legal_terms_5">五、知识产权\n本应用的界面设计、文案与代码归开发者所有。\n应用内使用的第三方开源组件遵循各自的开源许可证，详见「合规清单」页。</string>
     <string name="legal_terms_6">六、服务变更与终止\n我们可能出于功能调整、合规要求或技术原因变更、暂停部分功能，并将尽力在应用内告知。\n若你违反法律法规或本协议使用本应用，我们有权终止向您提供服务。</string>
     <string name="legal_terms_7">七、争议解决\n本协议适用中华人民共和国法律。因本协议产生的争议应友好协商解决；协商不成的，提交开发者所在地有管辖权的人民法院处理。</string>
@@ -648,6 +648,10 @@
     <string name="sub_plan_lifetime">终身会员</string>
     <string name="sub_plan_lifetime_price">¥498</string>
     <string name="sub_plan_lifetime_period">一次付费</string>
+    <string name="sub_plan_onetime">会员（一次性）</string>
+    <string name="sub_plan_onetime_price">¥70</string>
+    <string name="sub_plan_onetime_period">永久有效</string>
+    <string name="sub_plan_usd">约 $10（或 ¥70）</string>
     <string name="sub_pay_paypal">去 PayPal 支付</string>
     <string name="sub_paypal_hint">将打开 PayPal 安全支付页面，完成付款即视为订阅成功。</string>
     <string name="sub_paid">我已完成支付</string>
