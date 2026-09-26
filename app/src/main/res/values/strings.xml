@@ -530,4 +530,27 @@
     <string name="import_merge">合并导入</string>
     <string name="import_replace">覆盖导入</string>
     <string name="update_size">体积 %1$s</string>
+
+    <!-- 个性化设置 -->
+    <string name="settings_title">个性化设置</string>
+    <string name="settings_theme">系统色系</string>
+    <string name="settings_theme_desc">选择喜欢的界面主色调，立即生效</string>
+    <string name="theme_saint">圣衣金</string>
+    <string name="theme_ocean">深海蓝</string>
+    <string name="theme_forest">森野绿</string>
+    <string name="theme_rose">蔷薇红</string>
+    <string name="theme_violet">星紫</string>
+    <string name="theme_amber">琥珀橙</string>
+    <string name="settings_bg">背景图片</string>
+    <string name="settings_bg_desc">使用相册里的图片作为应用背景</string>
+    <string name="settings_bg_default_label">当前为默认背景</string>
+    <string name="settings_bg_pick">从相册选择</string>
+    <string name="settings_bg_default">恢复默认背景</string>
+    <string name="settings_title_custom">系统标题</string>
+    <string name="settings_title_desc">自定义应用显示名称，留空则使用默认名称</string>
+    <string name="settings_save">保存</string>
+    <string name="settings_reset">恢复默认</string>
+    <string name="settings_saved">已保存</string>
+    <string name="settings_reset_done">已恢复默认</string>
+    <string name="settings_title_empty">标题不能为空</string>
 </resources>

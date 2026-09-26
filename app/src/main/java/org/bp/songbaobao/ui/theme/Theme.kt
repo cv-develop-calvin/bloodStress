@@ -1,11 +1,15 @@
 package org.bp.songbaobao.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import org.bp.songbaobao.util.UserPrefs
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -91,14 +95,68 @@ private val SaintDarkColorScheme = darkColorScheme(
     onErrorContainer = DangerRed
 )
 
+/**
+ * 可选的系统色系预设。每个预设仅在 SaintDarkColorScheme 基础上替换强调色，
+ * 背景与文本颜色保持一致以保证可读性。
+ */
+data class ThemePreset(
+    val id: String,
+    val nameRes: Int,
+    val swatch: Color,
+    val scheme: ColorScheme
+)
+
+private fun accentScheme(primary: Color, secondary: Color, tertiary: Color): ColorScheme =
+    SaintDarkColorScheme.copy(
+        primary = primary,
+        onPrimary = Navy,
+        primaryContainer = primary.copy(alpha = 0.22f),
+        onPrimaryContainer = primary,
+        secondary = secondary,
+        onSecondary = Navy,
+        secondaryContainer = secondary.copy(alpha = 0.22f),
+        onSecondaryContainer = TextMain,
+        tertiary = tertiary,
+        onTertiary = Navy
+    )
+
+val ThemePresets = listOf(
+    ThemePreset("saint", R.string.theme_saint, GoldBright, SaintDarkColorScheme),
+    ThemePreset(
+        "ocean", R.string.theme_ocean, Color(0xFF5BC8F5),
+        accentScheme(Color(0xFF5BC8F5), Color(0xFF7FE3C0), Color(0xFFA99CFF))
+    ),
+    ThemePreset(
+        "forest", R.string.theme_forest, Color(0xFF7FD98A),
+        accentScheme(Color(0xFF7FD98A), Color(0xFFBFE3A0), Color(0xFFFFE9A8))
+    ),
+    ThemePreset(
+        "rose", R.string.theme_rose, Color(0xFFFF9BB0),
+        accentScheme(Color(0xFFFF9BB0), Color(0xFFFFC46E), Color(0xFFA99CFF))
+    ),
+    ThemePreset(
+        "violet", R.string.theme_violet, Color(0xFFB79CFF),
+        accentScheme(Color(0xFFB79CFF), Color(0xFF7FE3C0), Color(0xFFFFDD7A))
+    ),
+    ThemePreset(
+        "amber", R.string.theme_amber, Color(0xFFFFC46E),
+        accentScheme(Color(0xFFFFC46E), Color(0xFFFFDD7A), Color(0xFFFF9BB0))
+    )
+)
+
+fun schemeFor(id: String): ColorScheme =
+    ThemePresets.firstOrNull { it.id == id }?.scheme ?: SaintDarkColorScheme
+
 @Composable
 fun SongBaoBaoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     // 无论系统设置如何都使用深色：本应用以星夜背景为设计基调
+    // 强调色由用户设置的系统色系决定，即时生效
+    val schemeId by UserPrefs.themeScheme.collectAsState()
     MaterialTheme(
-        colorScheme = SaintDarkColorScheme,
+        colorScheme = schemeFor(schemeId),
         typography = AppTypography,
         content = content
     )

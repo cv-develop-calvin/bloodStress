@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -18,8 +20,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import org.bp.songbaobao.R
 import org.bp.songbaobao.ui.theme.*
+import org.bp.songbaobao.util.UserPrefs
 
 /** 金色渐变主按钮（对应 Web 版 btn-gold） */
 @Composable
@@ -209,33 +213,59 @@ fun AppBackground(
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit
 ) {
+    val customUri by UserPrefs.bgUri.collectAsState()
     Box(modifier = modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.bg_sagittarius_athena),
-            contentDescription = null,
-            // Fit 完整呈现两位人物，避免窄屏下被裁掉两侧
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.88f)
-                .align(Alignment.TopCenter)
-                .alpha(0.95f)
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.88f)
-                .align(Alignment.TopCenter)
-                .background(
+        if (customUri != null) {
+            // 用户自定义背景图片：铺满裁剪，并叠加压暗渐变保证文字可读
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = customUri,
+                    contentScale = ContentScale.Crop,
+                    error = painterResource(id = R.drawable.bg_sagittarius_athena)
+                ),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            Box(
+                modifier = Modifier.fillMaxSize().background(
                     Brush.verticalGradient(
-                        0f to Navy.copy(alpha = 0.45f),
-                        0.18f to Navy.copy(alpha = 0.16f),
-                        0.64f to Navy.copy(alpha = 0.22f),
-                        0.86f to Navy.copy(alpha = 0.72f),
-                        1f to Navy.copy(alpha = 0.96f)
+                        0f to Navy.copy(alpha = 0.35f),
+                        0.2f to Navy.copy(alpha = 0.1f),
+                        0.7f to Navy.copy(alpha = 0.3f),
+                        1f to Navy.copy(alpha = 0.92f)
                     )
                 )
-        )
+            )
+        } else {
+            // 默认射手座 + 雅典娜圣斗士主题底图
+            Image(
+                painter = painterResource(id = R.drawable.bg_sagittarius_athena),
+                contentDescription = null,
+                // Fit 完整呈现两位人物，避免窄屏下被裁掉两侧
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.88f)
+                    .align(Alignment.TopCenter)
+                    .alpha(0.95f)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.88f)
+                    .align(Alignment.TopCenter)
+                    .background(
+                        Brush.verticalGradient(
+                            0f to Navy.copy(alpha = 0.45f),
+                            0.18f to Navy.copy(alpha = 0.16f),
+                            0.64f to Navy.copy(alpha = 0.22f),
+                            0.86f to Navy.copy(alpha = 0.72f),
+                            1f to Navy.copy(alpha = 0.96f)
+                        )
+                    )
+            )
+        }
         content()
     }
 }

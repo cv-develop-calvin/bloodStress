@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,9 +31,17 @@ import org.bp.songbaobao.util.LanguageManager
 
 /** 关于与版本：构建信息 + 更新日志 */
 @Composable
-fun AboutScreen(onLegal: () -> Unit = {}) {
+fun AboutScreen(
+    onLegal: () -> Unit = {},
+    onSettings: () -> Unit = {}
+) {
     val changelog = remember {
         listOf(
+            "1.8.0" to (
+                "2026-09-26" to listOf(
+                    "新增个性化设置：关于页-个性化设置，可自定义系统色系、应用背景图片与系统标题"
+                )
+            ),
             "1.7.0" to (
                 "2026-09-26" to listOf(
                     "新增中英双语切换：关于页-语言，可选跟随系统 / 中文 / English",
@@ -118,8 +127,6 @@ fun AboutScreen(onLegal: () -> Unit = {}) {
         HeroCard {
             ZodiacChip(stringResource(R.string.about_chip))
             Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold, color = GoldBright)
             Text(
                 stringResource(
                     R.string.about_version,
@@ -136,6 +143,25 @@ fun AboutScreen(onLegal: () -> Unit = {}) {
 
         // 语言切换
         LanguageCard()
+
+        Spacer(Modifier.height(12.dp))
+
+        // 个性化设置：系统色系、背景图片、系统标题
+        PanelCard(modifier = Modifier.clickable { onSettings() }) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    stringResource(R.string.settings_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = GoldBright,
+                    modifier = Modifier.weight(1f)
+                )
+                Text("›", color = Gold, style = MaterialTheme.typography.titleMedium)
+            }
+        }
 
         Spacer(Modifier.height(12.dp))
 

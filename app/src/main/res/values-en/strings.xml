@@ -530,4 +530,27 @@
     <string name="import_merge">Merge import</string>
     <string name="import_replace">Replace import</string>
     <string name="update_size">Size %1$s</string>
+
+    <!-- Personalization -->
+    <string name="settings_title">Personalization</string>
+    <string name="settings_theme">Color scheme</string>
+    <string name="settings_theme_desc">Pick an accent color, applied instantly</string>
+    <string name="theme_saint">Saint Gold</string>
+    <string name="theme_ocean">Ocean Blue</string>
+    <string name="theme_forest">Forest Green</string>
+    <string name="theme_rose">Rose Red</string>
+    <string name="theme_violet">Star Violet</string>
+    <string name="theme_amber">Amber</string>
+    <string name="settings_bg">Background image</string>
+    <string name="settings_bg_desc">Use a photo from your gallery as the app background</string>
+    <string name="settings_bg_default_label">Default background</string>
+    <string name="settings_bg_pick">Choose from gallery</string>
+    <string name="settings_bg_default">Reset to default</string>
+    <string name="settings_title_custom">System title</string>
+    <string name="settings_title_desc">Customize the app display name. Blank uses the default.</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_reset">Reset</string>
+    <string name="settings_saved">Saved</string>
+    <string name="settings_reset_done">Reset to default</string>
+    <string name="settings_title_empty">Title cannot be empty</string>
 </resources>

@@ -284,24 +284,10 @@ fun BpTrendScreen(
     }
 }
 
-/** 首页大标题：宋宝宝的记录 */
+/** 首页副标题：压在顶栏自定义标题下方的引导语 */
 @Composable
 private fun AppHeader() {
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-        Text(
-            stringResource(R.string.app_name),
-            // 柔和的深色阴影，保证压在亮背景上依然清晰
-            style = MaterialTheme.typography.headlineMedium.copy(
-                shadow = Shadow(
-                    color = org.bp.songbaobao.ui.theme.Navy,
-                    offset = Offset(0f, 2f),
-                    blurRadius = 12f
-                )
-            ),
-            fontWeight = FontWeight.Bold,
-            color = org.bp.songbaobao.ui.theme.GoldBright
-        )
-        Spacer(Modifier.height(3.dp))
         Text(
             stringResource(R.string.bp_app_subtitle),
             style = MaterialTheme.typography.labelSmall,

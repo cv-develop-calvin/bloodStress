@@ -39,6 +39,9 @@ sealed class Screen(
     // 合规文档（应用商店上架必需，从关于页进入）
     object Legal : Screen("legal", R.string.title_legal, "", false)
 
+    // 个性化设置（从关于页进入）
+    object Settings : Screen("settings", R.string.settings_title, "", false)
+
     companion object {
         // 必须用 get() 而非 val 初始化：
         // companion object 的静态初始化早于外部类各 object 单例的初始化，

@@ -14,13 +14,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,6 +45,7 @@ import org.bp.songbaobao.reminder.NotificationHelper
 import org.bp.songbaobao.ui.components.AppBottomBar
 import org.bp.songbaobao.ui.navigation.Screen
 import org.bp.songbaobao.ui.screen.about.AboutScreen
+import org.bp.songbaobao.ui.screen.about.SettingsScreen
 import org.bp.songbaobao.ui.screen.bp.BpAddScreen
 import org.bp.songbaobao.ui.screen.bp.BpEditScreen
 import org.bp.songbaobao.ui.screen.bp.BpListScreen
@@ -57,6 +64,7 @@ import org.bp.songbaobao.ui.screen.note.NoteEditScreen
 import org.bp.songbaobao.ui.screen.note.NoteListScreen
 import org.bp.songbaobao.ui.theme.SongBaoBaoTheme
 import org.bp.songbaobao.util.LanguageManager
+import org.bp.songbaobao.util.UserPrefs
 import org.bp.songbaobao.util.PrivacyConsent
 
 @AndroidEntryPoint
@@ -215,6 +223,7 @@ private fun PrivacyConsentDialog(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(
     navController: NavHostController = rememberNavController(),
@@ -226,6 +235,26 @@ fun AppNavHost(
     val showBar = Screen.barItems.any { it.route == currentRoute }
 
     Scaffold(
+        topBar = {
+            if (showBar) {
+                val customTitle by UserPrefs.customTitle.collectAsState()
+                val ctx = LocalContext.current
+                val title = customTitle?.takeIf { it.isNotBlank() } ?: ctx.getString(R.string.app_name)
+                TopAppBar(
+                    title = {
+                        Text(
+                            title,
+                            color = org.bp.songbaobao.ui.theme.GoldBright,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = org.bp.songbaobao.ui.theme.NavySoft.copy(alpha = 0.92f)
+                    )
+                )
+            }
+        },
         bottomBar = {
             if (showBar) {
                 AppBottomBar(
@@ -348,8 +377,14 @@ fun AppNavHost(
             // ---------- 关于 ----------
             composable(Screen.About.route) {
                 AboutScreen(
-                    onLegal = { navController.navigate(Screen.Legal.route) }
+                    onLegal = { navController.navigate(Screen.Legal.route) },
+                    onSettings = { navController.navigate(Screen.Settings.route) }
                 )
+            }
+
+            // ---------- 个性化设置 ----------
+            composable(Screen.Settings.route) {
+                SettingsScreen(onBack = { navController.popBackStack() })
             }
 
             // ---------- 合规文档 ----------
