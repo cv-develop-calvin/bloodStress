@@ -61,6 +61,7 @@
     <string name="lang_follow_system">Follow system</string>
     <string name="lang_chinese">中文</string>
     <string name="lang_english">English</string>
+    <string name="lang_japanese">日本語</string>
     <string name="lang_restart_hint">Takes effect immediately</string>
 
     <!-- Bottom navigation -->

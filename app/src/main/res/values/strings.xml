@@ -61,6 +61,7 @@
     <string name="lang_follow_system">跟随系统</string>
     <string name="lang_chinese">中文</string>
     <string name="lang_english">English</string>
+    <string name="lang_japanese">日本語</string>
     <string name="lang_restart_hint">切换后立即生效</string>
 
     <!-- 底部导航 -->

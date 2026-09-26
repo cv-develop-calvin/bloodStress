@@ -8,7 +8,7 @@ import java.util.Locale
 /**
  * 应用内语言切换。
  *
- * 只做「中文 / 英文 / 跟随系统」三态，偏好存在本机 SharedPreferences。
+ * 支持「中文 / 英文 / 日本語 / 跟随系统」，偏好存在本机 SharedPreferences。
  * 实现方式：用 createConfigurationContext 包一层带目标 Locale 的 Context，
  * 在 Activity.attachBaseContext 注入，因此从 API 26 起所有版本行为一致，
  * 不依赖 Android 13 的 per-app language API（minSdk 26，很多设备没有该能力）。
@@ -18,6 +18,7 @@ object LanguageManager {
     const val FOLLOW_SYSTEM = ""
     const val ZH = "zh"
     const val EN = "en"
+    const val JA = "ja"
 
     private const val PREFS = "language"
     private const val KEY = "app_language"
@@ -39,7 +40,11 @@ object LanguageManager {
             @Suppress("DEPRECATION")
             context.resources.configuration.locale
         }
-        return if (sys.language.startsWith("zh")) ZH else EN
+        return when {
+            sys.language.startsWith("zh") -> ZH
+            sys.language.startsWith("ja") -> JA
+            else -> EN
+        }
     }
 
     fun setLanguage(context: Context, code: String) {
@@ -50,6 +55,7 @@ object LanguageManager {
     fun displayName(code: String): String = when (code) {
         ZH -> "中文"
         EN -> "English"
+        JA -> "日本語"
         else -> "跟随系统"
     }
 

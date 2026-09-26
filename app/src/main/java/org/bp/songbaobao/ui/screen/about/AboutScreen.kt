@@ -374,7 +374,7 @@ private fun findActivity(context: android.content.Context): android.app.Activity
 /**
  * 语言切换卡片。
  *
- * 三态：跟随系统 / 中文 / English。
+ * 四态：跟随系统 / 中文 / English / 日本語。
  * 选中后写入偏好并重建 Activity —— 语言是在 attachBaseContext 注入的，
  * 只有重建才能重新走一遍资源解析，让整个界面立即换成新语言。
  */
@@ -384,7 +384,8 @@ private fun LanguageCard() {
     val options = listOf(
         LanguageManager.FOLLOW_SYSTEM to R.string.lang_follow_system,
         LanguageManager.ZH to R.string.lang_chinese,
-        LanguageManager.EN to R.string.lang_english
+        LanguageManager.EN to R.string.lang_english,
+        LanguageManager.JA to R.string.lang_japanese
     )
     var selected by remember { mutableStateOf(LanguageManager.getSavedLanguage(context)) }
 

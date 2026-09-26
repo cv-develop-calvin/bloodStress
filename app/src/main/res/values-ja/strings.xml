@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">宋宝の記録</string>
+
+    <!-- 通知 -->
+    <string name="notif_channel_name">服薬リマインダー</string>
+    <string name="notif_channel_desc">服用時間になったらお知らせします</string>
+    <string name="notif_title">お薬の時間です 💊</string>
+    <string name="notif_default_name">お薬</string>
+    <string name="notif_body">%1$s · %2$s の服用時間です</string>
+
+    <!-- クラッシュログ -->
+    <string name="crash_time">時間: %1$s</string>
+    <string name="crash_device">端末: %1$s %2$s</string>
+    <string name="crash_os">OS: Android %1$s (API %2$d)</string>
+    <string name="crash_version">アプリバージョン: %1$s (%2$d)</string>
+    <string name="crash_share_subject">宋宝の記録 クラッシュログ</string>
+    <string name="crash_share_title">クラッシュログを共有</string>
+
+    <!-- アップデートとバックアップ -->
+    <string name="msg_already_latest">最新版です（v%1$s）</string>
+    <string name="msg_check_failed">確認失敗: %1$s</string>
+    <string name="msg_no_apk_link">このバージョンにはダウンロード可能なAPKがありません</string>
+    <string name="msg_download_failed">ダウンロード失敗: %1$s</string>
+    <string name="msg_download_done">ダウンロード完了 — タップしてインストール</string>
+    <string name="msg_install_failed">インストール失敗: %1$s</string>
+    <string name="msg_installing">インストール中…</string>
+    <string name="msg_export_failed">エクスポート失敗: %1$s</string>
+    <string name="msg_import_failed">インポート失敗: %1$s</string>
+    <string name="msg_export_done">%1$d 件の記録をエクスポートしました</string>
+    <string name="msg_import_done">%1$d 件の記録をインポートしました</string>
+    <string name="msg_need_install_permission">インストールには「提供元不明のアプリを許可」が必要です</string>
+    <string name="msg_pick_file">バックアップファイルを選択してください</string>
+    <string name="msg_check_start">checkForUpdate に入りました。リクエストの準備中</string>
+    <string name="msg_not_app_build">最新リリースはアプリビルドではありません（%1$s）</string>
+    <string name="msg_bad_build_number">ビルド番号を解析できません（%1$s）</string>
+    <string name="msg_timeout">リクエストがタイムアウトしました</string>
+    <string name="msg_download_http">ダウンロード失敗: HTTP %1$d</string>
+    <string name="msg_download_incomplete">ダウンロードが不完全です（%1$d / %2$d バイト）。再試行してください。</string>
+    <string name="msg_download_redirect">リダイレクトが多すぎてインストールパッケージが見つかりません。</string>
+    <string name="msg_net_unavailable">ネットワークに接続できません。通信状態を確認してください。</string>
+    <string name="msg_net_timeout">ネットワークリクエストがタイムアウトしました。通信状態を確認してください。</string>
+    <string name="msg_net_failed">ネットワーク接続に失敗しました。通信状態を確認してください。</string>
+    <string name="msg_exporting">エクスポート中…</string>
+    <string name="msg_importing">インポート中…</string>
+    <string name="msg_latest_version">最新版 v%1$s です</string>
+    <string name="msg_check_failed_reason">アップデート確認失敗: %1$s</string>
+    <string name="msg_download_done_hint">ダウンロード完了 — 下のボタンをタップしてインストール</string>
+    <string name="msg_installer_failed">インストーラーを起動できません: %1$s</string>
+    <string name="msg_write_failed">選択した場所に書き込めません</string>
+    <string name="msg_export_ok">エクスポート完了</string>
+    <string name="msg_read_failed">選択したファイルを読み取れません</string>
+    <string name="msg_not_backup_file">このアプリがエクスポートしたバックアップではありません</string>
+    <string name="msg_backup_too_new">バックアップのバージョン（v%1$d）がサポート対象（v%2$d）より新しいです。先にアプリを更新してください。</string>
+    <string name="msg_import_ok_merge">インポート完了（統合）</string>
+    <string name="msg_import_ok_replace">インポート完了（上書き）</string>
+    <string name="msg_backup_summary">血圧 %1$d · お薬 %2$d · 服用 %3$d · 血液検査 %4$d · 血糖 %5$d · メモ %6$d · 写真 %7$d</string>
+
+    <!-- 言語 -->
+    <string name="lang_title">言語</string>
+    <string name="lang_follow_system">システムに従う</string>
+    <string name="lang_chinese">中文</string>
+    <string name="lang_english">English</string>
+    <string name="lang_japanese">日本語</string>
+    <string name="lang_restart_hint">すぐに適用されます</string>
+
+    <!-- 下部ナビゲーション -->
+    <string name="nav_bp">血圧</string>
+    <string name="nav_med">お薬</string>
+    <string name="nav_lab">血液検査</string>
+    <string name="nav_notes">ノート</string>
+    <string name="nav_about">バージョン</string>
+
+    <!-- 画面タイトル -->
+    <string name="title_add_bp">血圧を追加</string>
+    <string name="title_edit_bp">血圧を編集</string>
+    <string name="title_all_records">すべての記録</string>
+    <string name="title_add_med">お薬を追加</string>
+    <string name="title_edit_med">お薬を編集</string>
+    <string name="title_add_lab">血液検査を追加</string>
+    <string name="title_edit_lab">血液検査を編集</string>
+    <string name="title_scan">写真で読み取り</string>
+    <string name="title_add_note">メモを書く</string>
+    <string name="title_edit_note">メモを編集</string>
+    <string name="title_note_detail">メモ詳細</string>
+    <string name="title_legal">プライバシーと規約</string>
+    <string name="back">戻る</string>
+
+    <!-- 共通アクション -->
+    <string name="action_save">保存</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_edit">編集</string>
+    <string name="action_delete">削除</string>
+    <string name="action_buy">購入</string>
+    <string name="action_confirm">OK</string>
+    <string name="action_copy">薬名をコピー</string>
+    <string name="action_retry">再試行</string>
+
+    <!-- 血圧 -->
+    <string name="bp_chip">PEGASUS</string>
+    <string name="bp_app_subtitle">SAINT · 健康記録</string>
+    <string name="bp_no_data">データなし</string>
+    <string name="bp_add_first">最初の記録を追加</string>
+    <string name="bp_latest">最新測定 · %1$s %2$s</string>
+    <string name="bp_pulse">心拍数 %1$d</string>
+    <string name="bp_avg_sys">平均収縮期血圧</string>
+    <string name="bp_avg_dia">平均拡張期血圧</string>
+    <string name="bp_avg_pulse">平均心拍数</string>
+    <string name="bp_range_max_min">最高 %1$s · 最低 %2$s</string>
+    <string name="bp_count_records">%1$d 件</string>
+    <string name="bp_adherence_7d">直近7日の服薬</string>
+    <string name="bp_time_to_take">お薬の時間です</string>
+    <string name="bp_trend_title">血圧の推移</string>
+    <string name="bp_series_sys">収縮期</string>
+    <string name="bp_series_dia">拡張期</string>
+    <string name="bp_series_pulse">心拍数</string>
+    <string name="bp_trend_empty_hint">右下の＋をタップして記録を追加</string>
+    <string name="bp_recent_title">最近の記録</string>
+    <string name="bp_view_all">すべて表示 →</string>
+    <string name="bp_no_records">まだ記録がありません</string>
+    <string name="bp_range_7d">7日</string>
+    <string name="bp_range_30d">30日</string>
+    <string name="bp_range_90d">90日</string>
+    <string name="bp_range_all">すべて</string>
+
+    <string name="bp_form_title_add">血圧を記録</string>
+    <string name="bp_form_title_edit">血圧を編集</string>
+    <string name="bp_scan_title">📷 血圧と心拍を写真で読み取り</string>
+    <string name="bp_scan_tip">血圧計の画面をはっきり撮影してください：平らに置き、明るさを均一にし、レンズに正対し、反射を避けてください。収縮期／拡張期／心拍数を自動認識します。保存前に確認してください。</string>
+    <string name="bp_scan_found">%1$d 件の数値を認識しました</string>
+    <string name="bp_scan_entry_title">写真で読み込み</string>
+    <string name="bp_scan_entry_sub">血圧計の写真を撮ると血圧と心拍数を自動読み取り</string>
+    <string name="bp_ocr_prefill">写真から血圧／心拍数を認識しました。数値を確認して保存してください。</string>
+    <string name="bp_form_current">今回の測定</string>
+    <string name="bp_form_date">測定日</string>
+    <string name="bp_form_time">測定時刻</string>
+    <string name="bp_form_sys">収縮期血圧(mmHg)</string>
+    <string name="bp_form_dia">拡張期血圧(mmHg)</string>
+    <string name="bp_form_pulse">心拍数(回/分、任意)</string>
+    <string name="bp_form_note">備考（任意）</string>
+    <string name="bp_form_note_hint">例：起床時、服薬後、運動後</string>
+    <string name="bp_err_date">測定日を選択してください</string>
+    <string name="bp_err_sys">収縮期は60〜300の間で入力してください</string>
+    <string name="bp_err_dia">拡張期は30〜200の間で入力してください</string>
+    <string name="bp_err_dia_lt_sys">拡張期は収縮期より小さくしてください</string>
+    <string name="bp_err_pulse">心拍数は30〜250の間で入力してください</string>
+
+    <!-- 血液検査 -->
+    <string name="lab_scan_title">📷 検査結果を撮影して自動読み取り</string>
+    <string name="lab_scan_tip">机の上に平らに広げ、明るさを均一に、レンズに正対させてください</string>
+    <string name="lab_open_camera">カメラを開く</string>
+    <string name="lab_from_gallery">アルバムから選択</string>
+    <string name="lab_supported">対応: %1$s</string>
+    <string name="lab_empty_title">まだ血液検査の記録がありません</string>
+    <string name="lab_empty_hint">上のパネルを開いて撮影するか、＋で手動入力してください</string>
+    <string name="lab_latest">最新レポート · %1$s</string>
+    <string name="lab_trend_title">指標の推移</string>
+    <string name="lab_range_7d">7日</string>
+    <string name="lab_range_30d">30日</string>
+    <string name="lab_range_90d">90日</string>
+    <string name="lab_no_series">この指標にデータがありません</string>
+    <string name="lab_abnormal_count">%1$d 件異常</string>
+    <string name="lab_all_normal">すべて正常</string>
+    <string name="lab_source_photo">写真で認識</string>
+    <string name="lab_form_title_add">血液検査を追加</string>
+    <string name="lab_form_title_edit">血液検査を編集</string>
+    <string name="lab_ocr_prefill">写真から %1$d 件を認識しました（金色で強調）。確認して保存してください</string>
+    <string name="lab_form_date">レポート日</string>
+    <string name="lab_form_time">時刻</string>
+    <string name="lab_form_hospital">病院 / 機関（任意）</string>
+    <string name="lab_form_hospital_hint">例：市こども病院</string>
+    <string name="lab_form_note">備考（任意）</string>
+    <string name="lab_form_note_hint">例：発熱2日目の再検査</string>
+    <string name="lab_err_need_one">血液検査の指標を1つ以上入力してください</string>
+    <string name="lab_err_date">レポート日を入力してください</string>
+
+    <!-- 写真認識 -->
+    <string name="scan_back">‹ 戻る</string>
+    <string name="scan_title">検査結果を撮影して自動読み取り</string>
+    <string name="scan_tip">ヒント：検査結果を机の上に平らに広げ、明るさを均一に、正対させ、反射や影を避けてください。項目／結果の部分だけを撮ると認識精度が上がります。</string>
+    <string name="scan_open_camera">📸 カメラ</string>
+    <string name="scan_from_gallery">🖼️ アルバム</string>
+    <string name="scan_photo_desc">検査結果の写真</string>
+    <string name="scan_idle_hint">検査結果の写真を撮影または選択してください</string>
+    <string name="scan_loading">認識中…</string>
+    <string name="scan_error">認識失敗: %1$s</string>
+    <string name="scan_error_hint">手動で入力するか、より鮮明な写真を撮り直してください。</string>
+    <string name="scan_none">利用可能な指標が見つかりません</string>
+    <string name="scan_found">%1$d 件の指標を認識しました</string>
+    <string name="scan_confirm">確認してフォームに入力 →</string>
+    <string name="scan_raw_text">認識テキスト（確認用）</string>
+    <string name="scan_no_text">（テキストなし）</string>
+
+    <!-- メモ詳細 -->
+    <string name="note_not_found">メモが見つかりません</string>
+    <string name="note_photos_count">📷 写真（%1$d）</string>
+    <string name="note_delete_photo">この写真を削除しますか？</string>
+
+    <!-- ノート -->
+    <string name="note_chip">ノート · MEMO</string>
+    <string name="note_count_notes">件のメモ</string>
+    <string name="note_count_photos">枚の写真</string>
+    <string name="note_since">%1$s から記録中</string>
+    <string name="note_search_hint">タイトル、本文、タグで検索</string>
+    <string name="note_filter_all">すべて</string>
+    <string name="note_photo_wall">写真ウォール</string>
+    <string name="note_no_match">該当するメモがありません</string>
+    <string name="note_empty_title">まだメモがありません</string>
+    <string name="note_empty_hint">赤ちゃんの日常、気分、成長の瞬間を記録できます。写真も添付できます</string>
+    <string name="note_untitled">無題</string>
+    <string name="note_photo_count">📷 %1$d 枚の写真</string>
+    <string name="note_view_detail">詳細を見る →</string>
+    <string name="note_form_title_add">メモを書く</string>
+    <string name="note_form_title_edit">メモを編集</string>
+    <string name="note_form_date">日付</string>
+    <string name="note_form_time">時刻</string>
+    <string name="note_form_title">タイトル</string>
+    <string name="note_form_title_hint">例：初めての寝返り</string>
+    <string name="note_form_content">メモ本文</string>
+    <string name="note_char_count">%1$d 文字 · 最大5000文字</string>
+    <string name="note_form_mood">気分</string>
+    <string name="note_form_tags">タグ</string>
+    <string name="note_form_tags_hint">カンマ区切り、例：成長,初めて,検診</string>
+    <string name="note_photos_max">写真（最大9枚）</string>
+    <string name="note_take_photo">📸 カメラ</string>
+    <string name="note_gallery">🖼️ アルバム</string>
+    <string name="note_selected_count">%1$d 枚選択中</string>
+    <string name="note_existing_photos">既存の写真（タップで削除対象に）</string>
+    <string name="note_err_need_content">タイトルか本文のいずれかを入力してください</string>
+    <string name="note_err_too_long">本文が長すぎます（最大5000文字）</string>
+
+    <!-- 服薬 -->
+    <string name="med_checkin">達成</string>
+    <string name="med_header">服薬管理 · MEDICATION</string>
+    <string name="med_adherence_7d">直近7日の服薬率</string>
+    <string name="med_taken_of">%1$d / %2$d 回 服用</string>
+    <string name="med_time_to_take">⏰ お薬の時間です</string>
+    <string name="med_list_title">お薬（%1$d）</string>
+    <string name="med_empty_title">まだお薬が追加されていません</string>
+    <string name="med_empty_hint">右下の＋をタップして追加</string>
+    <string name="med_field_name">お薬の名前</string>
+    <string name="med_field_name_hint">例：アムロジピン</string>
+    <string name="med_field_dosage">用量</string>
+    <string name="med_field_unit">単位</string>
+    <string name="med_field_freq">服用頻度</string>
+    <string name="med_field_times">服用時刻</string>
+    <string name="med_field_start">開始日</string>
+    <string name="med_field_end">終了日（任意）</string>
+    <string name="med_field_note">備考（任意）</string>
+    <string name="med_field_note_hint">例：食後</string>
+    <string name="med_add_time">＋ 追加</string>
+    <string name="med_time_format_hint">形式 HH:mm（例：08:00）</string>
+    <string name="med_remind_enabled">リマインダーを有効にする</string>
+    <string name="med_logs_title">服薬記録</string>
+    <string name="med_removed">お薬を削除しました</string>
+    <string name="med_delete_confirm">「%1$s」とその服薬記録を削除しますか？</string>
+
+    <string name="freq_daily_1">1日1回</string>
+    <string name="freq_daily_2">1日2回</string>
+    <string name="freq_daily_3">1日3回</string>
+    <string name="freq_every_other">1日おきに1回</string>
+    <string name="freq_weekly">週1回</string>
+    <string name="freq_as_needed">必要に応じて</string>
+
+    <string name="med_err_name_required">お薬の名前を入力してください</string>
+    <string name="med_err_time_required">服用時刻を1つ以上設定してください</string>
+    <string name="med_err_time_format">時刻の形式が正しくありません：%1$s（HH:mm）</string>
+    <string name="med_err_end_before_start">終了日は開始日より早くできません</string>
+
+    <!-- 薬購入 -->
+    <string name="buy_title">「%1$s」を購入</string>
+    <string name="buy_search_hint">「%1$s」で検索します。購薬チャネルを選択してください：</string>
+    <string name="buy_fallback_hint">チャネルが開かない、またはリンクが切れている場合は、薬名をコピーして購薬アプリで検索してください。</string>
+    <string name="buy_copied">「%1$s」をコピーしました。購薬アプリに貼り付けて検索できます</string>
+    <string name="buy_copy_failed">コピー失敗。薬名をメモしてください：%1$s</string>
+    <string name="buy_open_failed">%1$s を開けません。薬名をコピーしました。アプリで検索してください</string>
+    <string name="buy_name_required">先にお薬の名前を入力してください</string>
+    <string name="buy_no_channel">利用可能な購入チャネルが見つかりません。「%1$s」を手動で検索してください</string>
+
+    <string name="channel_meituan">美団買薬</string>
+    <string name="channel_meituan_desc">30分で配達、急ぎの際に便利</string>
+    <string name="channel_jd">京東健康</string>
+    <string name="channel_jd_desc">品ぞろえが豊富、まとめ買いに</string>
+    <string name="channel_taobao">淘宝</string>
+    <string name="channel_taobao_desc">価格に優位性がありがち</string>
+    <string name="channel_alihealth">阿里健康</string>
+    <string name="channel_alihealth_desc">阿里健康大薬房</string>
+
+    <!-- コンプライアンス文書 -->
+    <string name="legal_tab_privacy">プライバシーポリシー</string>
+    <string name="legal_tab_terms">利用規約</string>
+    <string name="legal_tab_compliance">コンプライアンス</string>
+    <string name="legal_title">プライバシーと規約</string>
+    <string name="legal_updated">最終更新: 2026-09-25（ポリシーバージョン v%1$d）</string>
+
+    <string name="legal_privacy_1">一、収集する情報\n本アプリはローカル優先の健康記録ツールです。ご入力いただいた血圧、服薬、血液検査、メモ、写真のデータは、標準でお使いのスマートフォンのローカルデータベースに保存され、いかなるサーバーにも自動アップロードされません。\n特記事項：健康医療データは個人情報保護法が定める敏感情報に該当します。これらのデータは記録、リマインダー、推移統計、およびご自身で開始されたエクスポート機能のみに利用し、広告、プロファイリング、その他無関係な目的には使用しません。</string>
+    <string name="legal_privacy_2">二、ネットワーク利用の目的\nアプリがネットワークにアクセスするのは、以下のご自身で開始される場面のみです：\n1. アップデート確認：GitHub（api.github.com）に最新バージョン番号をリクエスト。個人データは送信しません；\n2. ダウンロード：GitHub からAPKインストーラーをダウンロード；\n3. 薬購入：薬購入プラットフォームの検索ページへ遷移。遷移時は検索用の薬名のみを渡します；\n4. 会員：第三者決済プラットフォーム（PayPal）へ遷移して支払いを完了。\n上記以外に、アプリはバックグラウンドで暗に通信することはなく、ユーザー行動の暗黙的な報告も存在しません。</string>
+    <string name="legal_privacy_3">三、クラッシュログ\nアプリが異常終了した場合、クラッシュスタックをスマートフォンのローカルファイル（アプリのプライベートディレクトリ crash/last_crash.txt）に書き込みます。内容は時刻、端末モデル、システムバージョン、アプリバージョン、例外スタックを含みます。\nこのログは自動アップロードされません。「バージョン」ページで「ログを共有」をタップした場合にのみ送信され、送信前に内容を確認できます。</string>
+    <string name="legal_privacy_4">四、システム権限の説明\n通知権限：服用時間にリマインダーをプッシュするため；\n正確なアラーム：設定した服用時刻に正確にリマインダーを発報するため；\n起動時実行：再起動後にリマインダーを再登録するため。これによりデータは収集されません；\nネットワーク：上記のアップデート確認、インストーラー取得、薬購入遷移のみ；\n提供元不明のアプリ：ご自身でダウンロードした新バージョンをインストールするため；\nアルバム読み取り：検査結果の認識、およびメモへの写真追加でご自身が画像を選択した場合のみ。\nすべての権限は利用時にのみ要求され、いつでもシステム設定で無効にできます。無効にすると該当機能は利用できなくなりますが、その他の機能には影響しません。</string>
+    <string name="legal_privacy_5">五、データ保存とセキュリティ\nデータはスマートフォンのローカルデータベース（SQLite/Room）とアプリのプライベートディレクトリに保存され、他アプリから直接読み取ることはできません。\n重要：アプリをアンインストールするとローカルデータもすべて削除されます。「データバックアップ」でJSONファイルを定期的にエクスポートし、クラウドやパソコンに保存して、機種変更・再インストール・誤削除時に復元してください。</string>
+    <string name="legal_privacy_6">六、あなたの権利\nいつでもご自身の記録を閲覧・編集・削除できます；\n「データバックアップ」ですべてのデータをエクスポートできます；\n個別の記録や全データを削除できます；\nプライバシーポリシーへの同意を撤回できます（撤回後、アプリは収集を停止し終了します）。</string>
+    <string name="legal_privacy_7">七、未成年者の情報\n本アプリは一般の成人およびその保護対象者向けに利用されます。保護者が被保護者の健康データを入力する場合、その取り扱いは本ポリシーと同様に、ローカルのみに保存されます。</string>
+    <string name="legal_privacy_8">八、ポリシーの更新\n本ポリシーに実質的な変更がある場合、アプリ内で文書を更新し、改めて同意を求めます。\n継続して利用することで、更新後のポリシーに同意したものとみなします。</string>
+
+    <string name="legal_terms_1">一、サービス内容\n本アプリは、血圧の記録と推移、服薬リマインダーとチェックイン、血液検査の記録と写真認識、メモ、データのバックアップと復元、およびアプリ内アップデートなどのツール機能を提供します。</string>
+    <string name="legal_terms_2">二、重要な免責事項\n本アプリは健康記録ツールであり医療機器ではないため、診断・治療アドバイス・処方は提供しません。\nアプリに表示される血圧の分類、指標の参考範囲、ヒントは公開資料に基づく参考情報であり、医師の判断に代わるものではありません。\nいかなる服薬・中止・用量調整も医師の指示に従ってください。ご自身の判断により生じた結果の責任はユーザーにあります。\n体調不良の際は医療機関を受診してください。本アプリの統計結果のみで対処しないでください。</string>
+    <string name="legal_terms_3">三、データの責任\nデータは本機に保存され、その安全とバックアップの責任はユーザーにあります。\n定期的なエクスポートを推奨します。端末の紛失・破損・アプリのアンインストール・システムのクリアによるデータ消失について、当方は復元できません。</string>
+    <string name="legal_terms_4">四、アカウントと決済\n現在のバージョンはアカウント機能を提供せず、登録・ログインは不要です。アプリは任意の「買い切り会員」（永久有効、定額 ¥70／約$10、高度な機能の解放と開発支援）を提供し、代金は第三者決済プラットフォーム（PayPal）で一括収受します。返金はPayPalおよび関連法規に準じます。基本記録機能は永久に無料です。</string>
+    <string name="legal_terms_5">五、知的財産\n本アプリのインターフェース設計、文案、コードは開発者に帰属します。\nアプリ内で使用する第三者のオープンソースコンポーネントは各ライセンスに従い、「コンプライアンス」ページを参照してください。</string>
+    <string name="legal_terms_6">六、サービスの変更と終了\n機能調整、コンプライアンス要件、技術的理由により一部の機能を変更・一時停止することがあり、アプリ内でお知らせします。\n法令または本規約に違反して本アプリを利用した場合、当方はサービスの提供を終了する権利があります。</string>
+    <string name="legal_terms_7">七、紛争解決\n本規約は中華人民共和国の法律に準拠します。本規約に起因する紛争は友好的に協議解決とし、協議不成立の場合は開発者の所在地を管轄する裁判所に提訴します。</string>
+
+    <string name="legal_section_info">収集する個人情報の一覧</string>
+    <string name="legal_info_note">上記のうち、健康医療データは敏感情報に該当し、ローカルでのみ処理されアップロードされません。</string>
+    <string-array name="legal_info_headers">
+        <item>情報の種類</item>
+        <item>目的</item>
+        <item>アップロード</item>
+    </string-array>
+    <string-array name="legal_info_rows">
+        <item>血圧記録|記録と推移統計|ローカルのみ</item>
+        <item>服薬と服用チェックイン|リマインダーと服薬率統計|ローカルのみ</item>
+        <item>血液検査指標|記録と推移|ローカルのみ</item>
+        <item>メモ本文と写真|メモ記録|ローカルのみ</item>
+        <item>クラッシュログ|クラッシュ原因の特定|ローカルのみ、手動共有時のみ送信</item>
+        <item>プライバシー同意状態|同意事実の記録|ローカルのみ</item>
+    </string-array>
+
+    <string name="legal_section_perm">システム権限の一覧</string>
+    <string-array name="legal_perm_headers">
+        <item>権限</item>
+        <item>目的</item>
+    </string-array>
+    <string-array name="legal_perm_rows">
+        <item>POST_NOTIFICATIONS|服薬リマインダー通知</item>
+        <item>SCHEDULE_EXACT_ALARM|時間通りのリマインダー</item>
+        <item>VIBRATE|リマインダーのバイブ</item>
+        <item>RECEIVE_BOOT_COMPLETED|再起動後のリマインダー復元</item>
+        <item>INTERNET|アップデート確認、インストーラー取得、薬購入遷移</item>
+        <item>ACCESS_NETWORK_STATE|ネットワーク可用性の判定</item>
+        <item>REQUEST_INSTALL_PACKAGES|ダウンロードした新バージョンのインストール</item>
+        <item>READ_MEDIA_IMAGES|検査結果認識、メモ写真の追加</item>
+    </string-array>
+
+    <string name="legal_section_sdk">第三者SDKの一覧</string>
+    <string name="legal_sdk_note">本アプリは広告・プッシュ解析・ユーザー行動分析のSDKを一切接入していません。</string>
+    <string-array name="legal_sdk_headers">
+        <item>SDK</item>
+        <item>目的</item>
+        <item>データ</item>
+    </string-array>
+    <string-array name="legal_sdk_rows">
+        <item>Google ML Kit 文字認識（中国語）|検査結果の写真認識|端末側処理、アップロードなし</item>
+        <item>Coil|画像読み込み|収集しない</item>
+        <item>MPAndroidChart|推移グラフ|収集しない</item>
+        <item>AndroidX Room|ローカルデータベース|収集しない</item>
+        <item>AndroidX / Compose|UIとナビゲーション|収集しない</item>
+        <item>Hilt|依存性注入|収集しない</item>
+    </string-array>
+
+    <string name="legal_section_license">オープンソースライセンス表示</string>
+    <string-array name="legal_licenses">
+        <item>AndroidX 各コンポーネント（Apache License 2.0）</item>
+        <item>Jetpack Compose（Apache License 2.0）</item>
+        <item>Kotlin 標準ライブラリとコルーチン（Apache License 2.0）</item>
+        <item>Hilt / Dagger（Apache License 2.0）</item>
+        <item>Coil（Apache License 2.0）</item>
+        <item>MPAndroidChart（Apache License 2.0）</item>
+        <item>Google ML Kit（Google 利用規約）</item>
+        <item>Material Design アイコン（Apache License 2.0）</item>
+    </string-array>
+
+    <!-- プライバシー同意 -->
+    <string name="privacy_dialog_title">プライバシーポリシー</string>
+    <string name="privacy_dialog_intro">「宋宝の記録」をご利用いただきありがとうございます。記録を始める前に、『プライバシーポリシー』と『利用規約』をお読みいただき同意してください。</string>
+    <string name="privacy_dialog_points">要点：</string>
+    <string name="privacy_point_1">血圧、服薬、血液検査などの健康データはすべてスマートフォンにローカル保存され、サーバーにアップロードされません；</string>
+    <string name="privacy_point_2">ネットワークへのアクセスは、アップデート確認、インストーラー取得、薬購入遷移時のみ；</string>
+    <string name="privacy_point_3">クラッシュログはローカルにのみ書き込まれ、ご自身で共有した場合のみ送信；</string>
+    <string name="privacy_point_4">本アプリは記録ツールであり、いかなる医療診断や治療アドバイスも提供しません。</string>
+    <string name="privacy_agree">同意して続行</string>
+    <string name="privacy_view_full">全文を表示</string>
+    <string name="privacy_disagree">同意せず終了</string>
+
+    <!-- バージョン（About） -->
+    <string name="about_chip">について · ABOUT</string>
+    <string name="about_version">バージョン %1$s（build %2$d）</string>
+    <string name="about_channel">正式版</string>
+    <string name="about_build_info">ビルド情報</string>
+    <string name="about_version_name">バージョン名</string>
+    <string name="about_version_code">バージョンコード</string>
+    <string name="about_min_system">最小システム</string>
+    <string name="about_target_system">ターゲットシステム</string>
+    <string name="about_arch">アーキテクチャ</string>
+    <string name="about_database">データベース</string>
+    <string name="about_font">フォント</string>
+    <string name="about_value_min_system">Android 8.0（API 26）</string>
+    <string name="about_value_target_system">Android 14（API 34）</string>
+    <string name="about_value_arch">arm64-v8a</string>
+    <string name="about_value_database">Room / SQLite（ローカル）</string>
+    <string name="about_value_font">Noto Sans SC</string>
+    <string name="about_tech_stack">技術スタック</string>
+    <string name="about_tech_lang">言語</string>
+    <string name="about_tech_ui">UI</string>
+    <string name="about_tech_arch">アーキテクチャ</string>
+    <string name="about_tech_di">依存性注入</string>
+    <string name="about_tech_async">非同期</string>
+    <string name="about_tech_nav">ナビゲーション</string>
+    <string name="about_tech_chart">グラフ</string>
+    <string name="about_tech_ocr">OCR</string>
+    <string name="about_tech_image">画像</string>
+    <string name="about_value_lang">Kotlin</string>
+    <string name="about_value_ui">Jetpack Compose + Material 3</string>
+    <string name="about_value_arch_mvvm">MVVM（ViewModel + Repository）</string>
+    <string name="about_value_db">Room</string>
+    <string name="about_value_di">Hilt</string>
+    <string name="about_value_async">Coroutines + Flow</string>
+    <string name="about_value_nav">Navigation Compose</string>
+    <string name="about_value_chart">MPAndroidChart</string>
+    <string name="about_value_ocr">Google ML Kit（中国語）</string>
+    <string name="about_value_image">Coil</string>
+    <string name="about_update">システム更新</string>
+    <string name="about_update_desc">GitHub から最新バージョンを確認し、ダウンロード後そのままインストールします（データは失われません）。</string>
+    <string name="about_check_update">アップデートを確認</string>
+    <string name="about_checking">確認中…</string>
+    <string name="about_install_now">今すぐインストール</string>
+    <string name="about_download">ダウンロード</string>
+    <string name="about_downloading">ダウンロード中…</string>
+    <string name="about_current_version">現在 v%1$s</string>
+    <string name="about_downloaded_percent">%1$d%% ダウンロード済み</string>
+    <string name="about_found_new">新しいバージョン v%1$s（build %2$d）が見つかりました</string>
+    <string name="about_published_at">公開日 %1$s</string>
+    <string name="about_size">サイズ %1$s</string>
+    <string name="about_install_blocked">インストールがブロックされましたか？ここをタップしてインストール権限を有効に</string>
+    <string name="about_clear_update">アップデート通知を消去</string>
+    <string name="about_backup">データバックアップ</string>
+    <string name="about_backup_desc">すべての記録を1つのJSONファイルにエクスポートし、スマートフォンやクラウドに保存します。機種変更や再インストール時にこのファイルから復元できます。</string>
+    <string name="about_export">バックアップをエクスポート</string>
+    <string name="about_import">バックアップから復元</string>
+    <string name="about_processing">処理中…</string>
+    <string name="about_import_mode_title">インポート方法を選択</string>
+    <string name="about_import_merge_desc">統合：スマートフォン内の既存記録を残し、バックアップの内容を新規記録として追加します。</string>
+    <string name="about_import_replace_desc">上書き：スマートフォン内の全記録を一旦消去し、バックアップの内容を書き込みます（取り消し不可）。</string>
+    <string name="about_import_merge">統合インポート</string>
+    <string name="about_import_replace">上書きインポート</string>
+    <string name="about_changelog">更新履歴</string>
+    <string name="about_expand">展開</string>
+    <string name="about_collapse">折りたたむ</string>
+    <string name="about_last_crash">前回のクラッシュログ</string>
+    <string name="about_crash_desc">アプリが前回の実行時に異常終了しました。下のボタンからログを送信すれば原因を特定できます。</string>
+    <string name="about_share_log">ログを共有</string>
+    <string name="about_clear">消去</string>
+    <string name="about_data_warning">データはすべてスマートフォンにローカル保存され、アンインストール時に削除されます。定期的にバックアップをエクスポートしてください。</string>
+    <string name="about_legal_section">プライバシーとコンプライアンス</string>
+    <string name="about_legal_entry">プライバシーポリシー / 利用規約 / コンプライアンスを表示</string>
+    <string name="about_accepted_at">%1$s にプライバシーポリシーに同意しました</string>
+    <string name="about_not_accepted">プライバシーポリシーに未同意</string>
+    <string name="about_revoke_hint">同意しなくても本文書はいつでも閲覧できます。同意を撤回するには、システム設定でアプリデータを消去してください。</string>
+
+    <!-- ===== 国際化補完 ===== -->
+    <string name="bp_records_count">%1$d 件</string>
+    <string name="filter_from">開始</string>
+    <string name="filter_to">終了</string>
+    <string name="list_empty_filter">条件に合う記録がありません</string>
+    <string name="bp_delete_confirm">%1$s の記録を削除しますか？</string>
+    <string name="confirm_delete_title">削除の確認</string>
+
+    <string name="med_period">開始 %1$s · 終了 %2$s</string>
+    <string name="med_period_start">開始 %1$s</string>
+    <string name="med_time_index">時刻 %1$d</string>
+
+    <string name="bp_level_optimal">理想血圧</string>
+    <string name="bp_level_normal">正常血圧</string>
+    <string name="bp_level_elevated">正常高値</string>
+    <string name="bp_level_stage1">高血圧1級</string>
+    <string name="bp_level_stage2">高血圧2級</string>
+    <string name="bp_level_crisis">高血圧急症</string>
+    <string name="bp_advice_optimal">血圧は理想的です。このまま維持してください</string>
+    <string name="bp_advice_normal">血圧は正常です。規則正しい生活を心がけてください</string>
+    <string name="bp_advice_elevated">やや高めです。塩分制限、運動、生活リズムに注意してください</string>
+    <string name="bp_advice_stage1">医師に相談し、生活習慣を見直してください</string>
+    <string name="bp_advice_stage2">早めに受診し、適切に服薬してください</string>
+    <string name="bp_advice_crisis">直ちに受診してください</string>
+
+    <string name="judge_low">低め</string>
+    <string name="judge_high">高め</string>
+    <string name="judge_normal">正常</string>
+    <string name="judge_dash">—</string>
+    <string name="ocr_fail">認識失敗</string>
+
+    <string name="chart_systolic">収縮期</string>
+    <string name="chart_diastolic">拡張期</string>
+    <string name="chart_pulse">心拍数</string>
+    <string name="chart_metric">指標</string>
+    <string name="chart_ref_upper">参考上限</string>
+    <string name="chart_ref_lower">参考下限</string>
+    <string name="chart_no_data">データなし</string>
+    <string name="chart_ref_sys">収縮期 %1$d</string>
+    <string name="chart_ref_dia">拡張期 %1$d</string>
+
+    <string name="cbc_wbc">白血球</string>
+    <string name="cbc_rbc">赤血球</string>
+    <string name="cbc_hgb">ヘモグロビン</string>
+    <string name="cbc_hct">ヘマトクリット</string>
+    <string name="cbc_mcv">平均赤血球容積</string>
+    <string name="cbc_mch">平均ヘモグロビン量</string>
+    <string name="cbc_mchc">平均ヘモグロビン濃度</string>
+    <string name="cbc_plt">血小板</string>
+    <string name="cbc_lym">リンパ球比率</string>
+    <string name="cbc_neut">好中球比率</string>
+    <string name="cbc_mono">単球比率</string>
+    <string name="cbc_eos">好酸球比率</string>
+    <string name="cbc_crp">C反応性タンパク</string>
+
+    <string name="med_generic">お薬</string>
+
+    <string name="about_privacy_compliance">プライバシーとコンプライアンス</string>
+    <string name="about_view_legal">プライバシーポリシー / 利用規約 / コンプライアンスを表示</string>
+    <string name="about_consent_agreed">%1$s にプライバシーポリシーに同意しました</string>
+    <string name="about_consent_not">プライバシーポリシーに未同意</string>
+    <string name="about_consent_note">同意しなくても本文書はいつでも閲覧できます。同意を撤回するには、システム設定でアプリデータを消去してください。</string>
+    <string name="update_checking">確認中…</string>
+    <string name="update_install_now">今すぐインストール</string>
+    <string name="update_check_now">アップデートを確認</string>
+    <string name="update_downloading">ダウンロード中…</string>
+    <string name="update_download">ダウンロード</string>
+    <string name="update_downloaded_pct">%1$d%% ダウンロード済み</string>
+    <string name="update_found">新しいバージョン v%1$s（build %2$d）が見つかりました</string>
+    <string name="update_published">公開日 %1$s</string>
+    <string name="update_install_blocked">インストールがブロックされましたか？タップしてインストール権限を付与</string>
+    <string name="update_clear_hint">アップデート通知を消去</string>
+    <string name="backup_desc">すべての記録を1つのJSONファイルにエクスポートし、スマートフォンやクラウドに保存します。機種変更や再インストール時にこのファイルから復元できます。</string>
+    <string name="backup_export">バックアップをエクスポート</string>
+    <string name="backup_import">バックアップから復元</string>
+    <string name="common_processing">処理中…</string>
+    <string name="import_title">インポート方法を選択</string>
+    <string name="import_merge_desc">統合：既存記録を残し、バックアップ内容を新規記録として追加します。</string>
+    <string name="import_replace_desc">上書き：まず全記録を消去し、バックアップ内容を書き込みます（取り消し不可）。</string>
+    <string name="import_merge">統合インポート</string>
+    <string name="import_replace">上書きインポート</string>
+    <string name="update_size">サイズ %1$s</string>
+
+    <!-- 個人設定 -->
+    <string name="settings_title">個人設定</string>
+    <string name="settings_theme">システム配色</string>
+    <string name="settings_theme_desc">お好みのアクセントカラーを選択。すぐに反映</string>
+    <string name="theme_saint">聖衣ゴールド</string>
+    <string name="theme_ocean">深海ブルー</string>
+    <string name="theme_forest">森野グリーン</string>
+    <string name="theme_rose">薔薇レッド</string>
+    <string name="theme_violet">星紫</string>
+    <string name="theme_amber">琥珀オレンジ</string>
+    <string name="settings_bg">背景画像</string>
+    <string name="settings_bg_desc">アルバムの画像をアプリの背景にする</string>
+    <string name="settings_bg_default_label">現在はデフォルト背景</string>
+    <string name="settings_bg_pick">アルバムから選択</string>
+    <string name="settings_bg_default">デフォルト背景に戻す</string>
+    <string name="settings_title_custom">システムタイトル</string>
+    <string name="settings_title_desc">アプリの表示名をカスタマイズ。空欄の場合はデフォルト名</string>
+    <string name="settings_save">保存</string>
+    <string name="settings_reset">デフォルトに戻す</string>
+    <string name="settings_saved">保存しました</string>
+    <string name="settings_reset_done">デフォルトに戻しました</string>
+    <string name="settings_title_empty">タイトルは空にできません</string>
+    <!-- 血糖 -->
+    <string name="nav_glucose">血糖</string>
+    <string name="title_add_glucose">血糖を追加</string>
+    <string name="title_edit_glucose">血糖を編集</string>
+    <string name="glucose_chip">血糖 · GLUCOSE</string>
+    <string name="glucose_app_subtitle">SAINT · 健康記録</string>
+    <string name="glucose_no_data">データなし</string>
+    <string name="glucose_range_7d">直近7日</string>
+    <string name="glucose_range_30d">直近30日</string>
+    <string name="glucose_range_90d">直近90日</string>
+    <string name="glucose_range_all">すべて</string>
+    <string name="glucose_add_first">最初の記録を追加</string>
+    <string name="glucose_latest">最新測定 · %1$s %2$s</string>
+    <string name="glucose_scan_entry_title">写真で読み込み</string>
+    <string name="glucose_scan_entry_sub">血糖計の写真を撮ると血糖値を自動読み取り</string>
+    <string name="glucose_avg">平均血糖</string>
+    <string name="glucose_min">最低血糖</string>
+    <string name="glucose_max">最高 %1$s</string>
+    <string name="glucose_range_max_min">最高 %1$s · 最低 %2$s</string>
+    <string name="glucose_count">記録数</string>
+    <string name="glucose_unit_mmol">mmol/L</string>
+    <string name="glucose_recent_title">最近の記録</string>
+    <string name="glucose_recent_sub">最近の入力</string>
+    <string name="glucose_trend_title">血糖の推移</string>
+    <string name="glucose_trend_empty_hint">右下の ＋ をタップして記録を追加</string>
+    <string name="glucose_no_records">まだ記録がありません</string>
+    <string name="glucose_view_all">すべて表示 ›</string>
+    <string name="glucose_records_count">%1$d 件</string>
+    <string name="glucose_ocr_prefill">写真から血糖値を認識しました。確認して保存してください。</string>
+    <string name="glucose_form_title_add">血糖を記録</string>
+    <string name="glucose_form_title_edit">血糖を編集</string>
+    <string name="glucose_form_current">今回の測定</string>
+    <string name="glucose_form_context">測定タイミング</string>
+    <string name="glucose_form_date">測定日</string>
+    <string name="glucose_form_time">測定時刻</string>
+    <string name="glucose_form_value">血糖 (mmol/L)</string>
+    <string name="glucose_form_value_hint">例 5.6</string>
+    <string name="glucose_form_note">備考（任意）</string>
+    <string name="glucose_form_note_hint">例：朝食前空腹時、食後2時間</string>
+    <string name="glucose_err_date">測定日を選択してください</string>
+    <string name="glucose_err_value">血糖は 1.0〜50.0 mmol/L の間で入力してください</string>
+    <string name="glucose_scan_title">血糖を写真で読み取り</string>
+    <string name="glucose_scan_tip">血糖計の画面をはっきり撮影してください：平らに置き、明るさを均一に、レンズに正対し、反射を避けてください。血糖値を自動認識します。保存前に確認してください。</string>
+    <string name="glucose_scan_found">血糖値を認識しました</string>
+    <string name="glucose_delete_confirm">%1$s の記録を削除しますか？</string>
+    <string name="glucose_level_low">低め</string>
+    <string name="glucose_level_normal">正常</string>
+    <string name="glucose_level_high">高め</string>
+    <string name="glucose_level_very_high">明らかに高い</string>
+    <string name="glucose_advice_low">血糖が低めです。糖分を補給し早めに再確認してください</string>
+    <string name="glucose_advice_normal">血糖は正常です。規則正しい食事と生活を維持してください</string>
+    <string name="glucose_advice_high">血糖が高めです。食事を控えめに、適度に運動してください</string>
+    <string name="glucose_advice_very_high">血糖が明らかに高いです。早めに受診をお勧めします</string>
+    <string name="glucose_ctx_fasting">空腹時</string>
+    <string name="glucose_ctx_postprandial">食後2時間</string>
+    <string name="glucose_ctx_random">随時</string>
+    <string name="glucose_ctx_bedtime">寝る前</string>
+    <string name="glucose_ctx_all">すべてのタイミング</string>
+    <string name="glucose_ref_low">下限 3.9</string>
+    <string name="glucose_ref_high">上限 11.1</string>
+    <string name="glucose_value">血糖</string>
+
+    <!-- 会員購読 -->
+    <string name="nav_membership">会員</string>
+    <string name="sub_chip">会員 · MEMBERSHIP</string>
+    <string name="sub_title">会員にアップグレードしてさらに解放</string>
+    <string name="sub_subtitle">SAINT · 健康記録</string>
+    <string name="sub_benefits_title">会員特典</string>
+    <string name="sub_benefit_1">高度な推移と統計レポートを解放</string>
+    <string name="sub_benefit_2">複数デバイスで会員共有</string>
+    <string name="sub_benefit_3">専用の優先サポート</string>
+    <string name="sub_benefit_4">新機能を先行体験</string>
+    <string name="sub_note">現在のバージョンは基本機能です。会員特典はバージョンごとに順次解放されます。</string>
+    <string name="sub_select_hint">会員プランを選択してください</string>
+    <string name="sub_recommended">おすすめ</string>
+    <string name="sub_plan_monthly">月額会員</string>
+    <string name="sub_plan_monthly_price">¥18</string>
+    <string name="sub_plan_monthly_period">毎月</string>
+    <string name="sub_plan_quarterly">四半期会員</string>
+    <string name="sub_plan_quarterly_price">¥48</string>
+    <string name="sub_plan_quarterly_period">四半期ごと</string>
+    <string name="sub_plan_yearly">年額会員</string>
+    <string name="sub_plan_yearly_price">¥168</string>
+    <string name="sub_plan_yearly_period">毎年</string>
+    <string name="sub_plan_lifetime">永久会員</string>
+    <string name="sub_plan_lifetime_price">¥498</string>
+    <string name="sub_plan_lifetime_period">一括払い</string>
+    <string name="sub_plan_onetime">会員（買い切り）</string>
+    <string name="sub_plan_onetime_price">¥70</string>
+    <string name="sub_plan_onetime_period">永久有効</string>
+    <string name="sub_plan_usd">約 $10（または ¥70）</string>
+    <string name="sub_pay_paypal">PayPal で支払う</string>
+    <string name="sub_paypal_hint">PayPal の安全な支払いページを開きます。支払い完了で登録とみなされます。</string>
+    <string name="sub_paid">支払いを完了しました</string>
+    <string name="sub_open_failed">PayPal を開けません。支払いリンクをコピーしました。ブラウザに貼り付けて開いてください</string>
+    <string name="sub_copied">支払いリンクをコピーしました</string>
+    <string name="sub_status_title">私の登録</string>
+    <string name="sub_status_active">会員有効中</string>
+    <string name="sub_status_inactive">まだ会員登録がありません</string>
+    <string name="sub_expiry">有効期限：%1$s</string>
+    <string name="sub_plan_label">現在のプラン：%1$s</string>
+    <string name="sub_forever">永久</string>
+    <string name="sub_cancel">会員マークを解除</string>
+    <string name="sub_please_select">先にプランを選択してください</string>
+
+</resources>
