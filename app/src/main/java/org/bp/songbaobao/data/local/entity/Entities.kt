@@ -151,3 +151,15 @@ data class NotePhoto(
     val size: Long = 0,
     val createdAt: String
 )
+
+/** 血糖记录（单位 mmol/L）。context 为测量时段 key，见 ui.components.GlucoseContext。 */
+@Entity(tableName = "glucose_records", indices = [Index("date")])
+data class GlucoseRecord(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val date: String,            // yyyy-MM-dd
+    val time: String = "",       // HH:mm
+    val value: Float,            // 血糖 mmol/L
+    val context: String,         // 测量时段 key（fasting/postprandial/random/bedtime）
+    val note: String = "",
+    val createdAt: String
+)

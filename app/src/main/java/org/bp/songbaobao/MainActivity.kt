@@ -51,6 +51,11 @@ import org.bp.songbaobao.ui.screen.bp.BpEditScreen
 import org.bp.songbaobao.ui.screen.bp.BpListScreen
 import org.bp.songbaobao.ui.screen.bp.BpScanScreen
 import org.bp.songbaobao.ui.screen.bp.BpTrendScreen
+import org.bp.songbaobao.ui.screen.glucose.GlucoseAddScreen
+import org.bp.songbaobao.ui.screen.glucose.GlucoseAllScreen
+import org.bp.songbaobao.ui.screen.glucose.GlucoseEditScreen
+import org.bp.songbaobao.ui.screen.glucose.GlucoseListScreen
+import org.bp.songbaobao.ui.screen.glucose.GlucoseScanScreen
 import org.bp.songbaobao.ui.screen.lab.LabAddScreen
 import org.bp.songbaobao.ui.screen.lab.LabEditScreen
 import org.bp.songbaobao.ui.screen.lab.LabScanScreen
@@ -307,6 +312,38 @@ fun AppNavHost(
                 BpScanScreen(
                     onBack = { navController.popBackStack() },
                     onConfirm = { navController.navigate(Screen.BpAdd.route) }
+                )
+            }
+
+            // ---------- 血糖 ----------
+            composable(Screen.Glucose.route) {
+                GlucoseListScreen(
+                    onAdd = { navController.navigate(Screen.GlucoseAdd.route) },
+                    onEdit = { id -> navController.navigate(Screen.glucoseEdit(id)) },
+                    onList = { navController.navigate(Screen.GlucoseList.route) },
+                    onScan = { navController.navigate(Screen.GlucoseScan.route) }
+                )
+            }
+            composable(Screen.GlucoseAdd.route) {
+                GlucoseAddScreen(onBack = { navController.popBackStack() })
+            }
+            composable(
+                Screen.GlucoseEdit.route,
+                arguments = listOf(navArgument("id") { type = NavType.LongType })
+            ) {
+                GlucoseEditScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Screen.GlucoseList.route) {
+                GlucoseAllScreen(
+                    onBack = { navController.popBackStack() },
+                    onAdd = { navController.navigate(Screen.GlucoseAdd.route) },
+                    onEdit = { id -> navController.navigate(Screen.glucoseEdit(id)) }
+                )
+            }
+            composable(Screen.GlucoseScan.route) {
+                GlucoseScanScreen(
+                    onBack = { navController.popBackStack() },
+                    onConfirm = { navController.navigate(Screen.GlucoseAdd.route) }
                 )
             }
 

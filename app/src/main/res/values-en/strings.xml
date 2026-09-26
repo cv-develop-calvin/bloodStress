@@ -54,7 +54,7 @@
     <string name="msg_backup_too_new">Backup version (v%1$d) is newer than supported (v%2$d). Please update the app first.</string>
     <string name="msg_import_ok_merge">Import complete (merged)</string>
     <string name="msg_import_ok_replace">Import complete (replaced)</string>
-    <string name="msg_backup_summary">BP %1$d · meds %2$d · doses %3$d · blood tests %4$d · notes %5$d · photos %6$d</string>
+    <string name="msg_backup_summary">BP %1$d · meds %2$d · doses %3$d · blood tests %4$d · glucose %5$d · notes %6$d · photos %7$d</string>
 
     <!-- Language -->
     <string name="lang_title">Language</string>
@@ -561,4 +561,66 @@
     <string name="settings_saved">Saved</string>
     <string name="settings_reset_done">Reset to default</string>
     <string name="settings_title_empty">Title cannot be empty</string>
+    <!-- Blood glucose -->
+    <string name="nav_glucose">Glucose</string>
+    <string name="title_add_glucose">Add glucose</string>
+    <string name="title_edit_glucose">Edit glucose</string>
+    <string name="glucose_chip">GLUCOSE</string>
+    <string name="glucose_app_subtitle">SAINT · HEALTH RECORD</string>
+    <string name="glucose_no_data">No data</string>
+    <string name="glucose_range_7d">7 days</string>
+    <string name="glucose_range_30d">30 days</string>
+    <string name="glucose_range_90d">90 days</string>
+    <string name="glucose_range_all">All</string>
+    <string name="glucose_add_first">Add your first record</string>
+    <string name="glucose_latest">Latest · %1$s %2$s</string>
+    <string name="glucose_scan_entry_title">Scan to add</string>
+    <string name="glucose_scan_entry_sub">Photo your glucometer to read glucose value</string>
+    <string name="glucose_avg">Avg glucose</string>
+    <string name="glucose_min">Lowest</string>
+    <string name="glucose_max">Highest %1$s</string>
+    <string name="glucose_range_max_min">Highest %1$s · Lowest %2$s</string>
+    <string name="glucose_count">Records</string>
+    <string name="glucose_unit_mmol">mmol/L</string>
+    <string name="glucose_recent_title">Recent records</string>
+    <string name="glucose_recent_sub">Recent</string>
+    <string name="glucose_trend_title">Glucose trend</string>
+    <string name="glucose_trend_empty_hint">Tap ＋ at bottom right to add</string>
+    <string name="glucose_no_records">No records yet</string>
+    <string name="glucose_view_all">View all ›</string>
+    <string name="glucose_records_count">%1$d records</string>
+    <string name="glucose_ocr_prefill">Glucose value recognized from photo. Please verify before saving.</string>
+    <string name="glucose_form_title_add">Add glucose record</string>
+    <string name="glucose_form_title_edit">Edit glucose record</string>
+    <string name="glucose_form_current">This reading</string>
+    <string name="glucose_form_context">Context</string>
+    <string name="glucose_form_date">Date</string>
+    <string name="glucose_form_time">Time</string>
+    <string name="glucose_form_value">Glucose (mmol/L)</string>
+    <string name="glucose_form_value_hint">e.g. 5.6</string>
+    <string name="glucose_form_note">Note (optional)</string>
+    <string name="glucose_form_note_hint">e.g. fasting, 2h post-meal</string>
+    <string name="glucose_err_date">Please choose a date</string>
+    <string name="glucose_err_value">Glucose should be between 1.0–50.0 mmol/L</string>
+    <string name="glucose_scan_title">Scan glucose</string>
+    <string name="glucose_scan_tip">Take a clear photo of the glucometer screen: lay flat, even lighting, face the lens, avoid glare. The value is recognized automatically; verify before saving.</string>
+    <string name="glucose_scan_found">Glucose value recognized</string>
+    <string name="glucose_delete_confirm">Delete the record of %1$s?</string>
+    <string name="glucose_level_low">Low</string>
+    <string name="glucose_level_normal">Normal</string>
+    <string name="glucose_level_high">High</string>
+    <string name="glucose_level_very_high">Very high</string>
+    <string name="glucose_advice_low">Low glucose; take sugar and recheck soon</string>
+    <string name="glucose_advice_normal">Normal; keep a regular diet and routine</string>
+    <string name="glucose_advice_high">High; watch your diet and exercise</string>
+    <string name="glucose_advice_very_high">Very high; see a doctor soon</string>
+    <string name="glucose_ctx_fasting">Fasting</string>
+    <string name="glucose_ctx_postprandial">2h post-meal</string>
+    <string name="glucose_ctx_random">Random</string>
+    <string name="glucose_ctx_bedtime">Bedtime</string>
+    <string name="glucose_ctx_all">All contexts</string>
+    <string name="glucose_ref_low">Low line 3.9</string>
+    <string name="glucose_ref_high">High line 11.1</string>
+    <string name="glucose_value">Glucose</string>
+
 </resources>

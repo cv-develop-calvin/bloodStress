@@ -250,3 +250,54 @@ data class NotePhotoWithNote(
     val noteDate: String?,
     val noteTitle: String?
 )
+
+@Dao
+interface GlucoseDao {
+    @Insert
+    suspend fun insert(record: GlucoseRecord): Long
+
+    @Update
+    suspend fun update(record: GlucoseRecord)
+
+    @Query("DELETE FROM glucose_records WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    @Query("SELECT * FROM glucose_records WHERE id = :id")
+    suspend fun getById(id: Long): GlucoseRecord?
+
+    @Query("SELECT * FROM glucose_records ORDER BY date DESC, time DESC, id DESC LIMIT 1")
+    suspend fun latest(): GlucoseRecord?
+
+    @Query("SELECT * FROM glucose_records ORDER BY date DESC, time DESC, id DESC LIMIT :limit")
+    fun recent(limit: Int): Flow<List<GlucoseRecord>>
+
+    /** 供曲线使用：按日期升序；days 为空表示全部 */
+    @Query("SELECT * FROM glucose_records ORDER BY date ASC, time ASC, id ASC")
+    fun allAsc(): Flow<List<GlucoseRecord>>
+
+    @Query("SELECT * FROM glucose_records WHERE date >= :from ORDER BY date ASC, time ASC, id ASC")
+    fun sinceAsc(from: String): Flow<List<GlucoseRecord>>
+
+    @Query("SELECT * FROM glucose_records ORDER BY date DESC, time DESC, id DESC")
+    fun allDesc(): Flow<List<GlucoseRecord>>
+
+    @Query(
+        """SELECT COUNT(*) AS n, AVG(value) AS avgValue,
+           MIN(value) AS minValue, MAX(value) AS maxValue FROM glucose_records
+           WHERE (:from IS NULL OR date >= :from)"""
+    )
+    fun stats(from: String?): Flow<GlucoseStats>
+
+    @Query("SELECT * FROM glucose_records WHERE (:from='' OR date>=:from) AND (:to='' OR date<=:to) ORDER BY date DESC, time DESC, id DESC")
+    fun paged(from: String, to: String): Flow<List<GlucoseRecord>>
+
+    @Query("SELECT * FROM glucose_records ORDER BY date ASC, time ASC")
+    suspend fun allForExport(): List<GlucoseRecord>
+}
+
+data class GlucoseStats(
+    val n: Int,
+    val avgValue: Double?,
+    val minValue: Float?,
+    val maxValue: Float?
+)

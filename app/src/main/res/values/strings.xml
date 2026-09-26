@@ -54,7 +54,7 @@
     <string name="msg_backup_too_new">备份版本(v%1$d)高于当前应用支持(v%2$d)，请先升级应用</string>
     <string name="msg_import_ok_merge">导入成功（合并）</string>
     <string name="msg_import_ok_replace">导入成功（覆盖）</string>
-    <string name="msg_backup_summary">血压 %1$d · 药品 %2$d · 服药 %3$d · 血常规 %4$d · 留言 %5$d · 照片 %6$d</string>
+    <string name="msg_backup_summary">血压 %1$d · 药品 %2$d · 服药 %3$d · 血常规 %4$d · 血糖 %5$d · 留言 %6$d · 照片 %7$d</string>
 
     <!-- 语言 -->
     <string name="lang_title">语言</string>
@@ -561,4 +561,66 @@
     <string name="settings_saved">已保存</string>
     <string name="settings_reset_done">已恢复默认</string>
     <string name="settings_title_empty">标题不能为空</string>
+    <!-- 血糖 -->
+    <string name="nav_glucose">血糖</string>
+    <string name="title_add_glucose">添加血糖</string>
+    <string name="title_edit_glucose">编辑血糖</string>
+    <string name="glucose_chip">血糖 · GLUCOSE</string>
+    <string name="glucose_app_subtitle">SAINT · 健康档案</string>
+    <string name="glucose_no_data">暂无数据</string>
+    <string name="glucose_range_7d">近7天</string>
+    <string name="glucose_range_30d">近30天</string>
+    <string name="glucose_range_90d">近90天</string>
+    <string name="glucose_range_all">全部</string>
+    <string name="glucose_add_first">添加第一条记录</string>
+    <string name="glucose_latest">最新测量 · %1$s %2$s</string>
+    <string name="glucose_scan_entry_title">拍照识别录入</string>
+    <string name="glucose_scan_entry_sub">拍一张血糖仪照片，自动读取血糖值</string>
+    <string name="glucose_avg">平均血糖</string>
+    <string name="glucose_min">最低血糖</string>
+    <string name="glucose_max">最高 %1$s</string>
+    <string name="glucose_range_max_min">最高 %1$s · 最低 %2$s</string>
+    <string name="glucose_count">记录数</string>
+    <string name="glucose_unit_mmol">mmol/L</string>
+    <string name="glucose_recent_title">最近记录</string>
+    <string name="glucose_recent_sub">最近录入</string>
+    <string name="glucose_trend_title">血糖趋势曲线</string>
+    <string name="glucose_trend_empty_hint">点击右下角 ＋ 添加记录</string>
+    <string name="glucose_no_records">还没有记录</string>
+    <string name="glucose_view_all">查看全部 ›</string>
+    <string name="glucose_records_count">%1$d 条</string>
+    <string name="glucose_ocr_prefill">已从照片识别到血糖值，请核对后保存。</string>
+    <string name="glucose_form_title_add">添加血糖记录</string>
+    <string name="glucose_form_title_edit">编辑血糖记录</string>
+    <string name="glucose_form_current">本次测量</string>
+    <string name="glucose_form_context">测量时段</string>
+    <string name="glucose_form_date">测量日期</string>
+    <string name="glucose_form_time">测量时间</string>
+    <string name="glucose_form_value">血糖 (mmol/L)</string>
+    <string name="glucose_form_value_hint">如 5.6</string>
+    <string name="glucose_form_note">备注（选填）</string>
+    <string name="glucose_form_note_hint">如：晨起空腹、餐后2小时</string>
+    <string name="glucose_err_date">请选择测量日期</string>
+    <string name="glucose_err_value">血糖应在 1.0–50.0 mmol/L 之间</string>
+    <string name="glucose_scan_title">拍照识别血糖</string>
+    <string name="glucose_scan_tip">把血糖仪屏幕拍清楚：平放、光线均匀、正对镜头、避免反光。本机自动识别血糖值，识别后请核对再保存。</string>
+    <string name="glucose_scan_found">已识别到血糖值</string>
+    <string name="glucose_delete_confirm">确定删除 %1$s 的记录？</string>
+    <string name="glucose_level_low">偏低</string>
+    <string name="glucose_level_normal">正常</string>
+    <string name="glucose_level_high">偏高</string>
+    <string name="glucose_level_very_high">明显偏高</string>
+    <string name="glucose_advice_low">血糖偏低，注意补充糖分并及时复查</string>
+    <string name="glucose_advice_normal">血糖正常，保持规律饮食与作息</string>
+    <string name="glucose_advice_high">血糖偏高，注意控制饮食、适当运动</string>
+    <string name="glucose_advice_very_high">血糖明显偏高，建议尽快就医</string>
+    <string name="glucose_ctx_fasting">空腹</string>
+    <string name="glucose_ctx_postprandial">餐后2小时</string>
+    <string name="glucose_ctx_random">随机</string>
+    <string name="glucose_ctx_bedtime">睡前</string>
+    <string name="glucose_ctx_all">全部时段</string>
+    <string name="glucose_ref_low">偏低线 3.9</string>
+    <string name="glucose_ref_high">偏高线 11.1</string>
+    <string name="glucose_value">血糖</string>
+
 </resources>

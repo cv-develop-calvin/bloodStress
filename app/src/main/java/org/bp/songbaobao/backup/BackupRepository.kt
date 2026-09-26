@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.bp.songbaobao.R
 import org.bp.songbaobao.data.local.AppDatabase
+import org.bp.songbaobao.data.local.entity.GlucoseRecord
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.LocalDateTime
@@ -14,14 +15,12 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** 备份结果 */
 data class BackupResult(
     val ok: Boolean,
     val message: String,
     val counts: String = ""
 )
 
-/** 导入模式 */
 enum class ImportMode {
     /** 合并：保留原有数据，备份数据作为新记录追加 */
     MERGE,
@@ -32,7 +31,7 @@ enum class ImportMode {
 /**
  * 数据备份与恢复。
  *
- * 导出为单个 JSON 文件（含全部 6 张表），导入时按所选模式写入。
+ * 导出为单个 JSON 文件（含全部 7 张表），导入时按所选模式写入。
  * 用 org.json 手写序列化，不引入额外依赖。
  */
 @Singleton
@@ -64,6 +63,7 @@ class BackupRepository @Inject constructor(
             val labs = db.labDao().allForExport()
             val notes = db.noteDao().allForExport()
             val photos = db.noteDao().allPhotosForExport()
+            val glucose = db.glucoseDao().allForExport()
 
             val root = JSONObject().apply {
                 put("magic", MAGIC)
@@ -78,6 +78,7 @@ class BackupRepository @Inject constructor(
                 put("labReports", labs.toJsonArray { it.toJson() })
                 put("notes", notes.toJsonArray { it.toJson() })
                 put("notePhotos", photos.toJsonArray { it.toJson() })
+                put("glucose", glucose.toJsonArray { it.toJson() })
             }
 
             val out = context.contentResolver.openOutputStream(target, "wt")
@@ -94,7 +95,7 @@ class BackupRepository @Inject constructor(
                 message = context.getString(R.string.msg_export_ok),
                 counts = countsText(
                     context,
-                    records.size, meds.size, logs.size, labs.size, notes.size, photos.size
+                    records.size, meds.size, logs.size, labs.size, glucose.size, notes.size, photos.size
                 )
             )
         } catch (t: Throwable) {
@@ -121,39 +122,25 @@ class BackupRepository @Inject constructor(
 
                 val root = JSONObject(text)
                 if (root.optString("magic") != MAGIC) {
-                    return@withContext BackupResult(
-                        false, context.getString(R.string.msg_not_backup_file)
-                    )
+                    return@withContext BackupResult(false, context.getString(R.string.msg_not_backup_file))
                 }
-                val ver = root.optInt("version", 0)
-                if (ver > FORMAT_VERSION) {
-                    return@withContext BackupResult(
-                        false,
-                        context.getString(
-                            R.string.msg_backup_too_new, ver, FORMAT_VERSION
-                        )
-                    )
-                }
-
                 val records = root.optJSONArray("records").toBpList(mode)
                 val meds = root.optJSONArray("meds").toMedList(mode)
                 val logs = root.optJSONArray("medLogs").toMedLogList(mode)
                 val labs = root.optJSONArray("labReports").toLabList(mode)
                 val notes = root.optJSONArray("notes").toNoteList(mode)
                 val photos = root.optJSONArray("notePhotos").toNotePhotoList(mode)
+                val glucose = root.optJSONArray("glucose").toGlucoseList(mode)
 
-                // 事务保证「覆盖」模式不会写到一半失败。
-                // 必须用 withTransaction：runInTransaction 的 lambda 不是挂起上下文。
+                if (mode == ImportMode.REPLACE) db.clearAllTables()
                 db.withTransaction {
-                    if (mode == ImportMode.REPLACE) {
-                        db.clearAllTables()
-                    }
                     records.forEach { db.bpDao().insert(it) }
                     meds.forEach { db.medDao().insert(it) }
                     logs.forEach { db.medDao().insertLog(it) }
                     labs.forEach { db.labDao().insert(it) }
                     notes.forEach { db.noteDao().insert(it) }
                     photos.forEach { db.noteDao().insertPhoto(it) }
+                    glucose.forEach { db.glucoseDao().insert(it) }
                 }
 
                 BackupResult(
@@ -162,7 +149,10 @@ class BackupRepository @Inject constructor(
                         if (mode == ImportMode.MERGE) R.string.msg_import_ok_merge
                         else R.string.msg_import_ok_replace
                     ),
-                    counts = countsText(context, records.size, meds.size, logs.size, labs.size, notes.size, photos.size)
+                    counts = countsText(
+                        context,
+                        records.size, meds.size, logs.size, labs.size, glucose.size, notes.size, photos.size
+                    )
                 )
             } catch (t: Throwable) {
                 BackupResult(false, context.getString(R.string.msg_import_failed, t.message ?: t.javaClass.simpleName))
@@ -171,8 +161,8 @@ class BackupRepository @Inject constructor(
 
     private fun countsText(
         context: Context,
-        r: Int, m: Int, l: Int, lab: Int, n: Int, p: Int
-    ) = context.getString(R.string.msg_backup_summary, r, m, l, lab, n, p)
+        r: Int, m: Int, l: Int, lab: Int, g: Int, n: Int, p: Int
+    ) = context.getString(R.string.msg_backup_summary, r, m, l, lab, g, n, p)
 
     /** 合并模式下把主键置 0，交给自增重新分配，避免与既有记录 id 冲突 */
     private fun Long.forMode(mode: ImportMode): Long = if (mode == ImportMode.MERGE) 0L else this
@@ -235,6 +225,12 @@ class BackupRepository @Inject constructor(
     private fun org.bp.songbaobao.data.local.entity.NotePhoto.toJson() = JSONObject().apply {
         put("id", id); put("noteId", noteId); put("filename", filename)
         put("thumb", thumb); put("caption", caption); put("size", size); put("createdAt", createdAt)
+    }
+
+    private fun GlucoseRecord.toJson() = JSONObject().apply {
+        put("id", id); put("date", date); put("time", time)
+        put("value", value.toDouble()); put("context", context)
+        put("note", note); put("createdAt", createdAt)
     }
 
     // ---------------- JSON → 实体 ----------------
@@ -329,6 +325,18 @@ class BackupRepository @Inject constructor(
             thumb = it.optStr("thumb"),
             caption = it.optStr("caption"),
             size = it.optLong("size"),
+            createdAt = it.optStr("createdAt")
+        )
+    }
+
+    private fun JSONArray?.toGlucoseList(mode: ImportMode) = items().map {
+        GlucoseRecord(
+            id = it.optLong("id").forMode(mode),
+            date = it.optStr("date"),
+            time = it.optStr("time"),
+            value = it.optDouble("value").toFloat(),
+            context = it.optStr("context"),
+            note = it.optStr("note"),
             createdAt = it.optStr("createdAt")
         )
     }

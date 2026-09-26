@@ -21,6 +21,13 @@ sealed class Screen(
     object Notes : Screen("notes", R.string.nav_notes, "📖")
     object About : Screen("about", R.string.nav_about, "⚙️")
 
+    // 血糖（与血压并列的健康监测功能）
+    object Glucose : Screen("glucose", R.string.nav_glucose, "🍬")
+    object GlucoseList : Screen("glucose/all", R.string.title_all_records, "", false)
+    object GlucoseAdd : Screen("glucose/add", R.string.title_add_glucose, "", false)
+    object GlucoseEdit : Screen("glucose/edit/{id}", R.string.title_edit_glucose, "", false)
+    object GlucoseScan : Screen("glucose/scan", R.string.glucose_scan_title, "", false)
+
     // 二级页面（不显示在底栏）
     object BpAdd : Screen("bp/add", R.string.title_add_bp, "", false)
     object BpEdit : Screen("bp/edit/{id}", R.string.title_edit_bp, "", false)
@@ -49,12 +56,13 @@ sealed class Screen(
         // 若写成 val barItems = listOf(Bp, ...)，此处 Bp 等仍为 null，
         // 会导致底部栏渲染时 NPE 崩溃。
         val barItems: List<Screen>
-            get() = listOf(Bp, Med, Lab, Notes, About)
+            get() = listOf(Bp, Glucose, Med, Lab, Notes, About)
 
         fun bpEdit(id: Long) = "bp/edit/$id"
         fun medEdit(id: Long) = "med/edit/$id"
         fun labEdit(id: Long) = "lab/edit/$id"
         fun noteEdit(id: Long) = "note/edit/$id"
         fun noteDetail(id: Long) = "note/detail/$id"
+        fun glucoseEdit(id: Long) = "glucose/edit/$id"
     }
 }
