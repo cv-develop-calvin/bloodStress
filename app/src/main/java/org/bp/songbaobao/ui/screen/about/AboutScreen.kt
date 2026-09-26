@@ -389,35 +389,41 @@ private fun LanguageCard() {
     )
     var selected by remember { mutableStateOf(LanguageManager.getSavedLanguage(context)) }
 
+    val onSelect: (String) -> Unit = { code ->
+        if (selected == code) return@onSelect
+        selected = code
+        LanguageManager.setLanguage(context, code)
+        // 语言在 attachBaseContext 注入，只有重建 Activity
+        // 才会重新走资源解析，因此这里必须触发重建。
+        // LocalContext 通常是 ContextWrapper，需递归解包找 Activity。
+        val activity = findActivity(context)
+        if (activity != null) {
+            activity.recreate()
+        } else {
+            context.startActivity(
+                android.content.Intent(
+                    context,
+                    org.bp.songbaobao.MainActivity::class.java
+                ).addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            )
+        }
+    }
+
     PanelCard {
         Column(modifier = Modifier.padding(12.dp)) {
             SectionTitle(stringResource(R.string.lang_title))
             Spacer(Modifier.height(6.dp))
+            // 跟随系统 / 中文 / English 放在第一行
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                options.forEach { (code, res) ->
-                    FilterChip(
-                        selected = selected == code,
-                        onClick = {
-                            if (selected == code) return@FilterChip
-                            selected = code
-                            LanguageManager.setLanguage(context, code)
-                            // 语言在 attachBaseContext 注入，只有重建 Activity
-                            // 才会重新走资源解析，因此这里必须触发重建。
-                            // LocalContext 通常是 ContextWrapper，需递归解包找 Activity。
-                            val activity = findActivity(context)
-                            if (activity != null) {
-                                activity.recreate()
-                            } else {
-                                context.startActivity(
-                                    android.content.Intent(
-                                        context,
-                                        org.bp.songbaobao.MainActivity::class.java
-                                    ).addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                                )
-                            }
-                        },
-                        label = { Text(stringResource(res)) }
-                    )
+                options.take(3).forEach { (code, res) ->
+                    LangChip(code = code, res = res, selected = selected, onSelect = onSelect)
+                }
+            }
+            Spacer(Modifier.height(6.dp))
+            // 日本語单独换行显示，避免与英文项挤在一行被截断
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                options.drop(3).forEach { (code, res) ->
+                    LangChip(code = code, res = res, selected = selected, onSelect = onSelect)
                 }
             }
             Spacer(Modifier.height(4.dp))
@@ -428,6 +434,21 @@ private fun LanguageCard() {
             )
         }
     }
+}
+
+/** 单个语言选项芯片 */
+@Composable
+private fun LangChip(
+    code: String,
+    res: Int,
+    selected: String,
+    onSelect: (String) -> Unit
+) {
+    FilterChip(
+        selected = selected == code,
+        onClick = { onSelect(code) },
+        label = { Text(stringResource(res)) }
+    )
 }
 
 /**
