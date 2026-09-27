@@ -4,4 +4,6 @@
     <cache-path name="images" path="images/" />
     <!-- 从 GitHub 下载的更新包，需通过 FileProvider 交给系统安装器 -->
     <cache-path name="updates" path="updates/" />
+    <!-- 本地生成的趋势报告 PDF -->
+    <cache-path name="reports" path="reports/" />
 </paths>

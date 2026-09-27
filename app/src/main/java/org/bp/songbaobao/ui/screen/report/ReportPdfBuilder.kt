@@ -41,7 +41,8 @@ object ReportPdfBuilder {
         bpBitmap: Bitmap? = null,
         glucoseBitmap: Bitmap? = null
     ): File {
-        val file = File(context.cacheDir, "health_report_${System.currentTimeMillis()}.pdf")
+        val dir = File(context.cacheDir, "reports").apply { if (!exists()) mkdirs() }
+        val file = File(dir, "health_report_${System.currentTimeMillis()}.pdf")
         val doc = PdfDocument()
         var page = doc.startPage(PdfDocument.PageInfo.Builder(PAGE_W, PAGE_H, 1).create())
         var canvas = page.canvas

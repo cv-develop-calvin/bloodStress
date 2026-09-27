@@ -203,15 +203,23 @@ fun ReportScreen(
 }
 
 private fun sharePdf(context: Context, file: File) {
-    val uri: Uri = FileProvider.getUriForFile(
-        context,
-        context.packageName + ".fileprovider",
-        file
-    )
-    val intent = Intent(Intent.ACTION_SEND).apply {
-        type = "application/pdf"
-        putExtra(Intent.EXTRA_STREAM, uri)
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    runCatching {
+        val uri: Uri = FileProvider.getUriForFile(
+            context,
+            context.packageName + ".fileprovider",
+            file
+        )
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(Intent.createChooser(intent, context.getString(R.string.report_share)))
+    }.onFailure {
+        android.widget.Toast.makeText(
+            context,
+            context.getString(R.string.report_failed, "分享"),
+            android.widget.Toast.LENGTH_SHORT
+        ).show()
     }
-    context.startActivity(Intent.createChooser(intent, context.getString(R.string.report_share)))
 }
