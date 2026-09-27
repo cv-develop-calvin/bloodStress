@@ -244,6 +244,26 @@ class VersionRepository @Inject constructor(private val app: Application) {
     }
 
     /**
+     * 下载候选地址：原链优先，失败/超时时自动回退到多个国内可达的 GitHub 镜像代理，
+     * 缓解国内直连 GitHub 下载被限速/卡死的问题。镜像只改写 github.com / githubusercontent.com
+     * 的下载地址（前缀代理），文件内容与原链完全一致。
+     */
+    private val DOWNLOAD_PROXIES = listOf(
+        "https://ghproxy.com/",
+        "https://ghproxy.net/",
+
+        "https://ghfast.top/"
+    )
+
+    private fun buildDownloadCandidates(original: String): List<String> {
+        val candidates = mutableListOf(original)
+        if (original.contains("github.com") || original.contains("githubusercontent.com")) {
+            DOWNLOAD_PROXIES.forEach { candidates += it + original }
+        }
+        return candidates
+    }
+
+    /**
      * 失败重试：最多 [DOWNLOAD_MAX_RETRY] 次，退避后重试。
      * 借助断点续传，重试时从已下载字节处继续，而不是从头重下（解决“很慢”）。
      */
@@ -252,17 +272,21 @@ class VersionRepository @Inject constructor(private val app: Application) {
         target: File,
         onProgress: (downloaded: Long, total: Long) -> Unit
     ): File {
+        val candidates = buildDownloadCandidates(update.apkUrl)
         var lastError: Throwable? = null
         repeat(DOWNLOAD_MAX_RETRY) { attempt ->
-            try {
-                return downloadOnce(update, target, onProgress)
-            } catch (t: Throwable) {
-                lastError = t
-                // 半截文件保留（用于续传）；仅当整包已损坏且无法续传时才在下次覆盖
-                if (attempt < DOWNLOAD_MAX_RETRY - 1) {
-                    // 退避：指数增长，给网络/CDN 一点恢复时间
-                    Thread.sleep(800L * (attempt + 1))
+            // 每个重试轮次依次尝试所有候选地址（原链 -> 各镜像），任一成功即返回
+            for (candidate in candidates) {
+                try {
+                    return downloadOnce(candidate, update, target, onProgress)
+                } catch (t: Throwable) {
+                    lastError = t
                 }
+            }
+            // 半截文件保留（用于续传）；仅当整包已损坏且无法续传时才在下次覆盖
+            if (attempt < DOWNLOAD_MAX_RETRY - 1) {
+                // 退避：指数增长，给网络/CDN 一点恢复时间
+                Thread.sleep(800L * (attempt + 1))
             }
         }
         throw lastError ?: IOException(app.getString(R.string.msg_download_failed, ""))
@@ -279,11 +303,12 @@ class VersionRepository @Inject constructor(private val app: Application) {
      * 若本地已有部分下载（断点续传），则从已下载字节处接着下载，避免每次都从头开始。
      */
     private fun downloadOnce(
+        startUrl: String,
         update: UpdateInfo,
         target: File,
         onProgress: (downloaded: Long, total: Long) -> Unit
     ): File {
-        var url = update.apkUrl
+        var url = startUrl
         var conn: HttpURLConnection? = null
         // 已有字节（断点续传起点）；若大小未知则用写入模式从头开始
         val existing = if (target.exists() && update.apkSize > 0) target.length() else 0L
