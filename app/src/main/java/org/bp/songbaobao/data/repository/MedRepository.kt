@@ -46,12 +46,16 @@ class MedRepository @Inject constructor(private val dao: MedDao) {
     // ---------------- 打卡 ----------------
     fun recentLogs(limit: Int = 20): Flow<List<MedLogWithMed>> = dao.recentLogs(limit)
 
-    /** 打卡；若该时段已打卡则撤销，返回 true 表示变为「已打卡」 */
+    /** 打卡；若该时段已「已服」则撤销，否则置为「已服」（漏服/跳过可补打卡）。返回 true 表示变为「已服」 */
     suspend fun toggleTaken(medId: Long, slot: String, date: String = todayStr()): Boolean {
         val existing = dao.logsOfDate(date).firstOrNull { it.medId == medId && it.time == slot }
-        if (existing != null) {
+        if (existing != null && existing.status == "taken") {
             dao.deleteLog(existing.id)
             return false
+        }
+        if (existing != null) {
+            dao.updateLog(existing.copy(status = "taken", createdAt = nowStamp()))
+            return true
         }
         dao.insertLog(
             MedLog(medId = medId, date = date, time = slot, status = "taken", createdAt = nowStamp())
@@ -59,10 +63,15 @@ class MedRepository @Inject constructor(private val dao: MedDao) {
         return true
     }
 
+    /** 当天「已服」时段集合 */
     suspend fun takenSlots(date: String = todayStr()): Set<Pair<Long, String>> =
-        dao.logsOfDate(date).map { it.medId to it.time }.toSet()
+        dao.logsOfDate(date).filter { it.status == "taken" }.map { it.medId to it.time }.toSet()
 
-    /** 当前到点未服的药 */
+    /** 当天「漏服」时段集合 */
+    suspend fun missedSlots(date: String = todayStr()): Set<Pair<Long, String>> =
+        dao.logsOfDate(date).filter { it.status == "missed" }.map { it.medId to it.time }.toSet()
+
+    /** 当前到点未服的药（已服与漏服均不计入待办，漏服单独展示） */
     suspend fun pending(now: java.time.LocalDateTime = java.time.LocalDateTime.now()): List<PendingMed> {
         val today = LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val hhmm = String.format("%02d:%02d", now.hour, now.minute)
@@ -80,13 +89,50 @@ class MedRepository @Inject constructor(private val dao: MedDao) {
         return out.sortedBy { it.delayMinutes }
     }
 
+    /** 检测当天「已过服药时间却没打卡」的时段，写入漏服记录，返回新漏服药品名（用于通知） */
+    suspend fun checkMissedDoses(date: String = todayStr()): List<String> {
+        val hhmm = String.format("%02d:%02d",
+            java.time.LocalDateTime.now().hour, java.time.LocalDateTime.now().minute)
+        val logs = dao.logsOfDate(date)
+        val done = logs.filter { it.status == "taken" || it.status == "skipped" }
+            .map { it.medId to it.time }.toSet()
+        val alreadyMissed = logs.filter { it.status == "missed" }
+            .map { it.medId to it.time }.toSet()
+        val names = mutableListOf<String>()
+        for (med in dao.activeList()) {
+            if (med.startDate.isNotBlank() && date < med.startDate) continue
+            if (med.endDate.isNotBlank() && date > med.endDate) continue
+            for (slot in parseTimes(med.times)) {
+                if (slot <= hhmm && (med.id to slot) !in done && (med.id to slot) !in alreadyMissed) {
+                    dao.insertLog(
+                        MedLog(medId = med.id, date = date, time = slot, status = "missed", createdAt = nowStamp())
+                    )
+                    if (med.name !in names) names.add(med.name)
+                }
+            }
+        }
+        return names
+    }
+
+    /** 今日进度：总次数 / 已服次数 */
+    suspend fun todayProgress(date: String = todayStr()): Pair<Int, Int> {
+        val meds = dao.activeList().filter {
+            (it.startDate.isBlank() || date >= it.startDate) &&
+                (it.endDate.isBlank() || date <= it.endDate)
+        }
+        val total = meds.sumOf { parseTimes(it.times).size }
+        val taken = dao.logsOfDate(date).count { it.status == "taken" }
+        return total to taken
+    }
+
     suspend fun adherence(days: Int = 7): Adherence {
         val meds = dao.activeList().filter { it.times.isNotBlank() }
         val today = LocalDate.now()
         val from = today.minusDays(days.toLong() - 1)
             .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val logs = dao.logsSince(from)
-        val done = logs.map { Triple(it.medId, it.date, it.time) }.toSet()
+        val done = logs.filter { it.status == "taken" }
+            .map { Triple(it.medId, it.date, it.time) }.toSet()
 
         var expected = 0
         var taken = 0

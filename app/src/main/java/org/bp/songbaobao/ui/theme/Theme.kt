@@ -6,9 +6,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import org.bp.songbaobao.util.UserPrefs
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -147,6 +150,19 @@ val ThemePresets = listOf(
 fun schemeFor(id: String): ColorScheme =
     ThemePresets.firstOrNull { it.id == id }?.scheme ?: SaintDarkColorScheme
 
+/**
+ * 关爱模式（长辈）：在选定配色基础上提升对比度，
+ * 文本更亮、描边更明显，配合放大字号更易阅读。
+ */
+private fun highContrastScheme(base: ColorScheme): ColorScheme = base.copy(
+    onSurface = Color(0xFFFFFFFF),
+    onSurfaceVariant = Color(0xFFEFEAE0),
+    onBackground = Color(0xFFFFFFFF),
+    outline = GoldBright,
+    outlineVariant = Gold,
+    primary = GoldBright
+)
+
 @Composable
 fun SongBaoBaoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -155,9 +171,23 @@ fun SongBaoBaoTheme(
     // 无论系统设置如何都使用深色：本应用以星夜背景为设计基调
     // 强调色由用户设置的系统色系决定，即时生效
     val schemeId by UserPrefs.themeScheme.collectAsState()
-    MaterialTheme(
-        colorScheme = schemeFor(schemeId),
-        typography = AppTypography,
-        content = content
-    )
+    val caring by UserPrefs.caringMode.collectAsState()
+    val fontScale by UserPrefs.fontScale.collectAsState()
+    val baseScheme = schemeFor(schemeId)
+    val colorScheme = if (caring) highContrastScheme(baseScheme) else baseScheme
+
+    val density = LocalDensity.current
+    CompositionLocalProvider(
+        // 与系统字体大小相乘，不强覆盖老人已调整的系统字号
+        LocalDensity provides Density(
+            density = density.density,
+            fontScale = density.fontScale * fontScale
+        )
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            content = content
+        )
+    }
 }

@@ -47,6 +47,9 @@ sealed class Screen(
     // 导航时可能把 "edit" 当作 id 解析而抛异常。
     object NoteDetail : Screen("note/detail/{id}", R.string.title_note_detail, "", false)
 
+    // 报告导出（从趋势页进入）
+    object Report : Screen("report", R.string.report_title, "📑", false)
+
     // 合规文档（应用商店上架必需，从关于页进入）
     object Legal : Screen("legal", R.string.title_legal, "", false)
 

@@ -90,6 +90,9 @@ interface MedDao {
     @Insert
     suspend fun insertLog(log: MedLog): Long
 
+    @Update
+    suspend fun updateLog(log: MedLog)
+
     @Query("DELETE FROM med_logs WHERE id = :id")
     suspend fun deleteLog(id: Long)
 

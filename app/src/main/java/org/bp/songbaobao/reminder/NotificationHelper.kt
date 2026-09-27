@@ -14,9 +14,11 @@ import org.bp.songbaobao.R
 object NotificationHelper {
 
     const val CHANNEL_ID = "med_reminder"
+    const val CHANNEL_MISSED_ID = "med_missed"
 
     fun createChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 context.getString(R.string.notif_channel_name),
@@ -25,7 +27,6 @@ object NotificationHelper {
                 description = context.getString(R.string.notif_channel_desc)
                 enableVibration(true)
                 vibrationPattern = longArrayOf(300, 150, 300)
-                // 使用手机默认铃声
                 setSound(
                     RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),
                     android.media.AudioAttributes.Builder()
@@ -34,9 +35,56 @@ object NotificationHelper {
                         .build()
                 )
             }
-            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             nm.createNotificationChannel(channel)
+
+            val missed = NotificationChannel(
+                CHANNEL_MISSED_ID,
+                context.getString(R.string.notif_missed_channel_name),
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = context.getString(R.string.notif_missed_channel_desc)
+                enableVibration(true)
+                setSound(
+                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),
+                    android.media.AudioAttributes.Builder()
+                        .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION)
+                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build()
+                )
+            }
+            nm.createNotificationChannel(missed)
         }
+    }
+
+    /** 漏服提醒：汇总今天还没吃的药 */
+    fun notifyMissed(context: Context, missed: List<String>) {
+        createChannel(context)
+        val body = missed.joinToString("、") { it }
+        val text = context.getString(R.string.notif_missed_body, body)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("openMed", true)
+        }
+        val pi = PendingIntent.getActivity(
+            context,
+            77001,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or immutableFlag()
+        )
+        val notification = NotificationCompat.Builder(context, CHANNEL_MISSED_ID)
+            .setSmallIcon(R.drawable.ic_stat_reminder)
+            .setContentTitle(context.getString(R.string.notif_missed_title))
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setAutoCancel(true)
+            .setContentIntent(pi)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .build()
+
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.notify(77001, notification)
     }
 
     fun showReminder(context: Context, text: String, medId: Long) {

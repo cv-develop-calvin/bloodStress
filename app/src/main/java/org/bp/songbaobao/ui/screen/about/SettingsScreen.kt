@@ -14,6 +14,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -80,6 +82,91 @@ fun SettingsScreen(onBack: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     color = GoldBright
                 )
+            }
+            Spacer(Modifier.height(12.dp))
+
+            // 长辈友好：字体大小 + 关爱模式
+            val fontScale by UserPrefs.fontScale.collectAsState()
+            val caring by UserPrefs.caringMode.collectAsState()
+            PanelCard {
+                Column(Modifier.padding(12.dp)) {
+                    SectionTitle(stringResource(R.string.settings_font_size))
+                    Text(
+                        stringResource(R.string.settings_font_size_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextDim
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        val fontOptions = listOf(
+                            UserPrefs.FONT_STD to R.string.font_std,
+                            UserPrefs.FONT_LARGE to R.string.font_large,
+                            UserPrefs.FONT_XL to R.string.font_xl
+                        )
+                        fontOptions.forEach { (scale, labelRes) ->
+                            val selected = fontScale == scale
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.18f) else PanelBg)
+                                    .border(
+                                        1.dp,
+                                        if (selected) MaterialTheme.colorScheme.primary else PanelBorder,
+                                        RoundedCornerShape(12.dp)
+                                    )
+                                    .clickable { UserPrefs.setFontScale(scale) }
+                                    .padding(vertical = 12.dp)
+                            ) {
+                                Text(
+                                    stringResource(labelRes),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (selected) Gold else TextMain
+                                )
+                                Text(
+                                    when (scale) {
+                                        UserPrefs.FONT_STD -> "100%"
+                                        UserPrefs.FONT_LARGE -> "115%"
+                                        else -> "130%"
+                                    },
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (selected) Gold else TextDim
+                                )
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                stringResource(R.string.settings_caring),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = TextMain
+                            )
+                            Text(
+                                stringResource(R.string.settings_caring_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextDim
+                            )
+                        }
+                        Switch(
+                            checked = caring,
+                            onCheckedChange = { UserPrefs.setCaringMode(it) },
+                            colors = SwitchDefaults.colors(
+                                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                                checkedThumbColor = Color.White
+                            )
+                        )
+                    }
+                }
             }
             Spacer(Modifier.height(12.dp))
 

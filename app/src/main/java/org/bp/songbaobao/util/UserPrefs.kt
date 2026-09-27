@@ -18,6 +18,13 @@ object UserPrefs {
     private const val KEY_SUB_PLAN = "sub_plan"
     private const val KEY_SUB_ACTIVE = "sub_active"
     private const val KEY_SUB_EXPIRY = "sub_expiry"
+    private const val KEY_FONT_SCALE = "font_scale"
+    private const val KEY_CARING = "caring_mode"
+
+    /** 字体倍率选项：标准 1.0 / 大 1.15 / 特大 1.3 */
+    const val FONT_STD = 1.0f
+    const val FONT_LARGE = 1.15f
+    const val FONT_XL = 1.3f
 
     private var prefs: android.content.SharedPreferences? = null
 
@@ -27,6 +34,8 @@ object UserPrefs {
     private val _subPlan = MutableStateFlow<String?>(null)
     private val _subActive = MutableStateFlow(false)
     private val _subExpiry = MutableStateFlow(0L)
+    private val _fontScale = MutableStateFlow(FONT_STD)
+    private val _caringMode = MutableStateFlow(false)
 
     val themeScheme: StateFlow<String> = _themeScheme.asStateFlow()
     val bgUri: StateFlow<String?> = _bgUri.asStateFlow()
@@ -34,6 +43,8 @@ object UserPrefs {
     val subscriptionPlan: StateFlow<String?> = _subPlan.asStateFlow()
     val subscriptionActive: StateFlow<Boolean> = _subActive.asStateFlow()
     val subscriptionExpiry: StateFlow<Long> = _subExpiry.asStateFlow()
+    val fontScale: StateFlow<Float> = _fontScale.asStateFlow()
+    val caringMode: StateFlow<Boolean> = _caringMode.asStateFlow()
 
     fun init(context: Context) {
         if (prefs != null) return
@@ -44,6 +55,8 @@ object UserPrefs {
             _subPlan.value = p.getString(KEY_SUB_PLAN, null)
             _subActive.value = p.getBoolean(KEY_SUB_ACTIVE, false)
             _subExpiry.value = p.getLong(KEY_SUB_EXPIRY, 0L)
+            _fontScale.value = p.getFloat(KEY_FONT_SCALE, FONT_STD)
+            _caringMode.value = p.getBoolean(KEY_CARING, false)
         }
     }
 
@@ -78,5 +91,17 @@ object UserPrefs {
     /** 清除本地订阅标记（不会退款，仅清除本地状态）。 */
     fun clearSubscription() {
         setSubscription(null, false, 0L)
+    }
+
+    /** 字体倍率：与系统字体大小相乘，不强覆盖老人的系统设置。 */
+    fun setFontScale(scale: Float) {
+        _fontScale.value = scale
+        prefs?.edit()?.putFloat(KEY_FONT_SCALE, scale)?.apply()
+    }
+
+    /** 关爱模式：放大字号 + 高对比，面向长辈。 */
+    fun setCaringMode(on: Boolean) {
+        _caringMode.value = on
+        prefs?.edit()?.putBoolean(KEY_CARING, on)?.apply()
     }
 }

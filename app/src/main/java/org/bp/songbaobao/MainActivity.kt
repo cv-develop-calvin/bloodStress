@@ -68,6 +68,7 @@ import org.bp.songbaobao.ui.screen.note.NoteAddScreen
 import org.bp.songbaobao.ui.screen.note.NoteDetailScreen
 import org.bp.songbaobao.ui.screen.note.NoteEditScreen
 import org.bp.songbaobao.ui.screen.note.NoteListScreen
+import org.bp.songbaobao.ui.screen.report.ReportScreen
 import org.bp.songbaobao.ui.screen.subscription.SubscriptionScreen
 import org.bp.songbaobao.ui.theme.SongBaoBaoTheme
 import org.bp.songbaobao.util.LanguageManager
@@ -290,7 +291,8 @@ fun AppNavHost(
                     onAdd = { navController.navigate(Screen.BpAdd.route) },
                     onEdit = { id -> navController.navigate(Screen.bpEdit(id)) },
                     onList = { navController.navigate(Screen.BpList.route) },
-                    onScan = { navController.navigate(Screen.BpScan.route) }
+                    onScan = { navController.navigate(Screen.BpScan.route) },
+                    onReport = { navController.navigate(Screen.Report.route) }
                 )
             }
             composable(Screen.BpAdd.route) {
@@ -314,6 +316,11 @@ fun AppNavHost(
                     onBack = { navController.popBackStack() },
                     onConfirm = { navController.navigate(Screen.BpAdd.route) }
                 )
+            }
+
+            // ---------- 趋势报告 ----------
+            composable(Screen.Report.route) {
+                ReportScreen(onBack = { navController.popBackStack() })
             }
 
             // ---------- 血糖 ----------

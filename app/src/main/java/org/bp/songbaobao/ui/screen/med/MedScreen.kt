@@ -47,6 +47,59 @@ fun MedScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
+            // 今日用药
+            val todayTotal = state.todayTotal
+            val todayTaken = state.todayTaken
+            val missedCount = state.missedSlots.size
+            val nextDose = state.pending.firstOrNull()?.slot
+            HeroCard {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        stringResource(R.string.med_today),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        stringResource(R.string.med_today_progress, todayTaken, todayTotal),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextMain
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                LinearProgressIndicator(
+                    progress = if (todayTotal > 0) (todayTaken.toFloat() / todayTotal) else 1f,
+                    modifier = Modifier.fillMaxWidth().height(8.dp),
+                    color = if (missedCount > 0) WarnAmber else SuccessGreen,
+                    trackColor = PanelBorder
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val tip = when {
+                        todayTotal == 0 -> stringResource(R.string.med_today_none)
+                        missedCount > 0 -> stringResource(R.string.med_missed_tip, missedCount)
+                        todayTaken >= todayTotal -> stringResource(R.string.med_all_done)
+                        else -> stringResource(R.string.med_next_dose, nextDose ?: "--")
+                    }
+                    Text(
+                        tip,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (missedCount > 0) DangerRed else TextDim
+                    )
+                    Spacer(Modifier.weight(1f))
+                    if (nextDose != null) {
+                        Text(
+                            stringResource(R.string.med_next_dose, nextDose),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextDim
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
             // 概览
             HeroCard {
                 ZodiacChip(stringResource(R.string.med_header))
@@ -61,7 +114,7 @@ fun MedScreen(
                     Text("%", color = TextDim)
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        stringResource(R.string.med_adherence_7d),
+                        stringResource(R.string.med_adherence_30d),
                         style = MaterialTheme.typography.labelMedium,
                         color = TextDim
                     )
@@ -163,15 +216,24 @@ fun MedScreen(
                                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                     slots.forEach { slot ->
                                         val taken = (med.id to slot) in state.takenSlots
+                                        val missed = (med.id to slot) in state.missedSlots
                                         FilterChip(
                                             selected = taken,
                                             onClick = { vm.toggleTaken(med.id, slot) },
-                                            label = { Text(if (taken) "✓ $slot" else slot) },
+                                            label = {
+                                                Text(
+                                                    when {
+                                                        taken -> "✓ $slot"
+                                                        missed -> stringResource(R.string.med_missed) + " $slot"
+                                                        else -> slot
+                                                    }
+                                                )
+                                            },
                                             colors = FilterChipDefaults.filterChipColors(
                                                 selectedContainerColor = SuccessGreen.copy(alpha = 0.25f),
                                                 selectedLabelColor = SuccessGreen,
-                                                containerColor = androidx.compose.ui.graphics.Color.Transparent,
-                                                labelColor = TextDim
+                                                containerColor = if (missed) DangerRed.copy(alpha = 0.18f) else androidx.compose.ui.graphics.Color.Transparent,
+                                                labelColor = if (missed) DangerRed else TextDim
                                             )
                                         )
                                     }

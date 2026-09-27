@@ -6,25 +6,29 @@ import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.bp.songbaobao.data.repository.MedRepository
+import org.bp.songbaobao.util.todayStr
 import javax.inject.Inject
 
-/** 开机后重新注册全部提醒（闹钟在重启后会被清空） */
+/**
+ * 每天 21:00 触发：扫描当天已过服药时间却未打卡的时段，
+ * 写入「漏服」记录并提醒用户补服。
+ * 完全本地、离线可用。
+ */
 @AndroidEntryPoint
-class BootReceiver : BroadcastReceiver() {
+class MissedDoseReceiver : BroadcastReceiver() {
 
     @Inject lateinit var medRepository: MedRepository
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
         val pendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val meds = medRepository.all().first()
-                AlarmScheduler.rescheduleAll(context, meds)
-                AlarmScheduler.scheduleMissedCheck(context)
+                val missed = medRepository.checkMissedDoses(todayStr())
+                if (missed.isNotEmpty()) {
+                    NotificationHelper.notifyMissed(context, missed)
+                }
             } finally {
                 pendingResult.finish()
             }

@@ -667,4 +667,55 @@
     <string name="sub_cancel">取消会员标记</string>
     <string name="sub_please_select">请先选择一个套餐</string>
 
+    <!-- 大字模式 / 关爱模式 -->
+    <string name="settings_font_size">字体大小</string>
+    <string name="settings_font_size_desc">放大整体字号，方便长辈阅读（与系统字体叠加）</string>
+    <string name="font_std">标准</string>
+    <string name="font_large">大</string>
+    <string name="font_xl">特大</string>
+    <string name="settings_caring">关爱模式</string>
+    <string name="settings_caring_desc">更大字号 + 更高对比，适合长辈使用</string>
+
+    <!-- 用药：今日打卡 + 漏服 -->
+    <string name="med_today">今日用药</string>
+    <string name="med_today_progress">今日打卡 %1$d / %2$d 次</string>
+    <string name="med_next_dose">下次服药：%1$s</string>
+    <string name="med_all_done">今日用药已打完卡 ✓</string>
+    <string name="med_today_none">今日无用药安排</string>
+    <string name="med_missed">漏服</string>
+    <string name="med_missed_tip">有 %1$d 次药还没吃，记得补上</string>
+    <string name="med_makeup">补打卡</string>
+    <string name="med_adherence_30d">近 30 天依从性</string>
+
+    <!-- 漏服提醒通知 -->
+    <string name="notif_missed_title">有药还没吃 💊</string>
+    <string name="notif_missed_body">%1$s 今天还没服药，记得补上</string>
+    <string name="notif_missed_channel_name">漏服提醒</string>
+    <string name="notif_missed_channel_desc">当天该吃却没吃的药，晚间提醒补服</string>
+
+    <!-- 报告导出 -->
+    <string name="report_title">趋势报告</string>
+    <string name="report_generate">生成报告</string>
+    <string name="report_generating">正在生成报告…</string>
+    <string name="report_empty">暂无可生成的记录</string>
+    <string name="report_share">分享 / 保存</string>
+    <string name="report_send_doctor">发送给医生</string>
+    <string name="report_save_file">保存为文件</string>
+    <string name="report_ok">报告已生成</string>
+    <string name="report_failed">生成失败：%1$s</string>
+    <string name="report_patient">患者信息</string>
+    <string name="report_summary">报告摘要（%1$s）</string>
+    <string name="report_section_bp">一、血压趋势</string>
+    <string name="report_section_glucose">二、血糖趋势</string>
+    <string name="report_section_lab">三、血常规异常项</string>
+    <string name="report_section_med">四、用药依从性</string>
+    <string name="report_section_alert">五、异常事件</string>
+    <string name="report_level_stat">分级统计</string>
+    <string name="report_rate">达标率 %1$d%%</string>
+    <string name="report_avg">均值 %1$s / %2$s</string>
+    <string name="report_all_normal">全部指标正常</string>
+    <string name="report_compliance">依从率</string>
+    <string name="report_disclaimer">免责声明：本应用为健康记录工具，不构成医疗诊断或治疗建议。数据仅供医生参考。</string>
+    <string name="report_age_range">年龄区间：%1$s</string>
+
 </resources>

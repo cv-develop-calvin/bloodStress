@@ -2,6 +2,7 @@ package org.bp.songbaobao
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
+import org.bp.songbaobao.reminder.AlarmScheduler
 import org.bp.songbaobao.util.UserPrefs
 
 @HiltAndroidApp
@@ -13,5 +14,7 @@ class SongBaoBaoApp : Application() {
         CrashHandler.install(this)
         // 加载用户个性化设置（系统色系 / 背景图片 / 自定义标题）
         UserPrefs.init(this)
+        // 注册每日漏服检测（离线可用，不依赖网络）
+        AlarmScheduler.scheduleMissedCheck(this)
     }
 }

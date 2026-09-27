@@ -87,4 +87,44 @@ object AlarmScheduler {
     fun nowMillis() = System.currentTimeMillis()
 
     fun nowDateTime(): LocalDateTime = LocalDateTime.now()
+
+    // ---------------- 每日漏服检测 ----------------
+    const val ACTION_MISSED_CHECK = "org.bp.songbaobao.action.MISSED_CHECK"
+    private const val MISSED_RC = 99001
+
+    /** 注册每天 21:00 的漏服检测（设备重启后由 BootReceiver 重新注册） */
+    fun scheduleMissedCheck(context: Context) {
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val trigger = nextMissedMillis()
+        try {
+            am.setRepeating(
+                AlarmManager.RTC_WAKEUP, trigger,
+                AlarmManager.INTERVAL_DAY, missedPi(context)
+            )
+        } catch (e: SecurityException) {
+            am.set(AlarmManager.RTC_WAKEUP, trigger, missedPi(context))
+        }
+    }
+
+    fun cancelMissedCheck(context: Context) {
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        am.cancel(missedPi(context))
+    }
+
+    private fun missedPi(context: Context): PendingIntent {
+        val intent = Intent(context, MissedDoseReceiver::class.java).apply {
+            action = ACTION_MISSED_CHECK
+        }
+        return PendingIntent.getBroadcast(
+            context, MISSED_RC, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or immutableFlag()
+        )
+    }
+
+    private fun nextMissedMillis(): Long {
+        var trigger = LocalDate.now().atTime(21, 0)
+            .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        if (trigger <= System.currentTimeMillis()) trigger += 24 * 60 * 60 * 1000
+        return trigger
+    }
 }

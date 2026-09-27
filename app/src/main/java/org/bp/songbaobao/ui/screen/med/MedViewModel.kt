@@ -24,7 +24,10 @@ data class MedUiState(
     val logs: List<MedLogWithMed> = emptyList(),
     val adherence: Adherence? = null,
     val pending: List<PendingMed> = emptyList(),
-    val takenSlots: Set<Pair<Long, String>> = emptySet()
+    val takenSlots: Set<Pair<Long, String>> = emptySet(),
+    val missedSlots: Set<Pair<Long, String>> = emptySet(),
+    val todayTotal: Int = 0,
+    val todayTaken: Int = 0
 )
 
 @HiltViewModel
@@ -37,34 +40,39 @@ class MedViewModel @Inject constructor(
     /** 编辑页的药品 id（新增为 null） */
     val editId: Long? = savedStateHandle.get<Long>("id")?.takeIf { it != 0L }
 
-    private val _taken = MutableStateFlow<Set<Pair<Long, String>>>(emptySet())
-    private val _adh = MutableStateFlow<Adherence?>(null)
-    private val _pending = MutableStateFlow<List<PendingMed>>(emptyList())
+    private val _ui = MutableStateFlow(MedUiState())
 
     init {
         viewModelScope.launch {
             while (true) {
-                runCatching {
-                    _taken.value = repo.takenSlots(todayStr())
-                    _adh.value = repo.adherence(7)
-                    _pending.value = repo.pending()
-                }
+                runCatching { refresh() }
                 delay(30_000)
             }
         }
     }
 
-    val uiState: StateFlow<MedUiState> = combine(
-        repo.all(), repo.recentLogs(20), _taken, _adh, _pending
-    ) { meds, logs, taken, adh, pending ->
-        MedUiState(meds, logs, adh, pending, taken)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MedUiState())
+    val uiState: StateFlow<MedUiState> = _ui.asStateFlow()
 
     fun refresh() {
         viewModelScope.launch {
-            _taken.value = repo.takenSlots(todayStr())
-            _adh.value = repo.adherence(7)
-            _pending.value = repo.pending()
+            val meds = runCatching { repo.all().first() }.getOrDefault(emptyList())
+            val logs = runCatching { repo.recentLogs(20).first() }.getOrDefault(emptyList())
+            val taken = runCatching { repo.takenSlots(todayStr()) }.getOrDefault(emptySet())
+            val missed = runCatching { repo.missedSlots(todayStr()) }.getOrDefault(emptySet())
+            val adh = runCatching { repo.adherence(30) }.getOrNull()
+            val pending = runCatching { repo.pending() }.getOrDefault(emptyList())
+            val (total, takenCount) = runCatching { repo.todayProgress(todayStr()) }
+                .getOrDefault(0 to 0)
+            _ui.value = MedUiState(
+                meds = meds,
+                logs = logs,
+                adherence = adh,
+                pending = pending,
+                takenSlots = taken,
+                missedSlots = missed,
+                todayTotal = total,
+                todayTaken = takenCount
+            )
         }
     }
 

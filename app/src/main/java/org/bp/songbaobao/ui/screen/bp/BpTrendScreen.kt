@@ -35,6 +35,7 @@ fun BpTrendScreen(
     onEdit: (Long) -> Unit,
     onList: () -> Unit,
     onScan: () -> Unit = {},
+    onReport: () -> Unit = {},
     vm: BpViewModel = hiltViewModel()
 ) {
     val state by vm.uiState.collectAsState()
@@ -233,7 +234,14 @@ fun BpTrendScreen(
             // 趋势曲线
             PanelCard {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    SectionTitle(stringResource(R.string.bp_trend_title))
+                    SectionTitle(stringResource(R.string.bp_trend_title)) {
+                        TextButton(onClick = onReport) {
+                            Text(
+                                "📑 " + stringResource(R.string.report_generate),
+                                color = org.bp.songbaobao.ui.theme.Gold
+                            )
+                        }
+                    }
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         ToggleChip(stringResource(R.string.bp_series_sys),
                             state.showSys) { vm.toggleSeries(0) }
