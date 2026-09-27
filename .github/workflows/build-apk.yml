@@ -209,3 +209,33 @@ jobs:
             APK 签名固定不变（${{ env.SIGNING_ENABLED == 'true' && '已启用正式签名' || '本次未启用正式签名，需先卸载旧版' }}），
             后续升级直接覆盖安装即可，不需要卸载旧版本，数据也不会丢失。
             若从 v1.5.0 及更早版本升级，因签名更换为正式发布密钥，需先卸载旧版再安装（建议先导出备份）。
+
+      # 发版后自动更新 update.json：应用内「检查更新」的主数据源。
+      # 放在仓库内、经 raw.githubusercontent.com + 镜像代理在国内稳定可达，避免直连被限速的 api.github.com。
+      # 仅 tag 发布时执行；提交带 [skip ci] 不触发新一轮 CI；即便失败也不影响已发布的 Release。
+      - name: Update update.json for in-app check
+        if: startsWith(github.ref, 'refs/tags/') && steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          VER="${{ steps.ver.outputs.version }}"
+          RUN="${{ github.run_number }}"
+          APK="songbaobao-v${VER}-build${RUN}.apk"
+          SIZE=$(stat -c%s "dist/${APK}" 2>/dev/null || echo 0)
+          DATE=$(date +%F)
+          cat > update.json <<EOF
+          {
+            "versionName": "${VER}",
+            "versionCode": 0,
+            "tagName": "${{ github.ref_name }}",
+            "apkName": "${APK}",
+            "apkUrl": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${APK}",
+            "apkSize": ${SIZE},
+            "publishedAt": "${DATE}",
+            "notes": "宋宝宝的记录 v${VER}"
+          }
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add update.json
+          git commit -m "chore: update update.json [skip ci]" || echo "no change"
+          git push origin HEAD:main

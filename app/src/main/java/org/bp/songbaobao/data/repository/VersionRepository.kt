@@ -65,6 +65,9 @@ class VersionRepository @Inject constructor(private val app: Application) {
         private const val API_RELEASES = "https://api.github.com/repos/$REPO/releases?per_page=100"
         private const val APK_PREFIX = "songbaobao-v"
         private const val APK_DIR = "updates"
+        // 最新版本信息文件（放在仓库内，经 raw.githubusercontent.com + 镜像代理在国内稳定可达）。
+        // 作为「检查更新」的主数据源，避免直接访问国内被限速的 api.github.com。
+        private const val UPDATE_INFO_RAW = "https://raw.githubusercontent.com/$REPO/main/update.json"
 
         // 下载相关常量
         private const val MAX_REDIRECTS = 5
@@ -98,83 +101,129 @@ class VersionRepository @Inject constructor(private val app: Application) {
 
     // ---------------- 检查更新 ----------------
 
+    /**
+     * 检查更新。优先读取仓库内的 update.json（raw.githubusercontent.com，国内经镜像代理稳定可达），
+     * 失败再退回 GitHub Releases API（api.github.com 在国内常被限速/拦截，仅作兜底）。
+     */
     suspend fun checkForUpdate(): UpdateCheck = withContext(Dispatchers.IO) {
-        try {
-            android.util.Log.i("VersionRepo", "进入 checkForUpdate，准备请求")
-            // HttpURLConnection 是阻塞式 I/O，connectionTimeout 不约束 DNS 解析，
-            // 协程的 withTimeout 也无法打断阻塞调用（网络异常时可能卡住数分钟）。
-            // 因此用独立线程 + Future.get(timeout) 强制限时，超时直接放弃。
-            val json = runWithTimeout(15_000) { httpGetText(API_RELEASES) }
-            val arr = JSONArray(json)
+        // 1) 优先 update.json
+        runCatching { checkViaJsonFile() }.getOrNull()?.let { if (it !is UpdateCheck.Failed) return@withContext it }
+        // 2) 兜底 GitHub API
+        runCatching { checkViaApi() }.getOrNull()?.let { if (it !is UpdateCheck.Failed) return@withContext it }
+        // 3) 都失败
+        UpdateCheck.Failed(app.getString(R.string.msg_net_failed))
+    }
 
-            // 扫描所有 Release，选出「版本号最高」的可用构建（版本相同则取构建号更高者）。
-            // 兼容两种 tag：build-N（构建版）与 vX.Y.Z（版本号 Release），两者都带 APK。
-            var best: UpdateInfo? = null
-            for (i in 0 until arr.length()) {
-                val root = arr.getJSONObject(i)
-                val assets = root.optJSONArray("assets") ?: JSONArray()
-
-                var apkUrl = ""
-                var apkName = ""
-                var apkSize = 0L
-                for (j in 0 until assets.length()) {
-                    val a = assets.getJSONObject(j)
-                    val name = a.optString("name")
-                    if (name.endsWith(".apk")) {
-                        apkUrl = a.optString("browser_download_url")
-                        apkName = name
-                        apkSize = a.optLong("size")
-                        break
-                    }
+    /** 从仓库 update.json 读取最新版本（raw + 镜像代理可达）。 */
+    private suspend fun checkViaJsonFile(): UpdateCheck = withContext(Dispatchers.IO) {
+        val json = runCatching {
+            runWithTimeout(15_000) {
+                var last: Throwable? = null
+                for (url in buildDownloadCandidates(UPDATE_INFO_RAW)) {
+                    try { return@runWithTimeout httpGetText(url) } catch (t: Throwable) { last = t }
                 }
-                // 没有 APK 的不是应用构建（例如 ci-build-log 错误日志），跳过
-                if (apkUrl.isBlank()) continue
-
-                // 从 songbaobao-v1.9.7-build82.apk 解析出版本号与构建号
-                val remoteVersion = apkName
-                    .substringAfter(APK_PREFIX, "")
-                    .substringBefore("-build")
-                    .ifBlank { "0.0.0" }
-                val buildNo = apkName
-                    .substringAfter("-build")
-                    .substringBefore(".apk")
-                    .toIntOrNull() ?: 0
-
-                val candidate = UpdateInfo(
-                    tagName = root.optString("tag_name"),
-                    versionName = remoteVersion,
-                    versionCode = buildNo,
-                    publishedAt = root.optString("published_at").take(10),
-                    notes = root.optString("body").trim(),
-                    apkUrl = apkUrl,
-                    apkName = apkName,
-                    apkSize = apkSize
-                )
-
-                best = best?.let { prev ->
-                    when {
-                        // 版本更高优先
-                        compareVersion(remoteVersion, prev.versionName) > 0 -> candidate
-                        // 版本相同则构建号更高优先
-                        compareVersion(remoteVersion, prev.versionName) == 0 &&
-                            buildNo > prev.versionCode -> candidate
-                        else -> prev
-                    }
-                } ?: candidate
+                throw last ?: IOException(app.getString(R.string.msg_no_apk_link))
             }
+        }.getOrElse { return@withContext UpdateCheck.Failed(friendlyError(it)) }
 
-            val chosen = best
-                ?: return@withContext UpdateCheck.Failed(app.getString(R.string.msg_no_apk_link))
+        val root = JSONObject(json)
+        val remoteVersion = root.optString("versionName", "0.0.0")
+        val apkUrl = root.optString("apkUrl", "")
+        val apkName = root.optString("apkName", "")
+        if (apkUrl.isBlank()) return@withContext UpdateCheck.Failed(app.getString(R.string.msg_no_apk_link))
 
-            // 按语义化版本比较（主.次.修订），比构建号直观且不受 CI 编号影响
-            if (compareVersion(chosen.versionName, BuildConfig.VERSION_NAME) <= 0) {
-                return@withContext UpdateCheck.UpToDate(BuildConfig.VERSION_NAME)
-            }
+        val buildNo = apkName
+            .substringAfter("-build")
+            .substringBefore(".apk")
+            .toIntOrNull() ?: 0
 
-            UpdateCheck.Available(chosen)
-        } catch (t: Throwable) {
-            UpdateCheck.Failed(friendlyError(t))
+        if (compareVersion(remoteVersion, BuildConfig.VERSION_NAME) <= 0) {
+            return@withContext UpdateCheck.UpToDate(BuildConfig.VERSION_NAME)
         }
+
+        UpdateCheck.Available(
+            UpdateInfo(
+                tagName = root.optString("tagName", remoteVersion),
+                versionName = remoteVersion,
+                versionCode = buildNo,
+                publishedAt = root.optString("publishedAt", "").take(10),
+                notes = root.optString("notes", "").trim(),
+                apkUrl = apkUrl,
+                apkName = apkName,
+                apkSize = root.optLong("apkSize", 0L)
+            )
+        )
+    }
+
+    /** 兜底：扫描 Releases API 列表，按 APK 文件名里的语义版本号选最新可用版本。 */
+    private suspend fun checkViaApi(): UpdateCheck = withContext(Dispatchers.IO) {
+        val json = runWithTimeout(15_000) { httpGetText(API_RELEASES) }
+        val arr = JSONArray(json)
+
+        // 兼容两种 tag：build-N（构建版）与 vX.Y.Z（版本号 Release），两者都带 APK。
+        var best: UpdateInfo? = null
+        for (i in 0 until arr.length()) {
+            val root = arr.getJSONObject(i)
+            val assets = root.optJSONArray("assets") ?: JSONArray()
+
+            var apkUrl = ""
+            var apkName = ""
+            var apkSize = 0L
+            for (j in 0 until assets.length()) {
+                val a = assets.getJSONObject(j)
+                val name = a.optString("name")
+                if (name.endsWith(".apk")) {
+                    apkUrl = a.optString("browser_download_url")
+                    apkName = name
+                    apkSize = a.optLong("size")
+                    break
+                }
+            }
+            // 没有 APK 的不是应用构建（例如 ci-build-log 错误日志），跳过
+            if (apkUrl.isBlank()) continue
+
+            // 从 songbaobao-v1.9.7-build82.apk 解析出版本号与构建号
+            val remoteVersion = apkName
+                .substringAfter(APK_PREFIX, "")
+                .substringBefore("-build")
+                .ifBlank { "0.0.0" }
+            val buildNo = apkName
+                .substringAfter("-build")
+                .substringBefore(".apk")
+                .toIntOrNull() ?: 0
+
+            val candidate = UpdateInfo(
+                tagName = root.optString("tag_name"),
+                versionName = remoteVersion,
+                versionCode = buildNo,
+                publishedAt = root.optString("published_at").take(10),
+                notes = root.optString("body").trim(),
+                apkUrl = apkUrl,
+                apkName = apkName,
+                apkSize = apkSize
+            )
+
+            best = best?.let { prev ->
+                when {
+                    // 版本更高优先
+                    compareVersion(remoteVersion, prev.versionName) > 0 -> candidate
+                    // 版本相同则构建号更高优先
+                    compareVersion(remoteVersion, prev.versionName) == 0 &&
+                        buildNo > prev.versionCode -> candidate
+                    else -> prev
+                }
+            } ?: candidate
+        }
+
+        val chosen = best
+            ?: return@withContext UpdateCheck.Failed(app.getString(R.string.msg_no_apk_link))
+
+        // 按语义化版本比较（主.次.修订），比构建号直观且不受 CI 编号影响
+        if (compareVersion(chosen.versionName, BuildConfig.VERSION_NAME) <= 0) {
+            return@withContext UpdateCheck.UpToDate(BuildConfig.VERSION_NAME)
+        }
+
+        UpdateCheck.Available(chosen)
     }
 
     /**
