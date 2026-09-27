@@ -156,6 +156,11 @@ dependencies {
     // 图表（Compose 中通过 AndroidView 包装，API 稳定）
     implementation(libs.mpandroidchart)
 
+    // 支付：微信 / 支付宝 SDK + PayPal 用的 Custom Tabs
+    implementation(libs.wechat.sdk)
+    implementation(libs.alipay.sdk)
+    implementation(libs.browser)
+
     // OCR：中文识别
     implementation(libs.mlkit.text.chinese)
 

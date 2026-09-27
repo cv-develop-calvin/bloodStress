@@ -45,6 +45,14 @@ hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.re
 
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
+
+# 支付 SDK（仅在集成微信/支付宝支付时需要）
+# 微信开放平台 SDK（含支付）：https://developers.weixin.qq.com/doc/...
+wechat-sdk = { module = "com.tencent.mm.opensdk:wechat-sdk-android-without-mta", version = "6.8.0" }
+# 支付宝 App 支付 SDK
+alipay-sdk = { module = "com.alipay.sdk:alipaysdk-android", version = "15.8.11" }
+# PayPal 走网页授权（Custom Tabs），无需专用 SDK
+browser = { module = "androidx.browser:browser", version = "1.8.0" }
 # 内置打包版：中文识别模型直接打进 APK，无需运行时从 Google 下载（国内网络必需）
 mlkit-text-chinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "mlkitTextChinese" }
 

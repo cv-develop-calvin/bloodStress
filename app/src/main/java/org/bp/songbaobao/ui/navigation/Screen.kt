@@ -53,6 +53,9 @@ sealed class Screen(
     // 合规文档（应用商店上架必需，从关于页进入）
     object Legal : Screen("legal", R.string.title_legal, "", false)
 
+    // 打赏 / 捐赠（从关于页进入）
+    object Tip : Screen("tip", R.string.tip_title, "", false)
+
     // 个性化设置（从关于页进入）
     object Settings : Screen("settings", R.string.settings_title, "", false)
 

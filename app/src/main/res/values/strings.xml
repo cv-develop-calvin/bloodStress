@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">宋宝宝的记录</string>
+    <string name="tip_title">打赏开发者</string>
 
     <!-- 通知与提醒 -->
     <string name="notif_channel_name">用药提醒</string>

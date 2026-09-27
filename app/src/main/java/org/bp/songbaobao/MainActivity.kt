@@ -39,6 +39,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import dagger.hilt.android.AndroidEntryPoint
 import org.bp.songbaobao.R
 import org.bp.songbaobao.reminder.NotificationHelper
@@ -69,6 +70,7 @@ import org.bp.songbaobao.ui.screen.note.NoteDetailScreen
 import org.bp.songbaobao.ui.screen.note.NoteEditScreen
 import org.bp.songbaobao.ui.screen.note.NoteListScreen
 import org.bp.songbaobao.ui.screen.report.ReportScreen
+import org.bp.songbaobao.ui.payment.TipScreen
 import org.bp.songbaobao.ui.screen.subscription.SubscriptionScreen
 import org.bp.songbaobao.ui.theme.SongBaoBaoTheme
 import org.bp.songbaobao.util.LanguageManager
@@ -448,6 +450,13 @@ fun AppNavHost(
             // ---------- 合规文档 ----------
             composable(Screen.Legal.route) {
                 LegalScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(
+                Screen.Tip.route,
+                deepLinks = listOf(navDeepLink { uriPattern = "songbaobao://tip" })
+            ) {
+                TipScreen()
             }
         }
     }
