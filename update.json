@@ -1,10 +1,10 @@
 {
-  "versionName": "1.9.10",
-  "versionCode": 10910,
-  "tagName": "v1.9.10",
-  "apkName": "songbaobao-v1.9.10-build91.apk",
-  "apkUrl": "https://github.com/cv-develop-calvin/bloodStress/releases/download/v1.9.10/songbaobao-v1.9.10-build91.apk",
+  "versionName": "1.9.11",
+  "versionCode": 0,
+  "tagName": "v1.9.11",
+  "apkName": "songbaobao-v1.9.11-build93.apk",
+  "apkUrl": "https://github.com/cv-develop-calvin/bloodStress/releases/download/v1.9.11/songbaobao-v1.9.11-build93.apk",
   "apkSize": 67552287,
   "publishedAt": "2026-09-27",
-  "notes": "应用内更新下载增加 GitHub 镜像代理前缀与多源回退（解决国内下载卡顿）"
+  "notes": "宋宝宝的记录 v1.9.11"
 }
