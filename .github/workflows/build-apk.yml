@@ -180,19 +180,21 @@ jobs:
           path: dist/*.apk
           if-no-files-found: warn
 
-      # Release 的 assets 是原始 APK 文件（不是 zip），手机浏览器点开即可下载安装
+      # Release 的 assets 是原始 APK 文件（不是 zip），手机浏览器点开即可下载安装。
+      # 推送到 v* 标签时发布「版本号 Release」（用标签名，并自动生成更新日志）；
+      # 推送到 main 时发布「构建号 Release」（build-N），便于随时体验最新构建。
       - name: Publish APK release
         if: steps.build.outcome == 'success'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}
-          name: 宋宝宝的记录 · 构建 ${{ github.run_number }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('build-{0}', github.run_number) }}
+          name: ${{ startsWith(github.ref, 'refs/tags/') && format('宋宝宝的记录 {0}', github.ref_name) || format('宋宝宝的记录 · 构建 {0}', github.run_number) }}
           files: dist/*.apk
           draft: false
           prerelease: false
-          generate_release_notes: false
+          generate_release_notes: ${{ startsWith(github.ref, 'refs/tags/') }}
           body: |
-            ## 宋宝宝的记录 v${{ steps.ver.outputs.version }}
+            ## 宋宝宝的记录 ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('v{0}', steps.ver.outputs.version) }}
 
             **点击下方的 APK 文件即可下载安装**（原始文件，非压缩包）。
 
